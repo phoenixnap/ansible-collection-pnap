@@ -1,6 +1,6 @@
 # Ansible Collection - phoenixnap.ansible_pnap
 
-Ansible Modules to support the phoenixNAP Bare Metal Cloud (BMC)
+Collection of modules for phoenixNAP Bare Metal Cloud API
 
 ## Requirements
 
@@ -11,6 +11,16 @@ Ansible Modules to support the phoenixNAP Bare Metal Cloud (BMC)
 To install module execute:
 
 > pip install requests
+
+## Installation
+
+> ansible-galaxy collection install phoenixnap.bmc
+
+## Documentation
+
+After installation, see module documentation: 
+
+> ansible-doc phoenixnap.bmc.server
 
 ## Authentication (Credential File)
 

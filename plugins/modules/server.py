@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# (c) 2020, Goran Jelenic <goranje@phoenixnap.com>
+# (c) 2020, Pavle Jojkic <pavlej@phoenixnap.com> , Goran Jelenic <goranje@phoenixnap.com>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
@@ -13,7 +13,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 ---
-module: server
+module: pnap_server
 
 short_description: Manage PhoenixNAP Bare Metal Cloud servers
 description:
@@ -23,8 +23,9 @@ description:
 
 version_added: "x.x"
 
-author:
-    - Goran Jelenic (@xxx) <goranje@phoenixnap.com>
+authors:
+    - Pavle Jojkic (@pajuga) <pavlej@phoenixnap.com>
+    - Goran Jelenic <goranje@phoenixnap.com>
 
 options:
   client_id:
@@ -69,7 +70,7 @@ options:
     type: str
   type:
     description: Server type ID. Cannot be changed once a server is created.
-    choices: [s1.c1.tiny, s1.c1.medium]
+    choices: [s1.c1.small, s1.c1.medium]
     default: s1.c1.medium
     type: str
 '''
@@ -87,7 +88,7 @@ EXAMPLES = '''
   vars_files:
     - ~/.pnap/config.yaml
   collections:
-    - phoenixnap.ansible_pnap
+    - phoenixnap.bmc
   tasks:
   - server:
       client_id: "{{clientId}}"
@@ -107,7 +108,7 @@ EXAMPLES = '''
   vars_files:
     - ~/.pnap/config.yaml
   collections:
-    - phoenixnap.ansible_pnap
+    - phoenixnap.bmc
   tasks:
   - server:
       client_id: "{{clientId}}"
@@ -124,7 +125,7 @@ EXAMPLES = '''
   vars_files:
     - ~/.pnap/config.yaml
   collections:
-    - phoenixnap.ansible_pnap
+    - phoenixnap.bmc
   tasks:
   - server:
       client_id: "{{clientId}}"
@@ -141,7 +142,7 @@ EXAMPLES = '''
   vars_files:
     - ~/.pnap/config.yaml
   collections:
-    - phoenixnap.ansible_pnap
+    - phoenixnap.bmc
   tasks:
   - server:
       client_id: "{{clientId}}"
@@ -185,10 +186,6 @@ from base64 import standard_b64encode
 ALLOWED_STATES = ['absent', 'powered-on', 'powered-off', 'present', 'rebooted', 'reset', 'shutdown']
 BASE_API = 'https://api.phoenixnap.com/bmc/v0/servers/'
 TOKEN_API = 'https://auth.phoenixnap.com/auth/realms/BMC/protocol/openid-connect/token'
-
-BASE_API = 'https://api-dev.phoenixnap.com/bmc/v0/servers/'
-TOKEN_API = 'https://auth-dev.phoenixnap.com/auth/realms/BMC/protocol/openid-connect/token'
-
 CHECK_FOR_STATUS_CHANGE = 5
 TIMEOUT_STATUS_CHANGE = 900
 
@@ -388,7 +385,7 @@ def main():
             hostnames=dict(type='list', elements='str'),
             os=dict(choices=['ubuntu/bionic', 'centos/centos7'], default='ubuntu/bionic'),
             password=dict(no_log=True),
-            type=dict(choices=['s1.c1.tiny', 's1.c1.medium'], default='s1.c1.medium'),
+            type=dict(choices=['s1.c1.small', 's1.c1.medium'], default='s1.c1.medium'),
             server_ids=dict(type='list', elements='str'),
             ssh_key=dict(),
             state=dict(choices=ALLOWED_STATES, default='present')
