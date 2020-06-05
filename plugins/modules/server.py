@@ -13,7 +13,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 ---
-module: pnap_server
+module: server
 
 short_description: Manage PhoenixNAP Bare Metal Cloud servers
 description:
@@ -21,11 +21,11 @@ description:
     - This module has a dependency on requests
     - API is documented at U(https://developers.phoenixnap.com/docs/bmc/1/overview).
 
-version_added: "x.x"
+version_added: "2.10"
 
-authors:
+author:
     - Pavle Jojkic (@pajuga) <pavlej@phoenixnap.com>
-    - Goran Jelenic <goranje@phoenixnap.com>
+    - Goran Jelenic (@xxx) <goranje@phoenixnap.com>
 
 options:
   client_id:
@@ -40,18 +40,14 @@ options:
     description: Description of server.
     type: str
   location:
-    description: Server Location ID. Cannot be changed once a server is created.
-    choices: ['PHX']
-    default: PHX
+    description: Server Location ID. See BMC API for current list - U(https://developers.phoenixnap.com/docs/bmc/1/types/Server).
     type: str
   hostnames:
     description: Name of server.
     type: list
     elements: str
   os:
-    description: The server's OS ID used when the server was created
-    choices: [ubuntu/bionic, centos/centos7]
-    default: ubuntu/bionic
+    description: The server's OS used when the server was created. See BMC API for current list - U(https://developers.phoenixnap.com/docs/bmc/1/types/Server).
     type: str
   password:
     description: Password set for user Admin on Windows server.
@@ -69,9 +65,7 @@ options:
     default: present
     type: str
   type:
-    description: Server type ID. Cannot be changed once a server is created.
-    choices: [s1.c1.small, s1.c1.medium]
-    default: s1.c1.medium
+    description: Server type ID. See BMC API for current list - U(https://developers.phoenixnap.com/docs/bmc/1/types/Server).
     type: str
 '''
 
@@ -381,11 +375,11 @@ def main():
             client_id=dict(required=True),
             client_secret=dict(required=True, no_log=True),
             description=dict(),
-            location=dict(choices=['PHX'], default='PHX'),
+            location=dict(),
             hostnames=dict(type='list', elements='str'),
-            os=dict(choices=['ubuntu/bionic', 'centos/centos7'], default='ubuntu/bionic'),
+            os=dict(),
             password=dict(no_log=True),
-            type=dict(choices=['s1.c1.small', 's1.c1.medium'], default='s1.c1.medium'),
+            type=dict(),
             server_ids=dict(type='list', elements='str'),
             ssh_key=dict(),
             state=dict(choices=ALLOWED_STATES, default='present')

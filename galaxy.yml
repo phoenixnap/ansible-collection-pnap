@@ -1,10 +1,14 @@
 namespace: phoenixnap
 name: bmc
-version: 0.1.0
+version: 0.3.0
 readme: README.md
 authors:
 - Pavle Jojkic <pavlej@phoenixnap.com>
 - Goran Jelenic <goranje@phoenixnap.com>
 description: Collection of modules for phoenixNAP Bare Metal Cloud API
+tags:
+- phoenixnap
+- bmc
+- cloud
 license: GPL-3.0-or-later
 repository: https://github.com/phoenixnap/ansible-collection-pnap
