@@ -2,7 +2,7 @@ namespace: phoenixnap
 name: bmc
 version: 0.4.0
 readme: README.md
-authors: 
+authors:
 - Pavle Jojkic <pavlej@phoenixnap.com>
 - Goran Jelenic <goranje@phoenixnap.com>
 description: Collection of modules for phoenixNAP Bare Metal Cloud API
