@@ -15,7 +15,7 @@ DOCUMENTATION = '''
 ---
 module: server
 
-short_description: Manage PhoenixNAP Bare Metal Cloud servers
+short_description: Manage phoenixNAP Bare Metal Cloud servers
 description:
     - Manage phoenixNAP Bare Metal Cloud servers
     - This module has a dependency on requests

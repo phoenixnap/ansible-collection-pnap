@@ -15,7 +15,7 @@ DOCUMENTATION = '''
 ---
 module: ssh_key
 
-short_description: Create/delete an SSH key on PhoenixNAP Bare Metal Cloud.
+short_description: Create/delete an SSH key on phoenixNAP Bare Metal Cloud.
 description:
     - Create/delete an SSH key on phoenixNAP Bare Metal Cloud.
     - This module has a dependency on requests
