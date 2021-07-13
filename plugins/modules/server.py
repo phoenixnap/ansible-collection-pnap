@@ -17,11 +17,11 @@ module: server
 
 short_description: Manage PhoenixNAP Bare Metal Cloud servers
 description:
-    - Manage PhoenixNAP Bare Metal Cloud servers
+    - Manage phoenixNAP Bare Metal Cloud servers
     - This module has a dependency on requests
     - API is documented at U(https://developers.phoenixnap.com/docs/bmc/1/overview).
 
-version_added: "0.5.0"
+version_added: "0.6.0"
 
 author:
     - Pavle Jojkic (@pajuga) <pavlej@phoenixnap.com>

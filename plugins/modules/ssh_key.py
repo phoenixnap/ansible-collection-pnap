@@ -17,11 +17,11 @@ module: ssh_key
 
 short_description: Create/delete an SSH key on PhoenixNAP Bare Metal Cloud.
 description:
-    - Create/delete an SSH key on PhoenixNAP Bare Metal Cloud.
+    - Create/delete an SSH key on phoenixNAP Bare Metal Cloud.
     - This module has a dependency on requests
     - API is documented at U(https://developers.phoenixnap.com/docs/bmc/1/overview).
 
-version_added: "0.5.0"
+version_added: "0.6.0"
 
 author:
     - Pavle Jojkic (@pajuga) <pavlej@phoenixnap.com>
