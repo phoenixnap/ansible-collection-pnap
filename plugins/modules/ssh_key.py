@@ -171,7 +171,7 @@ def main():
         argument_spec=dict(
             client_id=dict(required=True),
             client_secret=dict(required=True, no_log=True),
-            name=dict(),
+            name={},
             default=dict(type='bool', default=False),
             ssh_key=dict(no_log=True),
             state=dict(choices=ALLOWED_STATES, default='present')

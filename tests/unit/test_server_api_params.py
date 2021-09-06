@@ -54,7 +54,12 @@ class TestApiParams(TestCase):
                 {
                     'installDefaultSshKeys': True,
                     'sshKeys': ['xxx'],
-                    'sshKeyIds': '123'
+                    'sshKeyIds': '123',
+                    'osConfiguration': {
+                        'windows': {
+                            'rdpAllowedIps': '1.1.1.1'
+                        }
+                    }
                 })
         }
         self.assertDictEqual(get_api_params(PseudoModule(), 'some_server_id', 'reset'), expected_output)

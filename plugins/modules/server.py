@@ -292,7 +292,12 @@ def get_api_params(module, server_id, target_state):
         data = {
             "installDefaultSshKeys": module.params['install_default_sshkeys'],
             "sshKeys": [module.params['ssh_key']],
-            "sshKeyIds": module.params['ssh_key_ids']
+            "sshKeyIds": module.params['ssh_key_ids'],
+            "osConfiguration": {
+                "windows": {
+                    "rdpAllowedIps": module.params['rdp_allowed_ips']
+                }
+            }
         }
     elif(target_state == 'present'):
         path = ''
@@ -338,22 +343,32 @@ def wait_for_status_change(module, target_list, target_state):
     raise Exception('waiting for status %s has expired' % target_state)
 
 
+def prepare_result_present(process_servers, target_state):
+    for ps in process_servers:
+        ps['status'] = state_final(target_state)
+    return process_servers
+
+
 def servers_action(module, target_state):
     changed = False
     set_token_headers(module)
     target_list = get_target_list(module, target_state)
     process_servers = ratify_server_list(module, target_list, target_state)
 
+    first_response = []
     for ps in process_servers:
         if ps['status'] != state_api_remapping(target_state):
             ap = get_api_params(module, ps['id'], target_state)
-            requests_wrapper(ap['endpoint'], ap['method'], data=ap['data'], module=module)
+            first_response.append(requests_wrapper(ap['endpoint'], ap['method'], data=ap['data'], module=module).json())
             changed = True
 
     if target_state == 'present':
         target_list = get_servers_id(module, target_list)
     if changed:
         process_servers = wait_for_status_change(module, target_list, target_state)
+
+    if target_state in ['present', 'reset']:
+        process_servers = prepare_result_present(first_response, target_state)
 
     return{
         'changed': changed,
@@ -367,20 +382,20 @@ def main():
         argument_spec=dict(
             client_id=dict(required=True),
             client_secret=dict(required=True, no_log=True),
-            description=dict(),
-            location=dict(),
+            description={},
+            location={},
             hostnames=dict(type='list', elements='str'),
             install_default_sshkeys=dict(type='bool', default=True),
             network_type=dict(default='PUBLIC_AND_PRIVATE'),
-            os=dict(),
+            os={},
             rdp_allowed_ips=dict(type='list', elements='str'),
-            reservation_id=dict(),
+            reservation_id={},
             pricing_model=dict(default='HOURLY'),
             server_ids=dict(type='list', elements='str'),
             ssh_key=dict(no_log=True),
             ssh_key_ids=dict(type='list', elements='str', no_log=True),
             state=dict(choices=ALLOWED_STATES, default='present'),
-            type=dict(),
+            type={},
         ),
         mutually_exclusive=[('hostnames', 'server_ids')],
         required_one_of=[('hostnames', 'server_ids')],
