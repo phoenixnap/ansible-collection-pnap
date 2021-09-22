@@ -21,7 +21,7 @@ description:
     - This module has a dependency on requests
     - API is documented at U(https://developers.phoenixnap.com/docs/bmc/1/overview).
 
-version_added: "0.6.0"
+version_added: "0.5.0"
 
 author:
     - Pavle Jojkic (@pajuga) <pavlej@phoenixnap.com>
@@ -48,6 +48,10 @@ options:
     default: true
   hostnames:
     description: Name of server.
+    type: list
+    elements: str
+  management_access_allowed_ips:
+    description: Define list of IPs allowed to access the Management UI. Supported in single IP, CIDR and range format.
     type: list
     elements: str
   network_type:
@@ -296,6 +300,9 @@ def get_api_params(module, server_id, target_state):
             "osConfiguration": {
                 "windows": {
                     "rdpAllowedIps": module.params['rdp_allowed_ips']
+                },
+                "esxi": {
+                    "managementAccessAllowedIps": module.params['management_access_allowed_ips']
                 }
             }
         }
@@ -316,12 +323,28 @@ def get_api_params(module, server_id, target_state):
             "osConfiguration": {
                 "windows": {
                     "rdpAllowedIps": module.params['rdp_allowed_ips']
-                }
+                },
+                "managementAccessAllowedIps": module.params['management_access_allowed_ips']
             }
         }
-    data = json.dumps(data)
+
+    data = json.dumps(remove_empty_elements(data))
     endpoint = BASE_API + path
     return{'method': method, 'endpoint': endpoint, 'data': data}
+
+
+def remove_empty_elements(d):
+    """recursively remove empty lists, empty dicts, or None elements from a dictionary"""
+
+    def empty(x):
+        return x is None or x == {} or x == []
+
+    if not isinstance(d, (dict, list)):
+        return d
+    elif isinstance(d, list):
+        return [v for v in (remove_empty_elements(v) for v in d) if not empty(v)]
+    else:
+        return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
 
 
 def wait_for_status_change_case_absent(target_list):
@@ -386,6 +409,7 @@ def main():
             location={},
             hostnames=dict(type='list', elements='str'),
             install_default_sshkeys=dict(type='bool', default=True),
+            management_access_allowed_ips=dict(type='list', elements='str'),
             network_type=dict(default='PUBLIC_AND_PRIVATE'),
             os={},
             rdp_allowed_ips=dict(type='list', elements='str'),
