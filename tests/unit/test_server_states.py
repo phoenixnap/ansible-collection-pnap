@@ -61,14 +61,14 @@ class TestServerStates(TestCase):
     def test_wait_for_status_change_case_absent(self):
         expected_output = [{
             'id': 'some_server_id',
-            'status': 'Server has been deleted'
+            'status': 'absent'
         }]
         self.assertListEqual(wait_for_status_change_case_absent(['some_server_id']), expected_output)
 
     def test_ratify_server_list_case_present(self):
         expected_output = [{
             'id': 'some_server_id',
-            'status': 'not present'
+            'status': 'absent'
         }]
         self.assertListEqual(ratify_server_list_case_present(['some_server_id']), expected_output)
 

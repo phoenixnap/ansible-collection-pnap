@@ -31,11 +31,9 @@ options:
   client_id:
     description: Client ID (Application Management)
     type: str
-    required: true
   client_secret:
     description: Client Secret (Application Management)
     type: str
-    required: true
   description:
     description: Description of server.
     type: str
@@ -190,25 +188,25 @@ servers:
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_native
-from ansible_collections.phoenixnap.bmc.plugins.module_utils.pnap import set_token_headers, HAS_REQUESTS, requests_wrapper
+from ansible_collections.phoenixnap.bmc.plugins.module_utils.pnap import set_token_headers, HAS_REQUESTS, requests_wrapper, SERVER_API
 
+import os
 import json
 import time
 
 
 ALLOWED_STATES = ['absent', 'powered-on', 'powered-off', 'present', 'rebooted', 'reset', 'shutdown']
-BASE_API = 'https://api.phoenixnap.com/bmc/v1/servers/'
 CHECK_FOR_STATUS_CHANGE = 5
 TIMEOUT_STATUS_CHANGE = 1800
 
 
-def get_target_list(module, target_state):
+def get_target_list(module, target_state, existing_servers):
     if module.params['server_ids']:
         target_list = module.params['server_ids']
     elif target_state == 'present':
         target_list = module.params['hostnames']
     else:
-        target_list = get_servers_id(module, module.params['hostnames'])
+        target_list = get_servers_id(module.params['hostnames'], existing_servers, target_state)
     return target_list
 
 
@@ -231,18 +229,18 @@ def state_final(target_state):
 
 
 def get_existing_servers(module):
-    response = requests_wrapper(BASE_API, module=module)
+    response = requests_wrapper(SERVER_API, module=module)
     return response.json()
 
 
-def equalize_server_list(module, target_servers):
+def refresh_server_list(module, target_servers):
     existing_servers = get_existing_servers(module)
     return [ex for ex in existing_servers if ex['id'] in target_servers]
 
 
 def ratify_server_list_case_present(target_servers):
     process_servers = []
-    [process_servers.append({'id': ts, 'status': 'not present'}) for ts in target_servers]
+    [process_servers.append({'id': ts, 'status': 'absent'}) for ts in target_servers]
     return process_servers
 
 
@@ -252,14 +250,14 @@ def ratify_server_list_case_rebooted(process_servers):
             raise Exception('all servers must be in powered-on state')
 
 
-def ratify_server_list(module, target_servers, target_state):
+def ratify_server_list(target_servers, target_state, existing_servers):
     if target_state == 'present':
         return ratify_server_list_case_present(target_servers)
 
     if len(target_servers) != len(set(target_servers)):
         raise Exception('List of servers can\'t contain duplicate server id')
 
-    process_servers = equalize_server_list(module, target_servers)
+    process_servers = [ex for ex in existing_servers if ex['id'] in target_servers]
     if len(target_servers) > len(process_servers):
         raise Exception('List of servers contain one or more invalid server id')
 
@@ -269,11 +267,18 @@ def ratify_server_list(module, target_servers, target_state):
     return process_servers
 
 
-def get_servers_id(module, server_names):
+def get_servers_id(server_names, existing_servers, target_state):
     if server_names is None:
         raise Exception('Please check provided server list.')
-    existing_servers = get_existing_servers(module)
-    return [s['id'] for s in existing_servers if s['hostname'] in server_names]
+
+    if target_state == 'present':
+        return [s['id'] for s in existing_servers if s['hostname'] in server_names]
+    else:
+        server_ids = []
+        for es in existing_servers:
+            if es['hostname'] in server_names:
+                server_ids.append(es['id'])
+        return server_ids
 
 
 def get_api_params(module, server_id, target_state):
@@ -327,9 +332,8 @@ def get_api_params(module, server_id, target_state):
                 "managementAccessAllowedIps": module.params['management_access_allowed_ips']
             }
         }
-
     data = json.dumps(remove_empty_elements(data))
-    endpoint = BASE_API + path
+    endpoint = SERVER_API + path
     return{'method': method, 'endpoint': endpoint, 'data': data}
 
 
@@ -349,7 +353,7 @@ def remove_empty_elements(d):
 
 def wait_for_status_change_case_absent(target_list):
     servers_refreshed = []
-    [servers_refreshed.append({'id': ts, 'status': 'Server has been deleted'}) for ts in target_list]
+    [servers_refreshed.append({'id': ts, 'status': 'absent'}) for ts in target_list]
     return servers_refreshed
 
 
@@ -359,7 +363,7 @@ def wait_for_status_change(module, target_list, target_state):
 
     timeout = time.time() + TIMEOUT_STATUS_CHANGE
     while timeout > time.time():
-        servers_refreshed = equalize_server_list(module, target_list)
+        servers_refreshed = refresh_server_list(module, target_list)
         if all(sr['status'] == state_final(target_state) for sr in servers_refreshed):
             return servers_refreshed
         time.sleep(CHECK_FOR_STATUS_CHANGE)
@@ -375,18 +379,20 @@ def prepare_result_present(process_servers, target_state):
 def servers_action(module, target_state):
     changed = False
     set_token_headers(module)
-    target_list = get_target_list(module, target_state)
-    process_servers = ratify_server_list(module, target_list, target_state)
+    existing_servers = get_existing_servers(module)
+    target_list = get_target_list(module, target_state, existing_servers)
+    process_servers = ratify_server_list(target_list, target_state, existing_servers)
 
     first_response = []
     for ps in process_servers:
         if ps['status'] != state_api_remapping(target_state):
+            changed = True
             ap = get_api_params(module, ps['id'], target_state)
             first_response.append(requests_wrapper(ap['endpoint'], ap['method'], data=ap['data'], module=module).json())
-            changed = True
 
     if target_state == 'present':
-        target_list = get_servers_id(module, target_list)
+        existing_servers = get_existing_servers(module)
+        target_list = get_servers_id(target_list, existing_servers, target_state)
     if changed:
         process_servers = wait_for_status_change(module, target_list, target_state)
 
@@ -403,8 +409,8 @@ def main():
 
     module = AnsibleModule(
         argument_spec=dict(
-            client_id=dict(required=True),
-            client_secret=dict(required=True, no_log=True),
+            client_id=dict(default=os.environ.get('BMC_CLIENT_ID'), no_log=True),
+            client_secret=dict(default=os.environ.get('BMC_CLIENT_SECRET'), no_log=True),
             description={},
             location={},
             hostnames=dict(type='list', elements='str'),
@@ -423,10 +429,16 @@ def main():
         ),
         mutually_exclusive=[('hostnames', 'server_ids')],
         required_one_of=[('hostnames', 'server_ids')],
+        required_if=[('state', 'present', ['hostnames'])],
     )
 
     if not HAS_REQUESTS:
         module.fail_json(msg='requests is required for this module.')
+
+    if not module.params.get('client_id') or not module.params.get('client_secret'):
+        _fail_msg = ("if BMC_CLIENT_ID and BMC_CLIENT_SECRET are not in environment variables, "
+                     "the client_id and client_secret parameters are required")
+        module.fail_json(msg=_fail_msg)
 
     state = module.params['state']
 

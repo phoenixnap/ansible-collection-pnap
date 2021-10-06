@@ -17,6 +17,8 @@ except ImportError:
 
 VALID_RESPONSE_CODES = [200, 201, 202]
 AUTH_API = 'https://auth.phoenixnap.com/auth/realms/BMC/protocol/openid-connect/token'
+SERVER_API = 'https://api.phoenixnap.com/bmc/v1/servers/'
+SSH_API = 'https://api.phoenixnap.com/bmc/v1/ssh-keys/'
 
 
 def set_token_headers(module):
@@ -34,6 +36,7 @@ def set_token_headers(module):
         raise Exception('%s' % response.json()['error_description'])
     token = response.json()['access_token']
     REQUEST.headers.update({'Authorization': 'Bearer %s' % token})
+    REQUEST.headers.update({'X-Powered-By': 'BMC-Ansible'})
 
 
 def requests_wrapper(endpoint, method='GET', data=None, module=None, reauth_attempts=3):
