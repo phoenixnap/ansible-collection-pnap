@@ -48,9 +48,9 @@ def requests_wrapper(endpoint, method='GET', data=None, module=None, reauth_atte
                 raise Exception("Too many reauthentication attempts")
             return requests_wrapper(endpoint, method, data, module, reauth_attempts - 1)
         elif response.status_code not in VALID_RESPONSE_CODES:
-            error_message = response.json()['message']
-            validation_errors = response.json()['validationErrors']
-            raise Exception('status code %s \n%s\nValidation errors: %s' % (response.status_code, error_message, validation_errors))
+            error_message = response.json().get('message')
+            validation_errors = response.json().get('validationErrors')
+            raise Exception('status code %s | %s | Validation errors: %s' % (response.status_code, error_message, validation_errors))
     except requests.exceptions.RequestException as e:
         raise_from(Exception("Communications error: %s" % str(e), e))
 

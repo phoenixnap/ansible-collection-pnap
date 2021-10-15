@@ -1,0 +1,25 @@
+# All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
+# in location: ~/.pnap/config.yaml
+# and generated SSH key pair in location: ~/.ssh/
+
+- name: Create two ubuntu servers
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ~/.pnap/config.yaml
+  collections:
+    - phoenixnap.bmc
+  tasks:
+  - phoenixnap.bmc.server:
+      client_id: "{{clientId}}"
+      client_secret: "{{clientSecret}}"
+      hostnames: [my-server-1, my-server-2]
+      location: PHX
+      os: ubuntu/bionic
+      type: s1.c1.medium
+      state: present
+      ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    register: output
+  - name: Print the servers information
+    debug:
+      var: output.servers

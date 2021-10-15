@@ -115,6 +115,10 @@ EXAMPLES = '''
       type: s1.c1.medium
       state: present
       ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    register: output
+  - name: Print the servers information
+    debug:
+      var: output.servers
 
 # Power on servers
 
@@ -131,6 +135,10 @@ EXAMPLES = '''
       client_secret: "{{clientSecret}}"
       hostnames: [my-server-red, my-server-blue]
       state: powered-on
+    register: output
+  - name: Print the servers information
+    debug:
+      var: output.servers
 
 # Shutdown servers
 # use server_ids as server identifier
@@ -150,6 +158,10 @@ EXAMPLES = '''
         - e6afba51-7de8-4080-83ab-0f9155706xxx
         - e6afBa51-7dg8-4380-8sab-0f9155705xxx
       state: shutdown
+    register: output
+  - name: Print the servers information
+    debug:
+      var: output.servers
 
 # Reset servers
 - name: reset servers
@@ -166,6 +178,13 @@ EXAMPLES = '''
       hostnames: [my-server-red, my-server-blue]
       ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
       state: reset
+    register: output
+  - name: Print the servers information
+    debug:
+      var: output.servers
+
+# For more examples, check out this helpful tutorial:
+# https://phoenixnap.com/kb/how-to-install-phoenixnap-bmc-ansible-module#htoc-bmc-playbook-examples
 '''
 
 RETURN = '''
@@ -332,7 +351,7 @@ def get_api_params(module, server_id, target_state):
                 "managementAccessAllowedIps": module.params['management_access_allowed_ips']
             }
         }
-    data = json.dumps(remove_empty_elements(data))
+    data = json.dumps(remove_empty_elements(data), sort_keys=True)
     endpoint = SERVER_API + path
     return{'method': method, 'endpoint': endpoint, 'data': data}
 
@@ -341,7 +360,7 @@ def remove_empty_elements(d):
     """recursively remove empty lists, empty dicts, or None elements from a dictionary"""
 
     def empty(x):
-        return x is None or x == {} or x == []
+        return x is None or x == {} or x == [] or x == ''
 
     if not isinstance(d, (dict, list)):
         return d

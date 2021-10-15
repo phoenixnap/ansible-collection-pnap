@@ -63,9 +63,35 @@ class TestApiParams(TestCase):
                             'managementAccessAllowedIps': '1.1.1.1'
                         }
                     }
-                })
+                }, sort_keys=True)
         }
         self.assertDictEqual(get_api_params(PseudoModule(), 'some_server_id', 'reset'), expected_output)
+
+    def test_api_params_for_state_present(self):
+        expected_output = {
+            'method': 'POST',
+            'endpoint': 'https://api.phoenixnap.com/bmc/v1/servers/',
+            'data': json.dumps({
+                'description': 'some description',
+                'location': 'PHX',
+                'hostname': 'my-server-red',
+                'installDefaultSshKeys': True,
+                'sshKeys': ['xxx'],
+                'sshKeyIds': '123',
+                'networkType': 'PUBLIC_AND_PRIVATE',
+                'os': 'ubuntu/bionic',
+                'reservationId': '1',
+                'pricingModel': 'HOURLY',
+                'type': 's1.c1.small',
+                'osConfiguration': {
+                    'windows': {
+                        'rdpAllowedIps': '1.1.1.1'
+                    },
+                    'managementAccessAllowedIps': '1.1.1.1'
+                }
+            }, sort_keys=True)
+        }
+        self.assertDictEqual(get_api_params(PseudoModule(), 'my-server-red', 'present'), expected_output)
 
 
 class PseudoModule:
