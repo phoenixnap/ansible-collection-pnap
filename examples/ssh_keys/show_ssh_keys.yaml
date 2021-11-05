@@ -1,0 +1,20 @@
+# All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
+# in location: ~/.pnap/config.yaml
+
+- name: Show all ssh keys
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ~/.pnap/config.yaml
+  collections:
+    - phoenixnap.bmc
+  tasks:
+  - phoenixnap.bmc.ssh_key_info:
+      client_id: "{{clientId}}"
+      client_secret: "{{clientSecret}}"
+      # filter by name
+      #names: [my-ssh-key-1, my-ssh-key-2]
+    register: output
+  - name: Print the gathered infos
+    debug:
+      var: output.ssh_keys

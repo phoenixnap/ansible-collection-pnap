@@ -1,0 +1,29 @@
+# Any parameters ommited from host list will use defaults defined in vars
+# Two Ubuntu servers (different types) and one Windows server
+
+---
+servers:
+  vars:
+    os: ubuntu/bionic
+    type: s1.c1.medium
+    location: PHX
+    description:
+    install_default_sshkeys: true
+    ssh_key:
+    ssh_key_ids:
+    reservation_id:
+    pricing_model:
+    network_type:
+    rdp_allowed_ips:
+    management_access_allowed_ips:
+  hosts:
+    my-server-1:
+    my-server-2:
+      type: s0.d1.medium
+    my-server-3:
+      type: s0.d1.medium
+      description: ansible
+      location: PHX
+      os: windows/srv2019std
+      rdp_allowed_ips: ["0.0.0.0/0"]
+  

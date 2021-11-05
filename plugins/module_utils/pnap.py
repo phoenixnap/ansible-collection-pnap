@@ -15,10 +15,11 @@ try:
 except ImportError:
     HAS_REQUESTS = False
 
-VALID_RESPONSE_CODES = [200, 201, 202]
+VALID_RESPONSE_CODES = [200, 201, 202, 204]
 AUTH_API = 'https://auth.phoenixnap.com/auth/realms/BMC/protocol/openid-connect/token'
 SERVER_API = 'https://api.phoenixnap.com/bmc/v1/servers/'
 SSH_API = 'https://api.phoenixnap.com/bmc/v1/ssh-keys/'
+NETWORK_API = 'https://api.phoenixnap.com/networks/v1/private-networks/'
 
 
 def set_token_headers(module):

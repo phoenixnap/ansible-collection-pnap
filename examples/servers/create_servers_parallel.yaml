@@ -1,0 +1,38 @@
+# All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
+# in location: ~/.pnap/config.yaml
+# and generated SSH key pair in location: ~/.ssh/
+
+# Playbook creates servers based on the inventory.yaml file.
+# command: ansible-playbook create_servers_parallel.yaml -i inventory.yaml
+
+- name: Create servers in parallel
+  hosts: servers
+  gather_facts: false
+  vars_files:
+    - ~/.pnap/config.yaml
+  collections:
+    - phoenixnap.bmc
+  tasks:
+    - name: create server
+      delegate_to: localhost
+      phoenixnap.bmc.server:
+        client_id: "{{clientId}}"
+        client_secret: "{{clientSecret}}"
+        hostnames: "{{ inventory_hostname }}"
+        location: "{{ hostvars[inventory_hostname].location }}"
+        os: "{{ hostvars[inventory_hostname].os }}"
+        type: "{{ hostvars[inventory_hostname].type }}"
+        description: "{{ hostvars[inventory_hostname].description }}"
+        install_default_sshkeys: "{{ hostvars[inventory_hostname].install_default_sshkeys }}"
+        ssh_key: "{{ hostvars[inventory_hostname].ssh_key }}"
+        ssh_key_ids:  "{{ hostvars[inventory_hostname].ssh_key_ids }}"
+        reservation_id: "{{ hostvars[inventory_hostname].reservation_id }}"
+        pricing_model: "{{ hostvars[inventory_hostname].pricing_model }}"
+        network_type: "{{ hostvars[inventory_hostname].network_type }}"
+        rdp_allowed_ips: "{{ hostvars[inventory_hostname].rdp_allowed_ips }}"
+        management_access_allowed_ips: "{{ hostvars[inventory_hostname].management_access_allowed_ips }}"
+        state: present
+      register: output
+    - name: print results
+      debug:
+        var: output

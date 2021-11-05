@@ -131,10 +131,10 @@ def ssh_keys_action(module, state):
     changed = False
     existing_keys = get_existing_keys(module)
     new_key_name = module.params['name']
-    target_key = next((key for key in existing_keys if key['name'] == new_key_name), 'missing')
+    target_key = next((key for key in existing_keys if key['name'] == new_key_name), 'absent')
 
     if state == 'present':
-        if target_key == 'missing':
+        if target_key == 'absent':
             data = json.dumps({
                 'name': new_key_name,
                 'default': module.params['default'],
@@ -151,7 +151,7 @@ def ssh_keys_action(module, state):
                 target_key = requests_wrapper(SSH_API + target_key['id'], method='PUT', data=data).json()
                 changed = True
 
-    if state == 'absent' and target_key != 'missing':
+    if state == 'absent' and target_key != 'absent':
         data = json.dumps({
             'ssh_key_id': target_key['id']
         })

@@ -34,8 +34,15 @@ options:
   client_secret:
     description: Client Secret (Application Management)
     type: str
+  configuration_type:
+    description: Determines the approach for configuring IP blocks for the server being provisioned.
+    default: "USE_OR_CREATE_DEFAULT"
+    type: str
   description:
     description: Description of server.
+    type: str
+  gateway_address:
+    description: The address of the gateway assigned / to assign to the server.
     type: str
   location:
     description: Server Location ID. See BMC API for current list - U(https://developers.phoenixnap.com/docs/bmc/1/types/Server).
@@ -63,6 +70,20 @@ options:
     description: Server pricing model.
     default: "HOURLY"
     type: str
+  private_networks:
+    description: The list of private networks this server is member of.
+    type: list
+    elements: dict
+    suboptions:
+      id:
+        type: str
+        description: The network identifier.
+      ips:
+        type: list
+        description: IPs to configure/configured on the server. Should be null or empty list if DHCP is true.
+      dhcp:
+        type: bool
+        description: Determines whether DHCP is enabled for this server. Should be false if ips is not an empty list.
   rdp_allowed_ips:
     description: List of IPs allowed for RDP access to Windows OS. Supported in single IP, CIDR and range format. When undefined, RDP is disabled.
     type: list
@@ -96,9 +117,9 @@ EXAMPLES = '''
 # in location: ~/.pnap/config.yaml
 # and generated SSH key pair in location: ~/.ssh/
 
-# Creating server
+# Create server
 
-- name: Create new servers for account
+- name: Create new server for account
   hosts: localhost
   gather_facts: false
   vars_files:
@@ -115,6 +136,38 @@ EXAMPLES = '''
       type: s1.c1.medium
       state: present
       ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    register: output
+  - name: Print the servers information
+    debug:
+      var: output.servers
+
+# Create server | network example
+
+- name: Create new server | network example
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ~/.pnap/config.yaml
+  collections:
+    - phoenixnap.bmc
+  tasks:
+  - phoenixnap.bmc.server:
+        client_id: "{{clientId}}"
+        client_secret: "{{clientSecret}}"
+        hostnames: server-red
+        description: custom description
+        location: PHX
+        os: ubuntu/bionic
+        type: s0.d1.medium
+        configuration_type: USER_DEFINED
+        private_networks:
+          - id: 60f81608e2f4665962b214db
+            ips: [10.0.0.13 - 10.0.0.17]
+            dhcp: false
+          - id: 60f93142c5c1d6082d31382a
+            ips: [10.0.0.11, 10.0.0.12]
+            dhcp: false
+        state: present
     register: output
   - name: Print the servers information
     debug:
@@ -349,8 +402,16 @@ def get_api_params(module, server_id, target_state):
                     "rdpAllowedIps": module.params['rdp_allowed_ips']
                 },
                 "managementAccessAllowedIps": module.params['management_access_allowed_ips']
+            },
+            "networkConfiguration": {
+                "privateNetworkConfiguration": {
+                    "configurationType": module.params['configuration_type'],
+                    "gatewayAddress": module.params['gateway_address'],
+                    "privateNetworks": module.params['private_networks']
+                }
             }
         }
+
     data = json.dumps(remove_empty_elements(data), sort_keys=True)
     endpoint = SERVER_API + path
     return{'method': method, 'endpoint': endpoint, 'data': data}
@@ -430,7 +491,9 @@ def main():
         argument_spec=dict(
             client_id=dict(default=os.environ.get('BMC_CLIENT_ID'), no_log=True),
             client_secret=dict(default=os.environ.get('BMC_CLIENT_SECRET'), no_log=True),
+            configuration_type=dict(default='USE_OR_CREATE_DEFAULT'),
             description={},
+            gateway_address={},
             location={},
             hostnames=dict(type='list', elements='str'),
             install_default_sshkeys=dict(type='bool', default=True),
@@ -440,6 +503,7 @@ def main():
             rdp_allowed_ips=dict(type='list', elements='str'),
             reservation_id={},
             pricing_model=dict(default='HOURLY'),
+            private_networks=dict(type="list", elements='dict'),
             server_ids=dict(type='list', elements='str'),
             ssh_key=dict(no_log=True),
             ssh_key_ids=dict(type='list', elements='str', no_log=True),

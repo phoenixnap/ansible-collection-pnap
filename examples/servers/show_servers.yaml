@@ -1,0 +1,20 @@
+# All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
+# in location: ~/.pnap/config.yaml
+
+- name: Show all servers 
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ~/.pnap/config.yaml
+  collections:
+    - phoenixnap.bmc
+  tasks:
+  - phoenixnap.bmc.server_info:
+      client_id: "{{clientId}}"
+      client_secret: "{{clientSecret}}"
+      # filter by hostname
+      #hostnames: [my-server-1, my-server-2]
+    register: output
+  - name: Print the gathered infos
+    debug:
+      var: output.servers

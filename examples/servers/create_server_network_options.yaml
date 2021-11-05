@@ -1,0 +1,34 @@
+# All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
+# in location: ~/.pnap/config.yaml
+# and generated SSH key pair in location: ~/.ssh/
+
+- name: Create new server | network example
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ~/.pnap/config.yaml
+  collections:
+    - phoenixnap.bmc
+  tasks:
+  - phoenixnap.bmc.server:
+        client_id: "{{clientId}}"
+        client_secret: "{{clientSecret}}"
+        hostnames: my-server-1
+        description: My custom server 1
+        location: PHX
+        os: ubuntu/bionic
+        type: s0.d1.medium
+        configuration_type: USER_DEFINED
+        private_networks: 
+          - id: 60f81608e2f4665962b214db
+            ip: [10.0.0.13 - 10.0.0.17]
+            dhcp: false
+          - id: 60f93142c5c1d6082d31382a
+            ip: [10.0.0.11, 10.0.0.12]
+            dhcp: false
+        ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        state: present
+    register: output
+  - name: Print the servers information
+    debug:
+      var: output.servers

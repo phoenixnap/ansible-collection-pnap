@@ -1,0 +1,24 @@
+# All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
+# in location: ~/.pnap/config.yaml
+
+- name: Create new network for account
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ~/.pnap/config.yaml
+  collections:
+    - phoenixnap.bmc
+  tasks:
+  - phoenixnap.bmc.network:
+      client_id: "{{clientId}}"
+      client_secret: "{{clientSecret}}"
+      name: My Default Backend Network
+      location: PHX
+      location_default: false
+      description: My Default Backend Network122
+      cidr: 10.0.0.0/24
+      state: present
+    register: output
+  - name: Print the networks information
+    debug:
+      var: output.networks
