@@ -15,9 +15,9 @@ DOCUMENTATION = '''
 ---
 module: ssh_key
 
-short_description: Create/delete an SSH key on phoenixNAP Bare Metal Cloud.
+short_description: Create/delete SSH key on phoenixNAP Bare Metal Cloud.
 description:
-    - Create/delete an SSH key on phoenixNAP Bare Metal Cloud.
+    - Create/delete SSH key on phoenixNAP Bare Metal Cloud.
     - This module has a dependency on requests
     - API is documented at U(https://developers.phoenixnap.com/docs/bmc/1/overview).
 
@@ -56,7 +56,7 @@ EXAMPLES = '''
 # in location: ~/.pnap/config.yaml
 # and generated SSH key pair in location: ~/.ssh/
 
-# Create an SSH Key
+# Create a SSH Key
 
 - name: Create new SSH Key for account
   hosts: localhost
@@ -74,9 +74,9 @@ EXAMPLES = '''
       ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
       state: present
 
-# Delete an SSH Key
+# Delete a SSH Key
 
-- name: Delete an SSH Key
+- name: Delete the SSH Key
   hosts: localhost
   gather_facts: false
   vars_files:
