@@ -1,7 +1,7 @@
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-- name: Delete the SSH Key
+- name: List all tags
   hosts: localhost
   gather_facts: false
   vars_files:
@@ -9,8 +9,10 @@
   collections:
     - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.ssh_key:
+  - phoenixnap.bmc.tag_info:
       client_id: "{{clientId}}"
       client_secret: "{{clientSecret}}"
-      name: sshkey-name-01
-      state: absent
+    register: output
+  - name: Print the gathered infos
+    debug:
+      var: output.tags

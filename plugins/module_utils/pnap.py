@@ -20,6 +20,7 @@ AUTH_API = 'https://auth.phoenixnap.com/auth/realms/BMC/protocol/openid-connect/
 SERVER_API = 'https://api.phoenixnap.com/bmc/v1/servers/'
 SSH_API = 'https://api.phoenixnap.com/bmc/v1/ssh-keys/'
 NETWORK_API = 'https://api.phoenixnap.com/networks/v1/private-networks/'
+TAG_API = 'https://api.phoenixnap.com/tag-manager/v1/tags/'
 
 
 def set_token_headers(module):

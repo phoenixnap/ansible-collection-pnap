@@ -13,14 +13,14 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 ---
-module: network_info
+module: tag_info
 
-short_description: Gather information about phoenixNAP BMC networks
+short_description: Gather information about phoenixNAP BMC tags
 description:
-    - Gather information about networks available.
+    - Gather information about tags available.
     - This module has a dependency on requests
 
-version_added: "0.11.0"
+version_added: "0.12.0"
 
 author:
     - Pavle Jojkic (@pajuga) <pavlej@phoenixnap.com>
@@ -34,7 +34,7 @@ options:
     description: Client Secret (Application Management)
     type: str
   names:
-    description: The friendly name of this private network.
+    description: The unique name of the tag.
     type: list
     elements: str
 '''
@@ -43,8 +43,8 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# List all networks information for account
-- name: List all networks
+# List all tags information for account
+- name: List all tags
   hosts: localhost
   gather_facts: false
   vars_files:
@@ -52,16 +52,16 @@ EXAMPLES = '''
   collections:
     - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.network_info:
+  - phoenixnap.bmc.tag_info:
       client_id: "{{clientId}}"
       client_secret: "{{clientSecret}}"
     register: output
   - name: Print the gathered infos
     debug:
-      var: output.networks
+      var: output.tags
 
-# List networks information based on the specified names
-- name: List the network details
+# List tags information based on the specified names
+- name: List the tag details
   hosts: localhost
   gather_facts: false
   vars_files:
@@ -72,85 +72,74 @@ EXAMPLES = '''
   - phoenixnap.bmc.network_info:
       client_id: "{{clientId}}"
       client_secret: "{{clientSecret}}"
-      names: [My Default Backend Network]
+      names: [Environment]
     register: output
   - name: Print the gathered infos
     debug:
-      var: output.networks
+      var: output.tags
 
 '''
 
 RETURN = '''
-networks:
-    description: The networks information as list
+tags:
+    description: The tags information as list
     returned: success
     type: complex
     contains:
       id:
-        description: The private network identifier.
+        description: The unique id of the tag.
         returned: always
         type: str
         sample: 604721852cf65253d151528b
       name:
-        description: The friendly name of this private network.
+        description: The name of the tag.
         returned: always
         type: str
-        sample: Sample Network
+        sample: Environment
       description:
-        description: The description of this private network..
+        description: The description of the tag.
         returned: always
         type: str
-        sample: Further details on the network
-      vlanId:
-        description: The VLAN of this private network.
-        returned: always
-        type: str
-        sample: 10
-      type:
-        description: The type of the private network.
-        returned: always
-        type: str
-        sample: PRIVATE
-      location:
-        description: The location of this private network.
-        returned: always
-        type: str
-        sample: PHX
-      locationDefault:
-        description: Identifies network as the default private network for the specified location.
+        sample: This tag is used for all resources that need to be assigned to an environment.
+      isBillingTag:
+        description: Whether or not to show the tag as part of billing and invoices.
         returned: always
         type: bool
         sample: true
-      cidr:
-        description: IP range associated with this private network in CIDR notation.
+      resourceAssignments:
+        description: The tag's assigned resources.
         returned: always
-        type: str
-        sample: 10.0.0.0/24
-      servers:
-        description: Server details linked to the Private Network
-        returned: always
-        type: str
+        type: list
+        contains:
+          resourceName:
+            description: The resource name.
+            type: str
+            sample: /bmc/servers/60ffafcdffb8b074c7968dad
+          value:
+            description: The value of the tag assigned to the resource.
+            type: str
+            sample: DEV
 '''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_native
-from ansible_collections.phoenixnap.bmc.plugins.module_utils.pnap import set_token_headers, HAS_REQUESTS, requests_wrapper, NETWORK_API
+from ansible_collections.phoenixnap.bmc.plugins.module_utils.pnap import set_token_headers, HAS_REQUESTS, requests_wrapper, TAG_API
 
 import os
 
 
-def network_info(module):
+def tag_info(module):
     set_token_headers(module)
-    networks = requests_wrapper(NETWORK_API, module=module).json()
-    filter_networks = []
+    tags = requests_wrapper(TAG_API, module=module).json()
+    filter_tags = []
     names = module.params['names']
 
     if names:
-        [filter_networks.append(net) for net in networks if net['name'] in names]
-        networks = filter_networks
+        [filter_tags.append(tag) for tag in tags if tag['name'] in names]
+        tags = filter_tags
 
     return{
-        'networks': networks
+        'tags': tags
     }
 
 
@@ -174,7 +163,7 @@ def main():
         module.fail_json(msg=_fail_msg)
 
     try:
-        module.exit_json(**network_info(module))
+        module.exit_json(**tag_info(module))
     except Exception as e:
         module.fail_json(msg='failed: %s' % to_native(e))
 

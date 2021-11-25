@@ -208,6 +208,27 @@ servers:
         returned: always
         type: str
         sample: x78sdkjds879sd7cx8
+      tags:
+        description: The tags assigned if any.
+        returned: always
+        type: list
+        contains:
+          id:
+            description: The unique id of the tag.
+            type: str
+            sample: 60ffafcdffb8b074c7968dad
+          name:
+            description: The name of the tag.
+            type: str
+            sample: Environment
+          value:
+            description: The value of the tag assigned to the resource.
+            type: str
+            sample: PROD
+          isBillingTag:
+            description: Whether or not to show the tag as part of billing and invoices
+            type: bool
+            sample: true
 '''
 
 from ansible.module_utils.basic import AnsibleModule
