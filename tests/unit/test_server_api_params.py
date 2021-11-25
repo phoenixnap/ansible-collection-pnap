@@ -117,5 +117,6 @@ class PseudoModule:
         'management_access_allowed_ips': '1.1.1.1',
         'configuration_type': 'USE_OR_CREATE_DEFAULT',
         'gateway_address': '10.0.0.10',
-        'private_networks': None
+        'private_networks': [],
+        'tags': [],
     }

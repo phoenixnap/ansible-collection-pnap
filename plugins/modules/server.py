@@ -107,6 +107,17 @@ options:
     choices: [absent, present, powered-on, powered-off, rebooted, reset, shutdown]
     default: present
     type: str
+  tags:
+    description: Tags to set to server, if any.
+    type: list
+    elements: dict
+    suboptions:
+      name:
+        type: str
+        description: The name of the tag.
+      value:
+        type: str
+        description: The value of the tag assigned to the resource.
   type:
     description: Server type ID. See BMC API for current list - U(https://developers.phoenixnap.com/docs/bmc/1/types/Server).
     type: str
@@ -241,21 +252,132 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-changed:
-    description: True if a server was altered in any way (created, modified or removed)
-    type: bool
-    sample: True
-    returned: success
 servers:
-    description: Information about each server that was processed
-    type: list
-    sample: '[{"id": "5e502f94dea4835b112de8f0", "status": "powered-on", "hostname": "my-server-red",
-               "description": "my test server", "os": "ubuntu/bionic", "type": "s1.c1.medium", "location": "PHX",
-               "cpu": "Dual Silver 4110", "cpuCount": 1, "coresPerCpu": 6, "cpuFrequency": 3.8,
-               "ram": "64GB RAM", "storage": "1x 1TB NVMe", privateIpAddresses": ["10.0.0.1"],
-               "publicIpAddresses": ["198.15.65.2", "198.15.65.3", "198.15.65.4", "198.15.65.5", "198.15.65.6"],
-               "reservationId": null, "pricingModel": "HOURLY", "password": null, "networkType": "PUBLIC_AND_PRIVATE"}]'
+    description: The servers information as list
     returned: success
+    type: complex
+    contains:
+      id:
+        description: The unique identifier of the server.
+        returned: always
+        type: str
+        sample: x78sdkjds879sd7cx8
+      status:
+        description: The status of the server.
+        returned: always
+        type: str
+        sample: powered-on
+      hostname:
+        description: Hostname of server.
+        returned: always
+        type: str
+        sample: my-server-1
+      description:
+        description: Description of server.
+        returned: always
+        type: str
+        sample: Server #1 used for computing.
+      os:
+        description: The server's OS ID used when the server was created.
+        returned: always
+        type: str
+        sample: ubuntu/bionic
+      type:
+        description: Server type ID. Cannot be changed once a server is created.
+        returned: always
+        type: str
+        sample: s1.c1.small
+      location:
+        description: Server location ID. Cannot be changed once a server is created.
+        returned: always
+        type: str
+        sample: PHX
+      cpu:
+        description: A description of the machine CPU.
+        returned: always
+        type: str
+        sample: E-2276G
+      cpuCount:
+        description: The number of CPUs available in the system.
+        returned: always
+        type: int
+        sample: 2
+      coresPerCpu:
+        description: The number of physical cores present on each CPU.
+        returned: always
+        type: int
+        sample: 28
+      cpuFrequency:
+        description: The CPU frequency in GHz.
+        returned: always
+        type: float
+        sample: 3.6
+      ram:
+        description: A description of the machine RAM.
+        returned: always
+        type: str
+        sample: 64GB RAM
+      storage:
+        description: A description of the machine storage.
+        returned: always
+        type: str
+        sample: 1x 960GB NVMe
+      privateIpAddresses:
+        description: Private IP addresses assigned to server.
+        returned: always
+        type: list
+        sample: [ "172.16.0.1" ]
+      publicIpAddresses:
+        description: Public IP addresses assigned to server.
+        returned: always
+        type: list
+        sample: [ "182.16.0.1", "183.16.0.1" ]
+      reservationId:
+        description: The reservation reference id if any.
+        returned: always
+        type: str
+        sample: x78sdkjds879sd7cx8
+      pricingModel:
+        description: The pricing model this server is being billed.
+        returned: always
+        type: str
+        sample: HOURLY
+      password:
+        description: Password set for user Admin on Windows server which will only be returned in response to provisioning a server.
+        returned: always
+        type: str
+        sample: MyP@ssw0rd_01
+      networkType:
+        description: The type of network configuration for this server.
+        returned: always
+        type: str
+        sample: PUBLIC_AND_PRIVATE
+      clusterId:
+        description: The cluster reference id if any.
+        returned: always
+        type: str
+        sample: x78sdkjds879sd7cx8
+      tags:
+        description: The tags assigned if any.
+        returned: always
+        type: list
+        contains:
+          id:
+            description: The unique id of the tag.
+            type: str
+            sample: 60ffafcdffb8b074c7968dad
+          name:
+            description: The name of the tag.
+            type: str
+            sample: Environment
+          value:
+            description: The value of the tag assigned to the resource.
+            type: str
+            sample: PROD
+          isBillingTag:
+            description: Whether or not to show the tag as part of billing and invoices
+            type: bool
+            sample: true
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -409,7 +531,8 @@ def get_api_params(module, server_id, target_state):
                     "gatewayAddress": module.params['gateway_address'],
                     "privateNetworks": module.params['private_networks']
                 }
-            }
+            },
+            "tags": module.params['tags']
         }
 
     data = json.dumps(remove_empty_elements(data), sort_keys=True)
@@ -508,6 +631,7 @@ def main():
             ssh_key=dict(no_log=True),
             ssh_key_ids=dict(type='list', elements='str', no_log=True),
             state=dict(choices=ALLOWED_STATES, default='present'),
+            tags=dict(type="list", elements='dict'),
             type={},
         ),
         mutually_exclusive=[('hostnames', 'server_ids')],

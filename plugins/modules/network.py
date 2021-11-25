@@ -17,9 +17,9 @@ module: network
 
 short_description: Create/delete network on phoenixNAP Bare Metal Cloud.
 description:
-    - Create/delete an SSH key on phoenixNAP Bare Metal Cloud.
+    - Create/delete network on phoenixNAP Bare Metal Cloud.
     - This module has a dependency on requests
-    - API is documented at U(https://developers.phoenixnap.com/docs/bmc/1/overview).
+    - API is documented at U(https://developers.phoenixnap.com/docs/networks/1/overview).
 
 version_added: "0.11.0"
 
