@@ -31,10 +31,10 @@ Ansible collection of modules for interacting with the <a href="https://develope
 2. Follow the prompts to set up your account.
 3. Use your credentials to [log in to Bare Metal Cloud portal](https://bmc.phoenixnap.com).
 
-:arrow_forward: **Video tutorial:** [How to Create a Bare Metal Cloud Account](https://www.youtube.com/watch?v=RLRQOisEB-k)
+:arrow_forward: **Video tutorial:** [How to Create a Bare Metal Cloud Account in Minutes](https://www.youtube.com/watch?v=hPR60XWOSsQ)
 <br>
 
-:arrow_forward: **Video tutorial:** [Introduction to Bare Metal Cloud](https://www.youtube.com/watch?v=8TLsqgLDMN4)
+:arrow_forward: **Video tutorial:** [How to Deploy a Bare Metal Server in a Minute](https://www.youtube.com/watch?v=BzBBwLxR80o)
 
 ## Installing Ansible
 
