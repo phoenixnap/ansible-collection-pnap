@@ -23,6 +23,7 @@ NETWORK_API = 'https://api.phoenixnap.com/networks/v1/private-networks/'
 TAG_API = 'https://api.phoenixnap.com/tag-manager/v1/tags/'
 EVENT_API = 'https://api.phoenixnap.com/audit/v1/events/'
 RESERVATION_API = 'https://api.phoenixnap.com/billing/v1/reservations/'
+CLUSTER_API = 'https://api.phoenixnap.com/solutions/rancher/v1beta/clusters'
 
 
 def set_token_headers(module):
@@ -50,7 +51,7 @@ def requests_wrapper(endpoint, method='GET', params=None, data=None, module=None
             set_token_headers(module)
             if reauth_attempts == 0:
                 raise Exception("Too many reauthentication attempts")
-            return requests_wrapper(endpoint, method, data, module, reauth_attempts - 1)
+            return requests_wrapper(endpoint, method, params, data, module, reauth_attempts - 1)
         elif response.status_code not in VALID_RESPONSE_CODES:
             error_message = response.json().get('message')
             validation_errors = response.json().get('validationErrors')
@@ -59,3 +60,27 @@ def requests_wrapper(endpoint, method='GET', params=None, data=None, module=None
         raise_from(Exception("Communications error: %s" % str(e), e))
 
     return response
+
+
+def remove_empty_elements(d):
+    """recursively remove empty lists, empty dicts, or None elements from a dictionary"""
+
+    def empty(x):
+        return x is None or x == {} or x == [] or x == ''
+
+    if not isinstance(d, (dict, list)):
+        return d
+    elif isinstance(d, list):
+        return [v for v in (remove_empty_elements(v) for v in d) if not empty(v)]
+    else:
+        return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
+
+
+def check_immutable_arguments(IMMUTABLE_ARGUMENTS, target, module):
+    wrong_parameters = []
+    for key in IMMUTABLE_ARGUMENTS:
+        if module.params[key]:
+            if module.params[key] != target[IMMUTABLE_ARGUMENTS[key]]:
+                wrong_parameters.append(key)
+    if wrong_parameters:
+        raise Exception('The following arguments in the playbook could not be changed: ' + ', '.join(wrong_parameters))

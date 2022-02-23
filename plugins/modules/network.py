@@ -41,10 +41,14 @@ options:
     description: The description of this private network.
     type: str
   location:
-    description: The location of this private network.
+    description:
+      - The location of this private network.
+      - Once a network is created, it cannot be modified through a playbook
     type: str
   location_default:
-    description: Identifies network as the default private network for the specified location.
+    description:
+      - Identifies network as the default private network for the specified location.
+      - Once a network is created, it cannot be modified through a playbook
     type: bool
     default: false
   cidr:
@@ -130,12 +134,14 @@ network:
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_native
-from ansible_collections.phoenixnap.bmc.plugins.module_utils.pnap import set_token_headers, HAS_REQUESTS, requests_wrapper, NETWORK_API
+from ansible_collections.phoenixnap.bmc.plugins.module_utils.pnap import (set_token_headers, HAS_REQUESTS, requests_wrapper,
+                                                                          check_immutable_arguments, NETWORK_API)
 
 import os
 import json
 
 ALLOWED_STATES = ["present", "absent"]
+IMMUTABLE_ARGUMENTS = {'cidr': 'cidr', 'location': 'location'}
 
 
 def get_existing_networks(module):
@@ -152,6 +158,7 @@ def network_action(module, state):
 
     if state == 'present':
         if target_network == 'absent':
+            changed = True
             data = json.dumps({
                 'name': new_network_name,
                 'location': module.params['location'],
@@ -159,26 +166,33 @@ def network_action(module, state):
                 'description': module.params['description'],
                 'cidr': module.params['cidr']
             })
-            target_network = requests_wrapper(NETWORK_API, method='POST', data=data).json()
-            changed = True
+            if not module.check_mode:
+                target_network = requests_wrapper(NETWORK_API, method='POST', data=data).json()
+
         else:
+            check_immutable_arguments(IMMUTABLE_ARGUMENTS, target_network, module)
             desc = target_network.get('description')
             if desc != module.params['description'] or target_network['locationDefault'] != module.params['location_default']:
+                changed = True
                 data = json.dumps({
                     'name': target_network['name'],
                     'description': module.params['description'],
                     'locationDefault': module.params['location_default']
                 })
-                target_network = requests_wrapper(NETWORK_API + target_network['id'], method='PUT', data=data).json()
-                changed = True
+                if not module.check_mode:
+                    target_network = requests_wrapper(NETWORK_API + target_network['id'], method='PUT', data=data).json()
 
     if state == 'absent' and target_network != 'absent':
+        changed = True
         data = json.dumps({
             'private_network_id': target_network['id']
         })
-        response = requests_wrapper(NETWORK_API + target_network['id'], method='DELETE', data=data)
-        target_network = 'Network deleted' if len(response.text) == 0 else response.json()
-        changed = True
+        if not module.check_mode:
+            response = requests_wrapper(NETWORK_API + target_network['id'], method='DELETE', data=data)
+            target_network = 'The network [%s] has been deleted.' % new_network_name if len(response.text) == 0 else response.json()
+
+    if target_network == 'absent':
+        target_network = 'The network [%s]' % new_network_name + ' is absent'
 
     return{
         'changed': changed,
@@ -198,7 +212,8 @@ def main():
             cidr={},
             state=dict(choices=ALLOWED_STATES, default='present')
         ),
-        required_if=[["state", "present", ["name", "location", "cidr"]]]
+        required_if=[["state", "present", ["name", "location", "cidr"]]],
+        supports_check_mode=True
     )
 
     if not HAS_REQUESTS:
