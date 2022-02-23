@@ -163,31 +163,33 @@ def tag_action(module, state):
 
     if state == 'present':
         if target_tag == 'absent':
+            changed = True
             data = json.dumps({
                 'name': new_tag_name,
                 'isBillingTag': module.params['is_billing_tag'],
                 'description': module.params['description'],
             })
-            target_tag = requests_wrapper(TAG_API, method='POST', data=data).json()
-            changed = True
+            if not module.check_mode:
+                target_tag = requests_wrapper(TAG_API, method='POST', data=data).json()
         else:
             desc = target_tag.get('description')
             if desc != module.params['description'] or target_tag['isBillingTag'] != module.params['is_billing_tag']:
+                changed = True
                 data = json.dumps({
                     'name': target_tag['name'],
                     'description': module.params['description'],
                     'isBillingTag': module.params['is_billing_tag']
                 })
-                target_tag = requests_wrapper(TAG_API + target_tag['id'], method='PATCH', data=data).json()
-                changed = True
+                if not module.check_mode:
+                    target_tag = requests_wrapper(TAG_API + target_tag['id'], method='PATCH', data=data).json()
 
     if state == 'absent' and target_tag != 'absent':
-        data = json.dumps({
-            'private_network_id': target_tag['id']
-        })
-        response = requests_wrapper(TAG_API + target_tag['id'], method='DELETE', data=data)
-        target_tag = 'Network deleted' if len(response.text) == 0 else response.json()
         changed = True
+        if not module.check_mode:
+            target_tag = requests_wrapper(TAG_API + target_tag['id'], method='DELETE').json()
+
+    if target_tag == 'absent':
+        target_tag = 'The tag [%s]' % new_tag_name + ' is absent'
 
     return{
         'changed': changed,
@@ -205,7 +207,8 @@ def main():
             is_billing_tag=dict(type='bool'),
             state=dict(choices=ALLOWED_STATES, default='present')
         ),
-        required_if=[["state", "present", ["name", "is_billing_tag"]]]
+        required_if=[["state", "present", ["name", "is_billing_tag"]]],
+        supports_check_mode=True
     )
 
     if not HAS_REQUESTS:

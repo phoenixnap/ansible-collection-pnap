@@ -125,7 +125,6 @@ from ansible.module_utils._text import to_native
 from ansible_collections.phoenixnap.bmc.plugins.module_utils.pnap import set_token_headers, HAS_REQUESTS, requests_wrapper, EVENT_API
 
 import os
-import json
 
 
 def event_info(module):

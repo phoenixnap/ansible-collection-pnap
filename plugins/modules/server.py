@@ -97,7 +97,8 @@ options:
     elements: str
   ssh_key:
     description: A list of SSH Keys that will be installed on the Linux server.
-    type: str
+    type: list
+    elements: str
   ssh_key_ids:
     description: A list of SSH Key IDs that will be installed on the server in addition to any ssh keys specified in request.
     type: list
@@ -382,7 +383,7 @@ servers:
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_native
-from ansible_collections.phoenixnap.bmc.plugins.module_utils.pnap import set_token_headers, HAS_REQUESTS, requests_wrapper, SERVER_API
+from ansible_collections.phoenixnap.bmc.plugins.module_utils.pnap import set_token_headers, HAS_REQUESTS, requests_wrapper, remove_empty_elements, SERVER_API
 
 import os
 import json
@@ -494,7 +495,7 @@ def get_api_params(module, server_id, target_state):
         path = '%s/actions/reset' % server_id
         data = {
             "installDefaultSshKeys": module.params['install_default_sshkeys'],
-            "sshKeys": [module.params['ssh_key']],
+            "sshKeys": module.params['ssh_key'],
             "sshKeyIds": module.params['ssh_key_ids'],
             "osConfiguration": {
                 "windows": {
@@ -512,7 +513,7 @@ def get_api_params(module, server_id, target_state):
             "location": module.params['location'],
             "hostname": server_id,
             "installDefaultSshKeys": module.params['install_default_sshkeys'],
-            "sshKeys": [module.params['ssh_key']],
+            "sshKeys": module.params['ssh_key'],
             "sshKeyIds": module.params['ssh_key_ids'],
             "networkType": module.params['network_type'],
             "os": module.params['os'],
@@ -538,20 +539,6 @@ def get_api_params(module, server_id, target_state):
     data = json.dumps(remove_empty_elements(data), sort_keys=True)
     endpoint = SERVER_API + path
     return{'method': method, 'endpoint': endpoint, 'data': data}
-
-
-def remove_empty_elements(d):
-    """recursively remove empty lists, empty dicts, or None elements from a dictionary"""
-
-    def empty(x):
-        return x is None or x == {} or x == [] or x == ''
-
-    if not isinstance(d, (dict, list)):
-        return d
-    elif isinstance(d, list):
-        return [v for v in (remove_empty_elements(v) for v in d) if not empty(v)]
-    else:
-        return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
 
 
 def wait_for_status_change_case_absent(target_list):
@@ -590,17 +577,23 @@ def servers_action(module, target_state):
     for ps in process_servers:
         if ps['status'] != state_api_remapping(target_state):
             changed = True
-            ap = get_api_params(module, ps['id'], target_state)
-            first_response.append(requests_wrapper(ap['endpoint'], ap['method'], data=ap['data'], module=module).json())
+            if not module.check_mode:
+                ap = get_api_params(module, ps['id'], target_state)
+                first_response.append(requests_wrapper(ap['endpoint'], ap['method'], data=ap['data'], module=module).json())
 
     if target_state == 'present':
         existing_servers = get_existing_servers(module)
         target_list = get_servers_id(target_list, existing_servers, target_state)
-    if changed:
-        process_servers = wait_for_status_change(module, target_list, target_state)
 
-    if target_state in ['present', 'reset']:
-        process_servers = prepare_result_present(first_response, target_state)
+    if not module.check_mode:
+        if changed:
+            process_servers = wait_for_status_change(module, target_list, target_state)
+        if target_state in ['present', 'reset']:
+            process_servers = prepare_result_present(first_response, target_state)
+
+    if target_state == 'present':
+        for pc in process_servers:
+            pc['status'] = 'Server [%s] will be created' % pc['id']
 
     return{
         'changed': changed,
@@ -628,7 +621,7 @@ def main():
             pricing_model=dict(default='HOURLY'),
             private_networks=dict(type="list", elements='dict'),
             server_ids=dict(type='list', elements='str'),
-            ssh_key=dict(no_log=True),
+            ssh_key=dict(type='list', elements='str', no_log=True),
             ssh_key_ids=dict(type='list', elements='str', no_log=True),
             state=dict(choices=ALLOWED_STATES, default='present'),
             tags=dict(type="list", elements='dict'),
@@ -637,6 +630,7 @@ def main():
         mutually_exclusive=[('hostnames', 'server_ids')],
         required_one_of=[('hostnames', 'server_ids')],
         required_if=[('state', 'present', ['hostnames'])],
+        supports_check_mode=True
     )
 
     if not HAS_REQUESTS:

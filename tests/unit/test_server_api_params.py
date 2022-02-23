@@ -53,7 +53,7 @@ class TestApiParams(TestCase):
             'data': json.dumps(
                 {
                     'installDefaultSshKeys': True,
-                    'sshKeys': ['xxx'],
+                    'sshKeys': 'xxx',
                     'sshKeyIds': '123',
                     'osConfiguration': {
                         'windows': {
@@ -76,7 +76,7 @@ class TestApiParams(TestCase):
                 'location': 'PHX',
                 'hostname': 'my-server-red',
                 'installDefaultSshKeys': True,
-                'sshKeys': ['xxx'],
+                'sshKeys': 'xxx',
                 'sshKeyIds': '123',
                 'networkType': 'PUBLIC_AND_PRIVATE',
                 'os': 'ubuntu/bionic',
