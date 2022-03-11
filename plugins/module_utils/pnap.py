@@ -23,8 +23,8 @@ NETWORK_API = 'https://api.phoenixnap.com/networks/v1/private-networks/'
 TAG_API = 'https://api.phoenixnap.com/tag-manager/v1/tags/'
 EVENT_API = 'https://api.phoenixnap.com/audit/v1/events/'
 RESERVATION_API = 'https://api.phoenixnap.com/billing/v1/reservations/'
-CLUSTER_API = 'https://api.phoenixnap.com/solutions/rancher/v1beta/clusters'
-IP_API = 'https://api.phoenixnap.com/ips/v1/ip-blocks'
+CLUSTER_API = 'https://api.phoenixnap.com/solutions/rancher/v1beta/clusters/'
+IP_API = 'https://api.phoenixnap.com/ips/v1/ip-blocks/'
 
 
 def set_token_headers(module):
