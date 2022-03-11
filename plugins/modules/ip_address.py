@@ -208,11 +208,8 @@ def delete_ip_addresses(match_ips, count, module, changed):
     ip_addresses_result = []
     for position in range(count):
         changed = True
-        data = json.dumps({
-            'ipBlockId': match_ips[position]['id']
-        })
         if not module.check_mode:
-            ip_addresses_result.append(requests_wrapper(IP_API + match_ips[position]['id'], method='DELETE', data=data).json())
+            ip_addresses_result.append(requests_wrapper(IP_API + match_ips[position]['id'], method='DELETE').json())
         else:
             ip_addresses_result.append('The IP Block with Id %s' % match_ips[position]['id'] + ' will be deleted.')
     return ip_addresses_result, changed
