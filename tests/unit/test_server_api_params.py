@@ -8,11 +8,14 @@ from ansible_collections.phoenixnap.bmc.plugins.modules.server import get_api_pa
 class TestApiParams(TestCase):
     def test_api_params_for_state_absent(self):
         expected_output = {
-            'method': 'DELETE',
-            'endpoint': 'https://api.phoenixnap.com/bmc/v1/servers/some_server_id',
-            'data': 'null'
+            'method': 'POST',
+            'endpoint': 'https://api.phoenixnap.com/bmc/v1/servers/some_server_id/actions/deprovision',
+            'data': json.dumps(
+                {
+                    'deleteIpBlocks': True
+                }, sort_keys=True)
         }
-        self.assertDictEqual(get_api_params(None, 'some_server_id', 'absent'), expected_output)
+        self.assertDictEqual(get_api_params(PseudoModule(), 'some_server_id', 'absent'), expected_output)
 
     def test_api_params_for_state_powered_on(self):
         expected_output = {
@@ -93,6 +96,14 @@ class TestApiParams(TestCase):
                     'privateNetworkConfiguration': {
                         'gatewayAddress': '10.0.0.10',
                         'configurationType': 'USE_OR_CREATE_DEFAULT'
+                    },
+                    'ipBlocksConfiguration': {
+                        'configurationType': 'USER_DEFINED',
+                        'ipBlocks': [
+                            {
+                                'id': '11111'
+                            }
+                        ]
                     }
                 }
             }, sort_keys=True)
@@ -115,8 +126,11 @@ class PseudoModule:
         'type': 's1.c1.small',
         'rdp_allowed_ips': '1.1.1.1',
         'management_access_allowed_ips': '1.1.1.1',
-        'configuration_type': 'USE_OR_CREATE_DEFAULT',
-        'gateway_address': '10.0.0.10',
+        'private_network_configuration_type': 'USE_OR_CREATE_DEFAULT',
+        'private_network_gateway_address': '10.0.0.10',
         'private_networks': [],
         'tags': [],
+        'ip_block_configuration_type': 'USER_DEFINED',
+        'ip_block': '11111',
+        'delete_ip_blocks': True
     }

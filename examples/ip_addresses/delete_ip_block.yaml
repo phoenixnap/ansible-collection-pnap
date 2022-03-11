@@ -1,0 +1,20 @@
+# All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
+# in location: ~/.pnap/config.yaml
+
+- name: Delete an IP Block.
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ~/.pnap/config.yaml
+  collections:
+    - phoenixnap.bmc
+  tasks:
+  - phoenixnap.bmc.ip_address:
+      client_id: "{{clientId}}"
+      client_secret: "{{clientSecret}}"
+      ipBlockId: 6047127fed34ecc3ba8402d2
+      state: absent
+    register: output
+  - name: Print the gathered infos
+    debug:
+      var: output.ip_addresses
