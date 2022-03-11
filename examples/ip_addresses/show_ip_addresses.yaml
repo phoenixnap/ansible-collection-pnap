@@ -1,0 +1,18 @@
+# All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
+# in location: ~/.pnap/config.yaml
+
+- name: List IP addresses
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ~/.pnap/config.yaml
+  collections:
+    - phoenixnap.bmc
+  tasks:
+  - phoenixnap.bmc.ip_address_info:
+      client_id: "{{clientId}}"
+      client_secret: "{{clientSecret}}"
+    register: output
+  - name: Print the gathered infos
+    debug:
+      var: output.ip_addresses

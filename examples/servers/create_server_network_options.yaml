@@ -18,7 +18,7 @@
         location: PHX
         os: ubuntu/bionic
         type: s0.d1.medium
-        configuration_type: USER_DEFINED
+        private_network_configuration_type: USER_DEFINED
         private_networks: 
           - id: 60f81608e2f4665962b214db
             ips: [10.0.0.13 - 10.0.0.17]

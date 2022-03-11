@@ -34,15 +34,12 @@ options:
   client_secret:
     description: Client Secret (Application Management)
     type: str
-  configuration_type:
-    description: Determines the approach for configuring IP blocks for the server being provisioned.
-    default: "USE_OR_CREATE_DEFAULT"
-    type: str
+  delete_ip_blocks:
+    description: When the state is absent, it determines whether the IP blocks assigned to the server should be deleted or not.
+    type: bool
+    default: true
   description:
     description: Description of server.
-    type: str
-  gateway_address:
-    description: The address of the gateway assigned / to assign to the server.
     type: str
   location:
     description: Server Location ID. See BMC API for current list - U(https://developers.phoenixnap.com/docs/bmc/1/types/Server).
@@ -51,6 +48,18 @@ options:
     description: Whether or not to install ssh keys marked as default in addition to any ssh keys specified in this request.
     type: bool
     default: true
+  ip_block_configuration_type:
+    description:
+      - Determines the approach for configuring IP blocks for the server being provisioned.
+      - If PURCHASE_NEW is selected, the smallest supported range, depending on the operating system, is allocated to the server.
+      - Default value is "PURCHASE_NEW"
+    type: str
+  ip_block:
+    description:
+      - Used to specify the previously purchased IP blocks to assign to this server upon provisioning.
+      - Used alongside the USER_DEFINED configurationType.
+      - must contain at most 1 item
+    type: str
   hostnames:
     description: Name of server.
     type: list
@@ -69,6 +78,13 @@ options:
   pricing_model:
     description: Server pricing model.
     default: "HOURLY"
+    type: str
+  private_network_configuration_type:
+    description: Determines the approach for configuring IP blocks for the server being provisioned.
+    default: "USE_OR_CREATE_DEFAULT"
+    type: str
+  private_network_gateway_address:
+    description: The address of the gateway assigned / to assign to the server.
     type: str
   private_networks:
     description: The list of private networks this server is member of.
@@ -171,7 +187,7 @@ EXAMPLES = '''
         location: PHX
         os: ubuntu/bionic
         type: s0.d1.medium
-        configuration_type: USER_DEFINED
+        private_network_configuration_type: USER_DEFINED
         private_networks:
           - id: 60f81608e2f4665962b214db
             ips: [10.0.0.13 - 10.0.0.17]
@@ -481,8 +497,10 @@ def get_api_params(module, server_id, target_state):
     data = None
 
     if target_state == 'absent':
-        path = server_id
-        method = 'DELETE'
+        path = '%s/actions/deprovision' % server_id
+        data = {
+            "deleteIpBlocks": module.params['delete_ip_blocks']
+        }
     elif(target_state == 'powered-on'):
         path = '%s/actions/power-on' % server_id
     elif(target_state == 'powered-off'):
@@ -528,9 +546,17 @@ def get_api_params(module, server_id, target_state):
             },
             "networkConfiguration": {
                 "privateNetworkConfiguration": {
-                    "configurationType": module.params['configuration_type'],
-                    "gatewayAddress": module.params['gateway_address'],
+                    "configurationType": module.params['private_network_configuration_type'],
+                    "gatewayAddress": module.params['private_network_gateway_address'],
                     "privateNetworks": module.params['private_networks']
+                },
+                "ipBlocksConfiguration": {
+                    "configurationType": module.params['ip_block_configuration_type'],
+                    "ipBlocks": [
+                        {
+                            "id": module.params['ip_block']
+                        }
+                    ]
                 }
             },
             "tags": module.params['tags']
@@ -541,15 +567,9 @@ def get_api_params(module, server_id, target_state):
     return{'method': method, 'endpoint': endpoint, 'data': data}
 
 
-def wait_for_status_change_case_absent(target_list):
-    servers_refreshed = []
-    [servers_refreshed.append({'id': ts, 'status': 'absent'}) for ts in target_list]
-    return servers_refreshed
-
-
-def wait_for_status_change(module, target_list, target_state):
+def wait_for_status_change(module, target_list, target_state, first_response):
     if target_state == 'absent':
-        return wait_for_status_change_case_absent(target_list)
+        return first_response
 
     timeout = time.time() + TIMEOUT_STATUS_CHANGE
     while timeout > time.time():
@@ -587,13 +607,13 @@ def servers_action(module, target_state):
 
     if not module.check_mode:
         if changed:
-            process_servers = wait_for_status_change(module, target_list, target_state)
+            process_servers = wait_for_status_change(module, target_list, target_state, first_response)
         if target_state in ['present', 'reset']:
             process_servers = prepare_result_present(first_response, target_state)
-
-    if target_state == 'present':
-        for pc in process_servers:
-            pc['status'] = 'Server [%s] will be created' % pc['id']
+    else:
+        if target_state == 'present':
+            for pc in process_servers:
+                pc['status'] = 'Server [%s] will be created' % pc['id']
 
     return{
         'changed': changed,
@@ -607,18 +627,21 @@ def main():
         argument_spec=dict(
             client_id=dict(default=os.environ.get('BMC_CLIENT_ID'), no_log=True),
             client_secret=dict(default=os.environ.get('BMC_CLIENT_SECRET'), no_log=True),
-            configuration_type=dict(default='USE_OR_CREATE_DEFAULT'),
+            delete_ip_blocks=dict(type='bool', default=True),
             description={},
-            gateway_address={},
             location={},
             hostnames=dict(type='list', elements='str'),
             install_default_sshkeys=dict(type='bool', default=True),
+            ip_block_configuration_type={},
+            ip_block={},
             management_access_allowed_ips=dict(type='list', elements='str'),
             network_type=dict(default='PUBLIC_AND_PRIVATE'),
             os={},
             rdp_allowed_ips=dict(type='list', elements='str'),
             reservation_id={},
             pricing_model=dict(default='HOURLY'),
+            private_network_configuration_type=dict(default='USE_OR_CREATE_DEFAULT'),
+            private_network_gateway_address={},
             private_networks=dict(type="list", elements='dict'),
             server_ids=dict(type='list', elements='str'),
             ssh_key=dict(type='list', elements='str', no_log=True),
