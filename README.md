@@ -7,7 +7,7 @@
 </h1>
 
 <p align="center">
-Ansible collection of modules for interacting with the <a href="https://developers.phoenixnap.com/docs/bmc/1/overview">Bare Metal Cloud API</a>. This collection contains the <i><b>server</b></i> module which allows you to automate <a href="https://phoenixnap.com/bare-metal-cloud">Bare Metal Cloud</a> server provisioning and management.
+Ansible collection of modules for interacting with the <a href="https://developers.phoenixnap.com/apis">Bare Metal Cloud API</a>. This collection contains the <i><b>server</b></i> module which allows you to automate <a href="https://phoenixnap.com/bare-metal-cloud">Bare Metal Cloud</a> server provisioning and management.
 </p>
 
 <p align="center">
