@@ -13,11 +13,11 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 ---
-module: ip_address
+module: ip_block
 
 short_description: Create/delete IP block.
 description:
-    - Create/delete IP block.
+    - Create/delete IP blocks.
     - An IP Block is a set of contiguous IPs that can be assigned to other resources such as servers.
     - The server module can also create and delete IP Blocks in some cases.
     - This module has a dependency on requests
@@ -74,7 +74,7 @@ EXAMPLES = '''
   collections:
     - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.ip_address:
+  - phoenixnap.bmc.ip_block:
       client_id: "{{clientId}}"
       client_secret: "{{clientSecret}}"
       location: PHX
@@ -83,7 +83,7 @@ EXAMPLES = '''
     register: output
   - name: Print the gathered infos
     debug:
-      var: output.ip_addresses
+      var: output.ip_blocks
 
 # Delete an IP Block.
 
@@ -95,7 +95,7 @@ EXAMPLES = '''
   collections:
     - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.ip_address:
+  - phoenixnap.bmc.ip_block:
       client_id: "{{clientId}}"
       client_secret: "{{clientSecret}}"
       ip_block_id: 6047127fed34ecc3ba8402d2
@@ -103,7 +103,7 @@ EXAMPLES = '''
     register: output
   - name: Print the gathered infos
     debug:
-      var: output.ip_addresses
+      var: output.ip_blocks
 '''
 
 RETURN = '''
@@ -112,7 +112,7 @@ changed:
     type: bool
     sample: True
     returned: success
-ip_addresses:
+ip_blocks:
     description: Information about IP Block that were created/removed
     type: complex
     returned: success
@@ -167,12 +167,12 @@ import json
 ALLOWED_STATES = ["present", "absent"]
 
 
-def get_existing_ip_addresses(module):
+def get_existing_ip_blocks(module):
     response = requests_wrapper(IP_API, module=module)
     return response.json()
 
 
-def get_matched_ip_addresses(existing_ips, cidr_block_size, location, count):
+def get_matched_ip_blocks(existing_ips, cidr_block_size, location, count):
     match_ips = []
     for ei in existing_ips:
         if ei['cidrBlockSize'] == cidr_block_size and ei['location'] == location:
@@ -181,8 +181,8 @@ def get_matched_ip_addresses(existing_ips, cidr_block_size, location, count):
     return match_ips, count
 
 
-def create_ip_addresses(cidr_block_size, location, description, count, module):
-    ip_addresses_result = []
+def create_ip_blocks(cidr_block_size, location, description, count, module):
+    ip_blocks_result = []
     if not module.check_mode:
         data = json.dumps({
             'cidrBlockSize': cidr_block_size,
@@ -190,10 +190,10 @@ def create_ip_addresses(cidr_block_size, location, description, count, module):
             'description': description
         })
         for __ in range(count):
-            ip_addresses_result.append(requests_wrapper(IP_API, method='POST', data=data).json())
+            ip_blocks_result.append(requests_wrapper(IP_API, method='POST', data=data).json())
     else:
-        ip_addresses_result.append('%s IP Block(s) will be created. [Cidr: %s | Location: %s]' % (count, cidr_block_size, location))
-    return ip_addresses_result
+        ip_blocks_result.append('%s IP Block(s) will be created. [Cidr: %s | Location: %s]' % (count, cidr_block_size, location))
+    return ip_blocks_result
 
 
 def find_deletion_candidates(match_ips, delete_counter):
@@ -204,18 +204,18 @@ def find_deletion_candidates(match_ips, delete_counter):
     return deleteable
 
 
-def delete_ip_addresses(match_ips, count, module, changed):
-    ip_addresses_result = []
+def delete_ip_blocks(match_ips, count, module, changed):
+    ip_blocks_result = []
     for position in range(count):
         changed = True
         if not module.check_mode:
-            ip_addresses_result.append(requests_wrapper(IP_API + match_ips[position]['id'], method='DELETE').json())
+            ip_blocks_result.append(requests_wrapper(IP_API + match_ips[position]['id'], method='DELETE').json())
         else:
-            ip_addresses_result.append('The IP Block with Id %s' % match_ips[position]['id'] + ' will be deleted.')
-    return ip_addresses_result, changed
+            ip_blocks_result.append('The IP Block with Id %s' % match_ips[position]['id'] + ' will be deleted.')
+    return ip_blocks_result, changed
 
 
-def ip_addresses_action(module, state):
+def ip_blocks_action(module, state):
     set_token_headers(module)
     changed = False
     count = module.params['count']
@@ -224,34 +224,34 @@ def ip_addresses_action(module, state):
     cidr_block_size = module.params['cidr_block_size']
     location = module.params['location']
     description = module.params['description']
-    existing_ips = get_existing_ip_addresses(module)
-    ip_addresses_result = []
+    existing_ips = get_existing_ip_blocks(module)
+    ip_blocks_result = []
 
     if state == 'present':
-        match_ips, count = get_matched_ip_addresses(existing_ips, cidr_block_size, location, count)
+        match_ips, count = get_matched_ip_blocks(existing_ips, cidr_block_size, location, count)
         if count > 0:
             changed = True
-            ip_addresses_result = create_ip_addresses(cidr_block_size, location, description, count, module)
+            ip_blocks_result = create_ip_blocks(cidr_block_size, location, description, count, module)
         elif count == 0:
-            ip_addresses_result = match_ips
+            ip_blocks_result = match_ips
         else:
             ids = find_deletion_candidates(match_ips, abs(count))
-            ip_addresses_result, changed = delete_ip_addresses(ids, abs(count), module, changed)
+            ip_blocks_result, changed = delete_ip_blocks(ids, abs(count), module, changed)
 
     if state == 'absent':
         count = 1
-        target_ip_address = next((ip for ip in existing_ips if ip['id'] == module.params['ip_block_id']), 'absent')
-        if target_ip_address != 'absent':
+        target_ip_block = next((ip for ip in existing_ips if ip['id'] == module.params['ip_block_id']), 'absent')
+        if target_ip_block != 'absent':
             if not module.check_mode:
-                ip_addresses_result, changed = delete_ip_addresses([target_ip_address], count, module, changed)
+                ip_blocks_result, changed = delete_ip_blocks([target_ip_block], count, module, changed)
             else:
-                ip_addresses_result, changed = delete_ip_addresses([target_ip_address], count, module, changed)
+                ip_blocks_result, changed = delete_ip_blocks([target_ip_block], count, module, changed)
         else:
-            ip_addresses_result = 'The IP Block with Id %s' % module.params['ip_block_id'] + ' is absent.'
+            ip_blocks_result = 'The IP Block with Id %s' % module.params['ip_block_id'] + ' is absent.'
 
     return{
         'changed': changed,
-        'ip_addresses': ip_addresses_result
+        'ip_blocks': ip_blocks_result
     }
 
 
@@ -285,7 +285,7 @@ def main():
     state = module.params['state']
 
     try:
-        module.exit_json(**ip_addresses_action(module, state))
+        module.exit_json(**ip_blocks_action(module, state))
     except Exception as e:
         module.fail_json(msg='failed: %s' % to_native(e))
 

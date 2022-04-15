@@ -60,7 +60,7 @@ def requests_wrapper(endpoint, method='GET', params=None, data=None, module=None
             validation_errors = response.json().get('validationErrors')
             raise Exception('status code %s | %s | Validation errors: %s' % (response.status_code, error_message, validation_errors))
     except requests.exceptions.RequestException as e:
-        raise_from(Exception("Communications error: %s" % str(e), e))
+        raise_from(Exception("Communications error: %s" % str(e)), e)
 
     return response
 
