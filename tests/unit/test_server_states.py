@@ -60,9 +60,10 @@ class TestServerStates(TestCase):
     def test_ratify_server_list_case_present(self):
         expected_output = [{
             'id': 'some_server_id',
+            'hostname': 'some_server_id',
             'status': 'absent'
         }]
-        self.assertListEqual(ratify_server_list_case_present(['some_server_id']), expected_output)
+        self.assertListEqual(ratify_server_list_case_present(['some_server_id'], []), expected_output)
 
     def test_ratify_server_list_case_rebooted(self):
         process_servers_with_not_powered_on_state = [{

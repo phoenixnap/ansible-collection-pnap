@@ -13,11 +13,11 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 ---
-module: ip_address_info
+module: ip_block_info
 
-short_description: Gather information about phoenixNAP public IP addresses.
+short_description: Gather information about phoenixNAP public IP blocks.
 description:
-    - Retrieves all public IP addresses associated with the authenticated account.
+    - Retrieves all public IP blocks associated with the authenticated account.
     - This module has a dependency on requests
 
 version_added: "1.2.0"
@@ -39,8 +39,8 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# List IP addresses
-- name: List IP addresses
+# List IP blocks
+- name: List IP blocks
   hosts: localhost
   gather_facts: false
   vars_files:
@@ -48,18 +48,18 @@ EXAMPLES = '''
   collections:
     - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.ip_address_info:
+  - phoenixnap.bmc.ip_block_info:
       client_id: "{{clientId}}"
       client_secret: "{{clientSecret}}"
     register: output
   - name: Print the gathered infos
     debug:
-      var: output.ip_address
+      var: output.ip_blocks
 '''
 
 RETURN = '''
-ip_addresses:
-    description: The ip addresses information as list
+ip_blocks:
+    description: The ip blocks information as list
     returned: success
     type: complex
     contains:
@@ -106,11 +106,11 @@ from ansible_collections.phoenixnap.bmc.plugins.module_utils.pnap import set_tok
 import os
 
 
-def ip_addresses_info(module):
+def ip_blocks_info(module):
     set_token_headers(module)
-    ip_addresses = requests_wrapper(IP_API, module=module).json()
+    ip_blocks = requests_wrapper(IP_API, module=module).json()
     return{
-        'ip_addresses': ip_addresses
+        'ip_blocks': ip_blocks
     }
 
 
@@ -133,7 +133,7 @@ def main():
         module.fail_json(msg=_fail_msg)
 
     try:
-        module.exit_json(**ip_addresses_info(module))
+        module.exit_json(**ip_blocks_info(module))
     except Exception as e:
         module.fail_json(msg='failed: %s' % to_native(e))
 

@@ -96,6 +96,7 @@ options:
         description: The network identifier.
       ips:
         type: list
+        elements: str
         description: IPs to configure/configured on the server. Should be null or empty list if DHCP is true.
       dhcp:
         type: bool
@@ -409,6 +410,7 @@ import time
 ALLOWED_STATES = ['absent', 'powered-on', 'powered-off', 'present', 'rebooted', 'reset', 'shutdown']
 CHECK_FOR_STATUS_CHANGE = 5
 TIMEOUT_STATUS_CHANGE = 1800
+present_servers = []
 
 
 def get_target_list(module, target_state, existing_servers):
@@ -418,12 +420,14 @@ def get_target_list(module, target_state, existing_servers):
         target_list = module.params['hostnames']
     else:
         target_list = get_servers_id(module.params['hostnames'], existing_servers, target_state)
-    return target_list
+    return list(set(target_list))
 
 
 def state_api_remapping(target_state):
     if target_state == 'shutdown':
         state = 'powered-off'
+    elif target_state == 'present':
+        state = ['powered-on', 'powered-off']
     else:
         state = target_state
     return state
@@ -449,9 +453,16 @@ def refresh_server_list(module, target_servers):
     return [ex for ex in existing_servers if ex['id'] in target_servers]
 
 
-def ratify_server_list_case_present(target_servers):
+def ratify_server_list_case_present(target_servers, existing_servers):
+
     process_servers = []
-    [process_servers.append({'id': ts, 'status': 'absent'}) for ts in target_servers]
+    existing_servers_hostname = [es['hostname'] for es in existing_servers]
+    for ts in target_servers:
+        if ts not in existing_servers_hostname:
+            process_servers.append({'id': ts, 'hostname': ts, 'status': 'absent'})
+        else:
+            [present_servers.append(es) for es in existing_servers if es['hostname'] == ts]
+
     return process_servers
 
 
@@ -463,7 +474,7 @@ def ratify_server_list_case_rebooted(process_servers):
 
 def ratify_server_list(target_servers, target_state, existing_servers):
     if target_state == 'present':
-        return ratify_server_list_case_present(target_servers)
+        return ratify_server_list_case_present(target_servers, existing_servers)
 
     if len(target_servers) != len(set(target_servers)):
         raise Exception('List of servers can\'t contain duplicate server id')
@@ -483,7 +494,7 @@ def get_servers_id(server_names, existing_servers, target_state):
         raise Exception('Please check provided server list.')
 
     if target_state == 'present':
-        return [s['id'] for s in existing_servers if s['hostname'] in server_names]
+        return [es['id'] for es in existing_servers if es['hostname'] in server_names]
     else:
         server_ids = []
         for es in existing_servers:
@@ -595,7 +606,7 @@ def servers_action(module, target_state):
 
     first_response = []
     for ps in process_servers:
-        if ps['status'] != state_api_remapping(target_state):
+        if ps['status'] not in state_api_remapping(target_state):
             changed = True
             if not module.check_mode:
                 ap = get_api_params(module, ps['id'], target_state)
@@ -603,6 +614,7 @@ def servers_action(module, target_state):
 
     if target_state == 'present':
         existing_servers = get_existing_servers(module)
+        [target_list.remove(ps['hostname']) for ps in present_servers if ps['hostname'] in target_list]
         target_list = get_servers_id(target_list, existing_servers, target_state)
 
     if not module.check_mode:
@@ -610,10 +622,9 @@ def servers_action(module, target_state):
             process_servers = wait_for_status_change(module, target_list, target_state, first_response)
         if target_state in ['present', 'reset']:
             process_servers = prepare_result_present(first_response, target_state)
-    else:
-        if target_state == 'present':
-            for pc in process_servers:
-                pc['status'] = 'Server [%s] will be created' % pc['id']
+
+    if target_state == 'present':
+        process_servers += present_servers
 
     return{
         'changed': changed,
@@ -642,12 +653,25 @@ def main():
             pricing_model=dict(default='HOURLY'),
             private_network_configuration_type=dict(default='USE_OR_CREATE_DEFAULT'),
             private_network_gateway_address={},
-            private_networks=dict(type="list", elements='dict'),
+            private_networks=dict(
+                type="list",
+                elements='dict',
+                options=dict(
+                    id={},
+                    ips=dict(type='list', elements='str'),
+                    dhcp=dict(type='bool')
+                )),
             server_ids=dict(type='list', elements='str'),
             ssh_key=dict(type='list', elements='str', no_log=True),
             ssh_key_ids=dict(type='list', elements='str', no_log=True),
             state=dict(choices=ALLOWED_STATES, default='present'),
-            tags=dict(type="list", elements='dict'),
+            tags=dict(
+                type="list",
+                elements='dict',
+                options=dict(
+                    name={},
+                    value={}
+                )),
             type={},
         ),
         mutually_exclusive=[('hostnames', 'server_ids')],

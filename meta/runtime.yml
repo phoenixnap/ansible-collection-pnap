@@ -1,1 +1,7 @@
 requires_ansible: '>=2.9.10'
+plugin_routing:
+  modules:
+    ip_address_info:
+      redirect: phoenixnap.bmc.ip_block_info
+    ip_address:
+      redirect: phoenixnap.bmc.ip_block

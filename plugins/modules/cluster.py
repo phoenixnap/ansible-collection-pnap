@@ -190,6 +190,36 @@ EXAMPLES = '''
     debug:
       var: output.clusters
 
+# Deployment of both management and workload clusters.
+
+- name: Create new clusters | management and workload
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ~/.pnap/config.yaml
+  collections:
+    - phoenixnap.bmc
+  tasks:
+  - phoenixnap.bmc.cluster:
+      client_id: "{{clientId}}"
+      client_secret: "{{clientSecret}}"
+      location: PHX
+      name: Rancher cluster deployment
+      description: mydescritpion
+      node_server_type: s1.c1.small
+      node_pool_count: 1
+      node_install_default_keys: false
+      node_key_ids: 6xex7xbx7xex1x4x3xfxex3x, 6yfy6y4yby6ydy2y4ycy2ybyXyX
+      workload_configuration:
+        name: Workload cluster
+        location: PHX
+        server_count: 1
+        server_type: s2.c2.small
+      state: present
+    register: output
+  - name: Print the cluster information
+    debug:
+      var: output.clusters
 
 # Delete cluster
 
@@ -472,6 +502,7 @@ def cluster_action(module, target_state):
             check_immutable_arguments(IMMUTABLE_ARGUMENTS, cluster, module)
 
     if target_state == 'absent' and cluster != 'absent':
+        changed = True
         if not module.check_mode:
             cluster = requests_wrapper(CLUSTER_API + cluster['id'], method='DELETE', module=module).json()
 
