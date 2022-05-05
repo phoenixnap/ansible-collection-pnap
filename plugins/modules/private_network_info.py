@@ -13,11 +13,11 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 ---
-module: network_info
+module: private_network_info
 
-short_description: Gather information about phoenixNAP BMC networks
+short_description: Gather information about phoenixNAP BMC private networks
 description:
-    - Gather information about networks available.
+    - Gather information about private networks available.
     - This module has a dependency on requests
 
 version_added: "0.11.0"
@@ -33,6 +33,9 @@ options:
   client_secret:
     description: Client Secret (Application Management)
     type: str
+  location:
+    description: If present will filter the result by the given location of the Private Networks.
+    type: str
   names:
     description: The friendly name of this private network.
     type: list
@@ -43,8 +46,8 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# List all networks information for account
-- name: List all networks
+# List all private networks information for account
+- name: List all private networks
   hosts: localhost
   gather_facts: false
   vars_files:
@@ -52,16 +55,16 @@ EXAMPLES = '''
   collections:
     - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.network_info:
+  - phoenixnap.bmc.private_network_info:
       client_id: "{{clientId}}"
       client_secret: "{{clientSecret}}"
     register: output
   - name: Print the gathered infos
     debug:
-      var: output.networks
+      var: output.private_networks
 
-# List networks information based on the specified names
-- name: List the network details
+# List private networks information based on the specified names
+- name: List the private network details
   hosts: localhost
   gather_facts: false
   vars_files:
@@ -69,20 +72,20 @@ EXAMPLES = '''
   collections:
     - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.network_info:
+  - phoenixnap.bmc.private_network_info:
       client_id: "{{clientId}}"
       client_secret: "{{clientSecret}}"
       names: [My Default Backend Network]
     register: output
   - name: Print the gathered infos
     debug:
-      var: output.networks
+      var: output.private_networks
 
 '''
 
 RETURN = '''
-networks:
-    description: The networks information as list
+private_networks:
+    description: The private networks information as list
     returned: success
     type: complex
     contains:
@@ -129,28 +132,45 @@ networks:
       servers:
         description: Server details linked to the Private Network
         returned: always
+        type: list
+        contains:
+          id:
+            description: The server identifier.
+            type: str
+            sample: 603f3e995c18d515cda9c4f8
+          ips:
+            description: List of private IPs associated to the server.
+            type: list
+            elements: str
+            example: ["10.0.0.2", "10.0.0.3"]
+      createdOn:
+        description: Date and time when this private network was created.
+        returned: always
         type: str
 '''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_native
-from ansible_collections.phoenixnap.bmc.plugins.module_utils.pnap import set_token_headers, HAS_REQUESTS, requests_wrapper, NETWORK_API
+from ansible_collections.phoenixnap.bmc.plugins.module_utils.pnap import set_token_headers, HAS_REQUESTS, requests_wrapper, PRIVATE_NETWORK_API
 
 import os
 
 
-def network_info(module):
+def private_network_info(module):
     set_token_headers(module)
-    networks = requests_wrapper(NETWORK_API, module=module).json()
-    filter_networks = []
+    params = {
+        'location': module.params['location']
+    }
+    private_networks = requests_wrapper(PRIVATE_NETWORK_API, params=params, module=module).json()
+    filter_private_networks = []
     names = module.params['names']
 
     if names:
-        [filter_networks.append(net) for net in networks if net['name'] in names]
-        networks = filter_networks
+        [filter_private_networks.append(pn) for pn in private_networks if pn['name'] in names]
+        private_networks = filter_private_networks
 
     return{
-        'networks': networks
+        'private_networks': private_networks
     }
 
 
@@ -160,6 +180,7 @@ def main():
         argument_spec=dict(
             client_id=dict(default=os.environ.get('BMC_CLIENT_ID'), no_log=True),
             client_secret=dict(default=os.environ.get('BMC_CLIENT_SECRET'), no_log=True),
+            location={},
             names=dict(type='list', elements='str'),
         ),
         supports_check_mode=True,
@@ -174,7 +195,7 @@ def main():
         module.fail_json(msg=_fail_msg)
 
     try:
-        module.exit_json(**network_info(module))
+        module.exit_json(**private_network_info(module))
     except Exception as e:
         module.fail_json(msg='failed: %s' % to_native(e))
 

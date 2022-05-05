@@ -1,7 +1,7 @@
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-- name: Create new Windows server
+- name: List all public networks
   hosts: localhost
   gather_facts: false
   vars_files:
@@ -9,12 +9,14 @@
   collections:
     - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.server:
+  - phoenixnap.bmc.public_network_info:
       client_id: "{{clientId}}"
       client_secret: "{{clientSecret}}"
-      hostnames: my-server-1
-      location: PHX
-      os: windows/srv2019std
-      type: s0.d1.medium
-      state: present
-      rdp_allowed_ips: ["0.0.0.0/0"]
+      #filter by location
+      #location: PHX
+      #filter by names
+      #names: [network1, network2] 
+    register: output
+  - name: Print the gathered infos
+    debug:
+      var: output.public_networks
