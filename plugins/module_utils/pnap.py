@@ -19,7 +19,8 @@ VALID_RESPONSE_CODES = [200, 201, 202, 204]
 AUTH_API = 'https://auth.phoenixnap.com/auth/realms/BMC/protocol/openid-connect/token'
 SERVER_API = 'https://api.phoenixnap.com/bmc/v1/servers/'
 SSH_API = 'https://api.phoenixnap.com/bmc/v1/ssh-keys/'
-NETWORK_API = 'https://api.phoenixnap.com/networks/v1/private-networks/'
+PRIVATE_NETWORK_API = 'https://api.phoenixnap.com/networks/v1/private-networks/'
+PUBLIC_NETWORK_API = 'https://api.phoenixnap.com/networks/v1/public-networks/'
 TAG_API = 'https://api.phoenixnap.com/tag-manager/v1/tags/'
 EVENT_API = 'https://api.phoenixnap.com/audit/v1/events/'
 RESERVATION_API = 'https://api.phoenixnap.com/billing/v1/reservations/'
@@ -47,7 +48,7 @@ def set_token_headers(module):
     REQUEST.headers.update({'X-Powered-By': 'BMC-Ansible'})
 
 
-def requests_wrapper(endpoint, method='GET', params=None, data=None, module=None, reauth_attempts=3):
+def requests_wrapper(endpoint, method='GET', params=None, data=None, module=None, reauth_attempts=3, retries=3):
     try:
         response = REQUEST.request(method, endpoint, data=data, params=params)
         if response.status_code == 401:
@@ -60,7 +61,9 @@ def requests_wrapper(endpoint, method='GET', params=None, data=None, module=None
             validation_errors = response.json().get('validationErrors')
             raise Exception('status code %s | %s | Validation errors: %s' % (response.status_code, error_message, validation_errors))
     except requests.exceptions.RequestException as e:
-        raise_from(Exception("Communications error: %s" % str(e)), e)
+        if retries == 0:
+            raise_from(Exception("Communications error: %s" % str(e)), e)
+        return requests_wrapper(endpoint, method, params, data, module, retries=retries - 1)
 
     return response
 

@@ -5,3 +5,7 @@ plugin_routing:
       redirect: phoenixnap.bmc.ip_block_info
     ip_address:
       redirect: phoenixnap.bmc.ip_block
+    network_info:
+      redirect: phoenixnap.bmc.private_network_info
+    network:
+      redirect: phoenixnap.bmc.private_network

@@ -41,6 +41,11 @@ options:
   description:
     description: Description of server.
     type: str
+  gateway_address:
+    description:
+      - The address of the gateway assigned / to assign to the server.
+      - When used as part of request body, IP address has to be part of private/public network assigned to this server.
+    type: str
   location:
     description: Server Location ID. See BMC API for current list - U(https://developers.phoenixnap.com/docs/bmc/1/types/Server).
     type: str
@@ -101,6 +106,18 @@ options:
       dhcp:
         type: bool
         description: Determines whether DHCP is enabled for this server. Should be false if ips is not an empty list.
+  public_networks:
+    description: The list of public networks this server is member of.
+    type: list
+    elements: dict
+    suboptions:
+      id:
+        type: str
+        description: The network identifier.
+      ips:
+        type: list
+        elements: str
+        description: IPs to configure/configured on the server. IPs must be within the network's range.
   rdp_allowed_ips:
     description: List of IPs allowed for RDP access to Windows OS. Supported in single IP, CIDR and range format. When undefined, RDP is disabled.
     type: list
@@ -170,9 +187,9 @@ EXAMPLES = '''
     debug:
       var: output.servers
 
-# Create server | network example
+# Create server | private network example
 
-- name: Create new server | network example
+- name: Create new server | private network example
   hosts: localhost
   gather_facts: false
   vars_files:
@@ -454,7 +471,6 @@ def refresh_server_list(module, target_servers):
 
 
 def ratify_server_list_case_present(target_servers, existing_servers):
-
     process_servers = []
     existing_servers_hostname = [es['hostname'] for es in existing_servers]
     for ts in target_servers:
@@ -537,6 +553,7 @@ def get_api_params(module, server_id, target_state):
         }
     elif(target_state == 'present'):
         path = ''
+        gateway_address = module.params['gateway_address'] or module.params['private_network_gateway_address']
         data = {
             "description": module.params['description'],
             "location": module.params['location'],
@@ -556,9 +573,9 @@ def get_api_params(module, server_id, target_state):
                 "managementAccessAllowedIps": module.params['management_access_allowed_ips']
             },
             "networkConfiguration": {
+                "gatewayAddress": gateway_address,
                 "privateNetworkConfiguration": {
                     "configurationType": module.params['private_network_configuration_type'],
-                    "gatewayAddress": module.params['private_network_gateway_address'],
                     "privateNetworks": module.params['private_networks']
                 },
                 "ipBlocksConfiguration": {
@@ -568,6 +585,9 @@ def get_api_params(module, server_id, target_state):
                             "id": module.params['ip_block']
                         }
                     ]
+                },
+                "publicNetworkConfiguration": {
+                    "publicNetworks": module.params['public_networks']
                 }
             },
             "tags": module.params['tags']
@@ -641,6 +661,7 @@ def main():
             delete_ip_blocks=dict(type='bool', default=True),
             description={},
             location={},
+            gateway_address={},
             hostnames=dict(type='list', elements='str'),
             install_default_sshkeys=dict(type='bool', default=True),
             ip_block_configuration_type={},
@@ -652,14 +673,21 @@ def main():
             reservation_id={},
             pricing_model=dict(default='HOURLY'),
             private_network_configuration_type=dict(default='USE_OR_CREATE_DEFAULT'),
-            private_network_gateway_address={},
+            private_network_gateway_address=dict(removed_in_version='2.0.0', removed_from_collection='phoenixnap.bmc'),
             private_networks=dict(
-                type="list",
+                type='list',
                 elements='dict',
                 options=dict(
                     id={},
                     ips=dict(type='list', elements='str'),
                     dhcp=dict(type='bool')
+                )),
+            public_networks=dict(
+                type='list',
+                elements='dict',
+                options=dict(
+                    id={},
+                    ips=dict(type='list', elements='str')
                 )),
             server_ids=dict(type='list', elements='str'),
             ssh_key=dict(type='list', elements='str', no_log=True),

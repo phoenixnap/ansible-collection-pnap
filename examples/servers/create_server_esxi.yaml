@@ -17,4 +17,6 @@
       os: esxi/esxi70u2
       type: s0.d1.medium
       state: present 
-      management_access_allowed_ips: ["xx.xxx.xxx.xx", "yy.yyy.yyy.yy"]
+      management_access_allowed_ips: 
+        - xx.xxx.xxx.xx
+        - yy.yyy.yyy.yy

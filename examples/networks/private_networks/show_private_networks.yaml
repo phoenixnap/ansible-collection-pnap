@@ -12,9 +12,11 @@
   - phoenixnap.bmc.network_info:
       client_id: "{{clientId}}"
       client_secret: "{{clientSecret}}"
-      # filter by name
+      # fileter by location
+      #location: PHX
+      # filter by names
       #names: [My Default Backend Network, Initial CHI Private Network]
     register: output
   - name: Print the gathered infos
     debug:
-      var: output.networks
+      var: output.private_networks

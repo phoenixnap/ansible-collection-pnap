@@ -93,8 +93,8 @@ class TestApiParams(TestCase):
                     'managementAccessAllowedIps': '1.1.1.1'
                 },
                 'networkConfiguration': {
+                    'gatewayAddress': '182.16.0.145',
                     'privateNetworkConfiguration': {
-                        'gatewayAddress': '10.0.0.10',
                         'configurationType': 'USE_OR_CREATE_DEFAULT'
                     },
                     'ipBlocksConfiguration': {
@@ -115,6 +115,7 @@ class PseudoModule:
     params = {
         'description': 'some description',
         'location': 'PHX',
+        'gateway_address': '182.16.0.145',
         'hostname': 'my-server-red',
         'install_default_sshkeys': True,
         'ssh_key': 'xxx',
@@ -127,10 +128,10 @@ class PseudoModule:
         'rdp_allowed_ips': '1.1.1.1',
         'management_access_allowed_ips': '1.1.1.1',
         'private_network_configuration_type': 'USE_OR_CREATE_DEFAULT',
-        'private_network_gateway_address': '10.0.0.10',
         'private_networks': [],
         'tags': [],
         'ip_block_configuration_type': 'USER_DEFINED',
         'ip_block': '11111',
-        'delete_ip_blocks': True
+        'delete_ip_blocks': True,
+        'public_networks': [],
     }
