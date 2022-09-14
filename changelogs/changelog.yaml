@@ -1,0 +1,17 @@
+ancestor: null
+releases:
+  1.6.0:
+    changes:
+      minor_changes:
+      - ip_block and server examples updated
+      - server - add new parameter install_os_to_rams
+    fragments:
+    - 001_storage_network_module_added.yml
+    modules:
+    - description: Create/delete storage network on phoenixNAP Bare Metal Cloud.
+      name: storage_network
+      namespace: ''
+    - description: Gather information about phoenixNAP BMC storage networks
+      name: storage_network_info
+      namespace: ''
+    release_date: '2022-09-14'

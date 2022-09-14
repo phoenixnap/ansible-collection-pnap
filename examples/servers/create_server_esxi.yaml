@@ -20,3 +20,7 @@
       management_access_allowed_ips: 
         - xx.xxx.xxx.xx
         - yy.yyy.yyy.yy
+    register: output
+  - name: Print the servers information
+    debug:
+      var: output.servers

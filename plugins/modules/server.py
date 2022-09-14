@@ -53,6 +53,12 @@ options:
     description: Whether or not to install ssh keys marked as default in addition to any ssh keys specified in this request.
     type: bool
     default: true
+  install_os_to_ram:
+    description:
+      - If true, OS will be installed to and booted from the server's RAM.
+      - On restart RAM OS will be lost and the server will not be reachable unless a custom bootable OS has been deployed.
+    type: bool
+    default: false
   ip_block_configuration_type:
     description:
       - Determines the approach for configuring IP blocks for the server being provisioned.
@@ -262,26 +268,6 @@ EXAMPLES = '''
     debug:
       var: output.servers
 
-# Reset servers
-- name: reset servers
-  hosts: localhost
-  gather_facts: false
-  vars_files:
-    - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
-  tasks:
-  - phoenixnap.bmc.server:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      hostnames: [my-server-red, my-server-blue]
-      ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-      state: reset
-    register: output
-  - name: Print the servers information
-    debug:
-      var: output.servers
-
 # For more examples, check out this helpful tutorial:
 # https://phoenixnap.com/kb/how-to-install-phoenixnap-bmc-ansible-module#htoc-bmc-playbook-examples
 '''
@@ -413,6 +399,138 @@ servers:
             description: Whether or not to show the tag as part of billing and invoices
             type: bool
             sample: true
+          createdBy:
+            description: Who the tag was created by.
+            type: str
+            sample: USER
+      provisionedOn:
+        description: Date and time when server was provisioned.
+        type: str
+        sample: "2021-03-13T20:24:32.491Z"
+      osConfiguration:
+        description: OS specific configuration properties.
+        type: dict
+        contains:
+          windows:
+            description: Windows OS configuration properties.
+            type: dict
+            contains:
+              rdpAllowedIps:
+                description:
+                  - List of IPs allowed for RDP access to Windows OS. Supported in single IP, CIDR and range format.
+                  - When undefined, RDP is disabled. To allow RDP access from any IP use 0.0.0.0/0.
+                  - This will only be returned in response to provisioning a server.
+                type: list
+                elements: str
+                sample: ["172.217.22.14", "10.111.14.40/29", "10.111.14.66 - 10.111.14.71"]
+          rootPassword:
+            description: Password set for user root on an ESXi server which will only be returned in response to provisioning a server.
+            type: str
+            sample: MyP@ssw0rd_01
+          managementUiUrl:
+            description: The URL of the management UI which will only be returned in response to provisioning a server.
+            type: str
+            sample: https://172.217.22.14
+          managementAccessAllowedIps:
+            description:
+              - List of IPs allowed to access the Management UI. Supported in single IP, CIDR and range format
+              - When undefined, Management UI is disabled. This will only be returned in response to provisioning a server.
+            type: list
+            elements: str
+            sample: ["172.217.22.14", "10.111.14.40/29", "10.111.14.66 - 10.111.14.71"]
+          installOsToRam:
+            description:
+              - If true, OS will be installed to and booted from the server's RAM.
+              - On restart RAM OS will be lost and the server will not be reachable unless a custom bootable OS has been deployed.
+            type: bool
+            sample: false
+      networkConfiguration:
+        description: Entire network details of bare metal server.
+        type: dict
+        contains:
+          gatewayAddress:
+            description:
+              - The address of the gateway assigned / to assign to the server.
+              - When used as part of request body, IP address has to be part of private/public network assigned to this server.
+            type: str
+            sample: 182.16.0.145
+          privateNetworkConfiguration:
+            description: Private network details of bare metal server.
+            type: dict
+            contains:
+              configurationType:
+                description: Determines the approach for configuring private network(s) for the server being provisioned.
+                type: str
+                sample: USER_DEFINED
+              privateNetworks:
+                description: The list of private networks this server is member of.
+                type: list
+                elements: dict
+                contains:
+                  id:
+                    description: The network identifier.
+                    type: str
+                    sample: 603f3b2cfcaf050643b89a4b
+                  ips:
+                    description: IPs to configure/configured on the server. Should be null or empty list if DHCP is true.
+                    type: list
+                    elements: str
+                    sample: ["10.1.1.1", "10.1.1.2"]
+                  dhcp:
+                    description: Determines whether DHCP is enabled for this server. Should be false if ips is not an empty list. Not supported for proxmox OS.
+                    type: bool
+                    sample: false
+                  statusDescription:
+                    description: The status of the network.
+                    type: str
+                    sample: assigned
+          ipBlocksConfiguration:
+            description:
+              - The IP blocks to assign to this server. This is an exclusive allocation, i.e. the IP blocks cannot be shared with other servers.
+              - If IpBlocksConfiguration is not defined, the purchase of a new IP block is determined by the networkType field.
+            type: dict
+            contains:
+              configurationType:
+                description: Determines the approach for configuring IP blocks for the server being provisioned.
+                type: str
+                sample: PURCHASE_NEW
+              ipBlocks:
+                description:
+                  - Used to specify the previously purchased IP blocks to assign to this server upon provisioning
+                  - Used alongside the USER_DEFINED configurationType.
+                type: list
+                elements: dict
+                contains:
+                  id:
+                    description: The IP block's ID.
+                    type: str
+                    sample: 60473a6115e34466c9f8f083
+                  vlanId:
+                    description: The VLAN on which this IP block has been configured within the network switch.
+                    type: int
+                    sample: 10
+          publicNetworkConfiguration:
+            description: Public network details of bare metal server.
+            type: dict
+            contains:
+              publicNetworks:
+                description: The list of public networks this server is member of.
+                type: list
+                elements: dict
+                contains:
+                  id:
+                    description: The network identifier.
+                    type: str
+                    sample: 60473c2509268bc77fd06d29
+                  ips:
+                    description: IPs to configure/configured on the server. IPs must be within the network's range.
+                    type: list
+                    elements: str
+                    sample: ["182.16.0.146", "182.16.0.147"]
+                  statusDescription:
+                    description: The status of the assignment to the network.
+                    type: str
+                    sample: assigned
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -570,7 +688,8 @@ def get_api_params(module, server_id, target_state):
                 "windows": {
                     "rdpAllowedIps": module.params['rdp_allowed_ips']
                 },
-                "managementAccessAllowedIps": module.params['management_access_allowed_ips']
+                "managementAccessAllowedIps": module.params['management_access_allowed_ips'],
+                "installOsToRam": module.params['install_os_to_ram']
             },
             "networkConfiguration": {
                 "gatewayAddress": gateway_address,
@@ -664,6 +783,7 @@ def main():
             gateway_address={},
             hostnames=dict(type='list', elements='str'),
             install_default_sshkeys=dict(type='bool', default=True),
+            install_os_to_ram=dict(type='bool', default=False),
             ip_block_configuration_type={},
             ip_block={},
             management_access_allowed_ips=dict(type='list', elements='str'),
