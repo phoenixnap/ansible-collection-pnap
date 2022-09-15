@@ -15,3 +15,7 @@
       client_secret: "{{clientSecret}}"
       hostnames: [my-server-1, my-server-2]
       state: shutdown
+    register: output
+  - name: Print the servers information
+    debug:
+      var: output.servers

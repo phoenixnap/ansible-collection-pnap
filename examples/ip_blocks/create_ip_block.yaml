@@ -9,13 +9,23 @@
   collections:
     - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.ip_address:
+  - phoenixnap.bmc.tag:
+      client_id: "{{clientId}}"
+      client_secret: "{{clientSecret}}"
+      name: Environment
+      description: desc1
+      is_billing_tag: true
+      state: present
+  - phoenixnap.bmc.ip_blocks:
       client_id: "{{clientId}}"
       client_secret: "{{clientSecret}}"
       location: PHX
       cidrBlockSize: /28
+      tags:
+        - name: Environment
+          value: PROD
       state: present
     register: output
   - name: Print the gathered infos
     debug:
-      var: output.ip_addresses
+      var: output.ip_blocks

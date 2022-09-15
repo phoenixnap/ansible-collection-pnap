@@ -28,6 +28,7 @@ CLUSTER_API = 'https://api.phoenixnap.com/solutions/rancher/v1beta/clusters/'
 IP_API = 'https://api.phoenixnap.com/ips/v1/ip-blocks/'
 PRODUCT_API = 'https://api.phoenixnap.com/billing/v1/products/'
 PRODUCT_AVAILABILITY_API = 'https://api.phoenixnap.com/billing/v1/product-availability/'
+STORAGE_NETWORK_API = 'https://api.phoenixnap.com/network-storage/v1/storage-networks/'
 
 
 def set_token_headers(module):
