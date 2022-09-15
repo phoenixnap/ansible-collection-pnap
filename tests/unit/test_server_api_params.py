@@ -90,7 +90,8 @@ class TestApiParams(TestCase):
                     'windows': {
                         'rdpAllowedIps': '1.1.1.1'
                     },
-                    'managementAccessAllowedIps': '1.1.1.1'
+                    'managementAccessAllowedIps': '1.1.1.1',
+                    'installOsToRam': False,
                 },
                 'networkConfiguration': {
                     'gatewayAddress': '182.16.0.145',
@@ -134,4 +135,5 @@ class PseudoModule:
         'ip_block': '11111',
         'delete_ip_blocks': True,
         'public_networks': [],
+        'install_os_to_ram': False,
     }

@@ -18,3 +18,7 @@
       type: s0.d1.medium
       state: present
       rdp_allowed_ips: ["0.0.0.0/0"]
+    register: output
+  - name: Print the servers information
+    debug:
+      var: output.servers

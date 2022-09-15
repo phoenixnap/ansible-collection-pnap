@@ -9,7 +9,7 @@
   collections:
     - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.ip_address:
+  - phoenixnap.bmc.ip_blocks:
       client_id: "{{clientId}}"
       client_secret: "{{clientSecret}}"
       ipBlockId: 6047127fed34ecc3ba8402d2
@@ -17,4 +17,4 @@
     register: output
   - name: Print the gathered infos
     debug:
-      var: output.ip_addresses
+      var: output.ip_blocks
