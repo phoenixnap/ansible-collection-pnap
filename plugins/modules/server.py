@@ -34,6 +34,9 @@ options:
   client_secret:
     description: Client Secret (Application Management)
     type: str
+  cloud_init_user_data:
+    description: User data for the cloud-init configuration in base64 encoding. NoCloud format is supported.
+    type: str
   delete_ip_blocks:
     description: When the state is absent, it determines whether the IP blocks assigned to the server should be deleted or not.
     type: bool
@@ -444,6 +447,13 @@ servers:
               - On restart RAM OS will be lost and the server will not be reachable unless a custom bootable OS has been deployed.
             type: bool
             sample: false
+          cloudInit:
+            description: Cloud-init configuration details.
+            type: dict
+            contains:
+              userData:
+                description: User data for the cloud-init configuration in base64 encoding. NoCloud format is supported.
+                type: str
       networkConfiguration:
         description: Entire network details of bare metal server.
         type: dict
@@ -540,7 +550,7 @@ from ansible_collections.phoenixnap.bmc.plugins.module_utils.pnap import set_tok
 import os
 import json
 import time
-
+from base64 import standard_b64encode
 
 ALLOWED_STATES = ['absent', 'powered-on', 'powered-off', 'present', 'rebooted', 'reset', 'shutdown']
 CHECK_FOR_STATUS_CHANGE = 5
@@ -689,7 +699,8 @@ def get_api_params(module, server_id, target_state):
                     "rdpAllowedIps": module.params['rdp_allowed_ips']
                 },
                 "managementAccessAllowedIps": module.params['management_access_allowed_ips'],
-                "installOsToRam": module.params['install_os_to_ram']
+                "installOsToRam": module.params['install_os_to_ram'],
+                "cloudInit": {"userData": standard_b64encode(module.params['cloud_init_user_data'].encode("utf-8")).decode("utf-8")},
             },
             "networkConfiguration": {
                 "gatewayAddress": gateway_address,
@@ -737,6 +748,7 @@ def prepare_result_present(process_servers, target_state):
 
 
 def servers_action(module, target_state):
+
     changed = False
     set_token_headers(module)
     existing_servers = get_existing_servers(module)
@@ -777,6 +789,7 @@ def main():
         argument_spec=dict(
             client_id=dict(default=os.environ.get('BMC_CLIENT_ID'), no_log=True),
             client_secret=dict(default=os.environ.get('BMC_CLIENT_SECRET'), no_log=True),
+            cloud_init_user_data=dict(no_log=True),
             delete_ip_blocks=dict(type='bool', default=True),
             description={},
             location={},
