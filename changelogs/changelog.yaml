@@ -15,3 +15,10 @@ releases:
       name: storage_network_info
       namespace: ''
     release_date: '2022-09-14'
+  1.7.0:
+    changes:
+      minor_changes:
+      - server - add new parameter cloud_init_user_data
+    fragments:
+    - 002_server_module_cloud_init.yml
+    release_date: '2022-11-01'

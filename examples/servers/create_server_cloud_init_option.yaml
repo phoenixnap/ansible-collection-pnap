@@ -1,0 +1,28 @@
+# All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
+# in location: ~/.pnap/config.yaml and generated SSH key pair in location: ~/.ssh/
+# The file "cloud_init_script" contains an example of cloud init configuration:
+# #!/bin/bash
+# mkdir /root/cloud-init-script-executed
+
+- name: Create server
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ~/.pnap/config.yaml
+  collections:
+    - phoenixnap.bmc
+  tasks:
+  - phoenixnap.bmc.server:
+      client_id: "{{clientId}}"
+      client_secret: "{{clientSecret}}"
+      hostnames: my-server
+      location: PHX
+      os: ubuntu/bionic
+      type: s1.c1.medium
+      ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      cloud_init_user_data: "{{ lookup('file', 'cloud_init_script') }}"
+      state: present
+    register: output
+  - name: Print the servers information
+    debug:
+      var: output.servers

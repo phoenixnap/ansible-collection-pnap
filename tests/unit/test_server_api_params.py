@@ -92,6 +92,9 @@ class TestApiParams(TestCase):
                     },
                     'managementAccessAllowedIps': '1.1.1.1',
                     'installOsToRam': False,
+                    'cloudInit': {
+                        'userData': 'eHh4'
+                    }
                 },
                 'networkConfiguration': {
                     'gatewayAddress': '182.16.0.145',
@@ -136,4 +139,5 @@ class PseudoModule:
         'delete_ip_blocks': True,
         'public_networks': [],
         'install_os_to_ram': False,
+        'cloud_init_user_data': 'xxx'
     }
