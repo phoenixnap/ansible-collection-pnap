@@ -5,6 +5,14 @@ Phoenixnap.Bmc Release Notes
 .. contents:: Topics
 
 
+v1.7.1
+======
+
+Bugfixes
+--------
+
+- server - cloud_init_user_data default value added
+
 v1.7.0
 ======
 

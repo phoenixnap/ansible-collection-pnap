@@ -789,7 +789,7 @@ def main():
         argument_spec=dict(
             client_id=dict(default=os.environ.get('BMC_CLIENT_ID'), no_log=True),
             client_secret=dict(default=os.environ.get('BMC_CLIENT_SECRET'), no_log=True),
-            cloud_init_user_data=dict(no_log=True),
+            cloud_init_user_data=dict(no_log=True, default=''),
             delete_ip_blocks=dict(type='bool', default=True),
             description={},
             location={},
