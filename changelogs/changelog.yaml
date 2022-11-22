@@ -22,3 +22,10 @@ releases:
     fragments:
     - 002_server_module_cloud_init.yml
     release_date: '2022-11-01'
+  1.7.1:
+    changes:
+      bugfixes:
+      - server - cloud_init_user_data default value added
+    fragments:
+    - 003_server_module_cloud_init_default.yml
+    release_date: '2022-11-22'
