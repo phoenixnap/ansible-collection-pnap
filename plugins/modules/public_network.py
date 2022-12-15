@@ -55,6 +55,9 @@ options:
       id:
         type: str
         description: The assigned IP block to the Public Network.
+  vlan_id:
+    description: The VLAN that will be assigned to this network.
+    type: int
   state:
     description: Indicate desired state of the target.
     default: present
@@ -201,7 +204,8 @@ def network_action(module, state):
                 'name': new_network_name,
                 'location': module.params['location'],
                 'description': module.params['description'],
-                'ipBlocks': module.params['ip_blocks']
+                'ipBlocks': module.params['ip_blocks'],
+                'vlanId': module.params['vlan_id'],
             })
             if not module.check_mode:
                 target_network = requests_wrapper(PUBLIC_NETWORK_API, method='POST', data=data).json()
@@ -248,6 +252,7 @@ def main():
                     id={}
                 )
             ),
+            vlan_id=dict(type='int'),
             state=dict(choices=ALLOWED_STATES, default='present')
         ),
         required_if=[["state", "present", ["name", "location"]]],

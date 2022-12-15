@@ -5,6 +5,15 @@ Phoenixnap.Bmc Release Notes
 .. contents:: Topics
 
 
+v1.8.0
+======
+
+Minor Changes
+-------------
+
+- private_network - add new parameter vlan_id
+- public_network - add new parameter vlan_id
+
 v1.7.1
 ======
 
