@@ -54,6 +54,9 @@ options:
   cidr:
     description: IP range associated with this private network in CIDR notation.
     type: str
+  vlan_id:
+    description: The VLAN that will be assigned to this network.
+    type: int
   state:
     description: Indicate desired state of the target.
     default: present
@@ -209,7 +212,8 @@ def private_network_action(module, state):
                 'location': module.params['location'],
                 'locationDefault': module.params['location_default'],
                 'description': module.params['description'],
-                'cidr': module.params['cidr']
+                'cidr': module.params['cidr'],
+                'vlanId': module.params['vlan_id'],
             })
             if not module.check_mode:
                 target_network = requests_wrapper(PRIVATE_NETWORK_API, method='POST', data=data).json()
@@ -252,6 +256,7 @@ def main():
             location={},
             location_default=dict(type='bool', default=False),
             cidr={},
+            vlan_id=dict(type='int'),
             state=dict(choices=ALLOWED_STATES, default='present')
         ),
         required_if=[["state", "present", ["name", "location", "cidr"]]],
