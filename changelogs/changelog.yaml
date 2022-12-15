@@ -29,3 +29,12 @@ releases:
     fragments:
     - 003_server_module_cloud_init_default.yml
     release_date: '2022-11-22'
+  1.8.0:
+    changes:
+      minor_changes:
+      - private_network - add new parameter vlan_id
+      - public_network - add new parameter vlan_id
+    fragments:
+    - 004_private_network_module_vlan_id.yml
+    - 005_public_network_module_vlan_id.yml
+    release_date: '2022-12-15'
