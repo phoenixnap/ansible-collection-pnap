@@ -38,17 +38,23 @@ options:
     description: User data for the cloud-init configuration in base64 encoding. NoCloud format is supported.
     type: str
   delete_ip_blocks:
-    description: When the state is absent, it determines whether the IP blocks assigned to the server should be deleted or not.
+    description: Required when the state is absent, it determines whether the IP blocks assigned to the server should be deleted or not.
     type: bool
-    default: true
   description:
     description: Description of server.
     type: str
   gateway_address:
     description:
       - The address of the gateway assigned / to assign to the server.
-      - When used as part of request body, IP address has to be part of private/public network assigned to this server.
+      - When used as part of request body, IP address has to be part of a private/public network or an IP block assigned to this server.
+      - Gateway address also has to be assigned on an already deployed resource unless the address matches
+        the BMC gateway address in a public network/IP block or the force query parameter is true.
     type: str
+  force:
+    description:
+      - parameter controlling advanced features availability.
+      - Currently applicable for networking. It is advised to use with caution since it might lead to unhealthy setups.
+    type: bool
   location:
     description: Server Location ID. See BMC API for current list - U(https://developers.phoenixnap.com/docs/bmc/1/types/Server).
     type: str
@@ -98,7 +104,9 @@ options:
     default: "USE_OR_CREATE_DEFAULT"
     type: str
   private_network_gateway_address:
-    description: The address of the gateway assigned / to assign to the server.
+    description:
+      - Deprecated in favour of a common gateway address across all networks available under gateway_address.
+      - The address of the gateway assigned / to assign to the server.
     type: str
   private_networks:
     description: The list of private networks this server is member of.
@@ -461,7 +469,9 @@ servers:
           gatewayAddress:
             description:
               - The address of the gateway assigned / to assign to the server.
-              - When used as part of request body, IP address has to be part of private/public network assigned to this server.
+              - When used as part of request body, IP address has to be part of a private/public network or an IP block assigned to this server.
+              - Gateway address also has to be assigned on an already deployed resource unless the address matches
+                the BMC gateway address in a public network/IP block or the force query parameter is true.
             type: str
             sample: 182.16.0.145
           privateNetworkConfiguration:
@@ -656,15 +666,16 @@ def get_api_params(module, server_id, target_state):
         data = {
             "deleteIpBlocks": module.params['delete_ip_blocks']
         }
-    elif(target_state == 'powered-on'):
+
+    elif (target_state == 'powered-on'):
         path = '%s/actions/power-on' % server_id
-    elif(target_state == 'powered-off'):
+    elif (target_state == 'powered-off'):
         path = '%s/actions/power-off' % server_id
-    elif(target_state == 'shutdown'):
+    elif (target_state == 'shutdown'):
         path = '%s/actions/shutdown' % server_id
-    elif(target_state == 'rebooted'):
+    elif (target_state == 'rebooted'):
         path = '%s/actions/reboot' % server_id
-    elif(target_state == 'reset'):
+    elif (target_state == 'reset'):
         path = '%s/actions/reset' % server_id
         data = {
             "installDefaultSshKeys": module.params['install_default_sshkeys'],
@@ -679,8 +690,10 @@ def get_api_params(module, server_id, target_state):
                 }
             }
         }
-    elif(target_state == 'present'):
+    elif (target_state == 'present'):
         path = ''
+        if module.params['force'] is not None:
+            path = '?force=' + str(module.params['force']).lower()
         gateway_address = module.params['gateway_address'] or module.params['private_network_gateway_address']
         data = {
             "description": module.params['description'],
@@ -725,7 +738,7 @@ def get_api_params(module, server_id, target_state):
 
     data = json.dumps(remove_empty_elements(data), sort_keys=True)
     endpoint = SERVER_API + path
-    return{'method': method, 'endpoint': endpoint, 'data': data}
+    return {'method': method, 'endpoint': endpoint, 'data': data}
 
 
 def wait_for_status_change(module, target_list, target_state, first_response):
@@ -777,7 +790,7 @@ def servers_action(module, target_state):
     if target_state == 'present':
         process_servers += present_servers
 
-    return{
+    return {
         'changed': changed,
         'servers': process_servers
     }
@@ -790,8 +803,9 @@ def main():
             client_id=dict(default=os.environ.get('BMC_CLIENT_ID'), no_log=True),
             client_secret=dict(default=os.environ.get('BMC_CLIENT_SECRET'), no_log=True),
             cloud_init_user_data=dict(no_log=True, default=''),
-            delete_ip_blocks=dict(type='bool', default=True),
+            delete_ip_blocks=dict(type='bool'),
             description={},
+            force=dict(type='bool'),
             location={},
             gateway_address={},
             hostnames=dict(type='list', elements='str'),
@@ -837,7 +851,7 @@ def main():
         ),
         mutually_exclusive=[('hostnames', 'server_ids')],
         required_one_of=[('hostnames', 'server_ids')],
-        required_if=[('state', 'present', ['hostnames'])],
+        required_if=[('state', 'present', ['hostnames']), ('state', 'absent', ['delete_ip_blocks'])],
         supports_check_mode=True
     )
 
