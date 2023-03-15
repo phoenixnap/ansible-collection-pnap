@@ -46,7 +46,7 @@ def set_token_headers(module):
         raise Exception('%s' % response.json()['error_description'])
     token = response.json()['access_token']
     REQUEST.headers.update({'Authorization': 'Bearer %s' % token})
-    REQUEST.headers.update({'X-Powered-By': 'BMC-Ansible'})
+    REQUEST.headers.update({'X-Powered-By': 'BMC-Ansible/1.9.0'})
 
 
 def requests_wrapper(endpoint, method='GET', params=None, data=None, module=None, reauth_attempts=3, retries=3):
@@ -80,7 +80,7 @@ def remove_empty_elements(d):
     elif isinstance(d, list):
         return [v for v in (remove_empty_elements(v) for v in d) if not empty(v)]
     else:
-        return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
+        return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v) or k == 'ips'}
 
 
 def check_immutable_arguments(IMMUTABLE_ARGUMENTS, target, module):

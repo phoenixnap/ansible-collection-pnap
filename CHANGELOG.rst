@@ -5,6 +5,15 @@ Phoenixnap.Bmc Release Notes
 .. contents:: Topics
 
 
+v1.9.0
+======
+
+Minor Changes
+-------------
+
+- server - The delete_ip_blocks parameter is required when state is absent
+- server - add new parameter force
+
 v1.8.0
 ======
 
