@@ -38,3 +38,11 @@ releases:
     - 004_private_network_module_vlan_id.yml
     - 005_public_network_module_vlan_id.yml
     release_date: '2022-12-15'
+  1.9.0:
+    changes:
+      minor_changes:
+      - server - The delete_ip_blocks parameter is required when state is absent
+      - server - add new parameter force
+    fragments:
+    - 006_server_module_force.yml
+    release_date: '2023-02-08'

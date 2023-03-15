@@ -288,7 +288,9 @@ servers:
           gatewayAddress:
             description:
               - The address of the gateway assigned / to assign to the server.
-              - When used as part of request body, IP address has to be part of private/public network assigned to this server.
+              - When used as part of request body, IP address has to be part of a private/public network or an IP block assigned to this server.
+              - Gateway address also has to be assigned on an already deployed resource unless the address matches
+                the BMC gateway address in a public network/IP block or the force query parameter is true.
             type: str
             sample: 182.16.0.145
           privateNetworkConfiguration:
@@ -392,7 +394,7 @@ def server_info(module):
         [filter_servers.append(es) for es in servers if es['hostname'] in hostnames]
         servers = filter_servers
 
-    return{
+    return {
         'servers': servers
     }
 

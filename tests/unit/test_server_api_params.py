@@ -121,6 +121,7 @@ class PseudoModule:
         'location': 'PHX',
         'gateway_address': '182.16.0.145',
         'hostname': 'my-server-red',
+        'force': None,
         'install_default_sshkeys': True,
         'ssh_key': 'xxx',
         'ssh_key_ids': '123',
