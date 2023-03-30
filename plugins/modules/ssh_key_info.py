@@ -140,7 +140,7 @@ def ssh_key_info(module):
         [filter_ssh_keys.append(sh) for sh in ssh_keys if sh['name'] in names]
         ssh_keys = filter_ssh_keys
 
-    return{
+    return {
         'ssh_keys': ssh_keys
     }
 

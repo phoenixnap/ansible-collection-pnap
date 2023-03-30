@@ -5,6 +5,23 @@ Phoenixnap.Bmc Release Notes
 .. contents:: Topics
 
 
+v1.10.0
+=======
+
+Minor Changes
+-------------
+
+- ip_block_info - filter by IP Block identifiers
+- private_network - The cidr parameter is no longer required
+- private_network - new parameter force added
+
+New Modules
+-----------
+
+- phoenixnap.bmc.server_ip_block - add/remove an IP block from a server.
+- phoenixnap.bmc.server_private_network - add/remove the server to/from a private network
+- phoenixnap.bmc.server_public_network - add/remove the server to/from a public network
+
 v1.9.0
 ======
 

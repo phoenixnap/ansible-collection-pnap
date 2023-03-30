@@ -168,7 +168,7 @@ def ssh_keys_action(module, state):
     if target_key == 'absent':
         target_key = 'The SSH Key [%s]' % new_key_name + ' is absent'
 
-    return{
+    return {
         'changed': changed,
         'ssh_key': target_key
     }

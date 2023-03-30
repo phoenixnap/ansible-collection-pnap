@@ -138,7 +138,7 @@ def tag_info(module):
         [filter_tags.append(tag) for tag in tags if tag['name'] in names]
         tags = filter_tags
 
-    return{
+    return {
         'tags': tags
     }
 
