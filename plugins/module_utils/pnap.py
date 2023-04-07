@@ -7,6 +7,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 from ansible.module_utils.six import raise_from
 from base64 import standard_b64encode
+import time
 HAS_REQUESTS = True
 try:
     import requests
@@ -30,6 +31,9 @@ PRODUCT_API = 'https://api.phoenixnap.com/billing/v1/products/'
 PRODUCT_AVAILABILITY_API = 'https://api.phoenixnap.com/billing/v1/product-availability/'
 STORAGE_NETWORK_API = 'https://api.phoenixnap.com/network-storage/v1/storage-networks/'
 
+NETWORK_TIMEOUT_STATUS_CHANGE = 180
+CHECK_FOR_NETWORK_STATUS_CHANGE = 5
+
 
 def set_token_headers(module):
     auth_data = "%s:%s" % (module.params["client_id"], module.params["client_secret"])
@@ -46,7 +50,7 @@ def set_token_headers(module):
         raise Exception('%s' % response.json()['error_description'])
     token = response.json()['access_token']
     REQUEST.headers.update({'Authorization': 'Bearer %s' % token})
-    REQUEST.headers.update({'X-Powered-By': 'BMC-Ansible/1.9.0'})
+    REQUEST.headers.update({'X-Powered-By': 'BMC-Ansible/1.10.0'})
 
 
 def requests_wrapper(endpoint, method='GET', params=None, data=None, module=None, reauth_attempts=3, retries=3):
@@ -91,3 +95,13 @@ def check_immutable_arguments(IMMUTABLE_ARGUMENTS, target, module):
                 wrong_parameters.append(key)
     if wrong_parameters:
         raise Exception('The following arguments in the playbook could not be changed: ' + ', '.join(wrong_parameters))
+
+
+def wait_for_network_status_change(server_id, network_id, get_existing_network_method, target_status, module):
+    timeout = time.time() + NETWORK_TIMEOUT_STATUS_CHANGE
+    while timeout > time.time():
+        network = get_existing_network_method(server_id, network_id, module)
+        if network["statusDescription"].lower() == "assigned":
+            return network
+        time.sleep(CHECK_FOR_NETWORK_STATUS_CHANGE)
+    raise Exception('waiting for status %s has expired' % target_status)

@@ -289,7 +289,7 @@ def storage_network_action(module, state):
     if storage_network == 'absent':
         storage_network = 'The storage network [%s]' % new_storage_name + ' is absent'
 
-    return{
+    return {
         'changed': changed,
         'storage_networks': storage_network
     }

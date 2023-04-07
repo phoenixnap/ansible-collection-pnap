@@ -167,7 +167,7 @@ def product_availabilities_info(module):
 
     product_availabilities = requests_wrapper(PRODUCT_AVAILABILITY_API, params=params, module=module).json()
 
-    return{
+    return {
         'product_availabilities': product_availabilities
     }
 

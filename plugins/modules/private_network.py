@@ -57,6 +57,11 @@ options:
   vlan_id:
     description: The VLAN that will be assigned to this network.
     type: int
+  force:
+    description:
+      - parameter controlling advanced features availability.
+      - Currently applicable for networking. It is advised to use with caution since it might lead to unhealthy setups.
+    type: bool
   state:
     description: Indicate desired state of the target.
     default: present
@@ -216,7 +221,8 @@ def private_network_action(module, state):
                 'vlanId': module.params['vlan_id'],
             })
             if not module.check_mode:
-                target_network = requests_wrapper(PRIVATE_NETWORK_API, method='POST', data=data).json()
+                params = {'force': module.params['force']}
+                target_network = requests_wrapper(PRIVATE_NETWORK_API, method='POST', data=data, params=params).json()
 
         else:
             check_immutable_arguments(IMMUTABLE_ARGUMENTS, target_network, module)
@@ -240,7 +246,7 @@ def private_network_action(module, state):
     if target_network == 'absent':
         target_network = 'The network [%s]' % new_network_name + ' is absent'
 
-    return{
+    return {
         'changed': changed,
         'private_networks': target_network
     }
@@ -257,9 +263,10 @@ def main():
             location_default=dict(type='bool', default=False),
             cidr={},
             vlan_id=dict(type='int'),
+            force=dict(type='bool'),
             state=dict(choices=ALLOWED_STATES, default='present')
         ),
-        required_if=[["state", "present", ["name", "location", "cidr"]]],
+        required_if=[["state", "present", ["name", "location"]]],
         supports_check_mode=True
     )
 

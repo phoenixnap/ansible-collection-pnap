@@ -201,7 +201,7 @@ def product_info(module):
 
     products = requests_wrapper(PRODUCT_API, params=params, module=module).json()
 
-    return{
+    return {
         'products': products
     }
 

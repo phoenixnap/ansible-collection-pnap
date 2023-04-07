@@ -509,7 +509,7 @@ def cluster_action(module, target_state):
     if cluster == 'absent':
         cluster = 'The cluster [%s]' % name + ' is absent'
 
-    return{
+    return {
         'changed': changed,
         'clusters': cluster
     }

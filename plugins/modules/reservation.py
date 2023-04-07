@@ -220,7 +220,7 @@ def reservation_action(module, state):
                     reservations = change_autorenew_state(reservations, auto_renew)
                 changed = True
 
-    return{
+    return {
         'changed': changed,
         'reservations': reservations
     }
