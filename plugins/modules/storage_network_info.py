@@ -195,7 +195,7 @@ def network_storage_info(module):
         [filter_storage_networks.append(sn) for sn in storage_networks if sn['name'] in names]
         storage_networks = filter_storage_networks
 
-    return{
+    return {
         'storage_networks': storage_networks
     }
 

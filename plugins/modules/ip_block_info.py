@@ -33,6 +33,10 @@ options:
   client_secret:
     description: Client Secret (Application Management)
     type: str
+  ids:
+    description: Filter by IP Block identifiers.
+    type: list
+    elements: str
 '''
 
 EXAMPLES = '''
@@ -108,8 +112,15 @@ import os
 
 def ip_blocks_info(module):
     set_token_headers(module)
+    ids = module.params['ids']
     ip_blocks = requests_wrapper(IP_API, module=module).json()
-    return{
+
+    if ids:
+        filter_ip_blocks = []
+        [filter_ip_blocks.append(ip) for ip in ip_blocks if ip['id'] in ids]
+        ip_blocks = filter_ip_blocks
+
+    return {
         'ip_blocks': ip_blocks
     }
 
@@ -120,6 +131,7 @@ def main():
         argument_spec=dict(
             client_id=dict(default=os.environ.get('BMC_CLIENT_ID'), no_log=True),
             client_secret=dict(default=os.environ.get('BMC_CLIENT_SECRET'), no_log=True),
+            ids=dict(type='list', elements='str'),
         ),
         supports_check_mode=True,
     )

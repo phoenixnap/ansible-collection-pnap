@@ -139,7 +139,7 @@ def event_info(module):
         'uri': module.params['uri'],
     }
     events = requests_wrapper(EVENT_API, module=module, params=data).json()
-    return{
+    return {
         'events': events
     }
 

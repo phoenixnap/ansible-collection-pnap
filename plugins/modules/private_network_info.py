@@ -169,7 +169,7 @@ def private_network_info(module):
         [filter_private_networks.append(pn) for pn in private_networks if pn['name'] in names]
         private_networks = filter_private_networks
 
-    return{
+    return {
         'private_networks': private_networks
     }
 

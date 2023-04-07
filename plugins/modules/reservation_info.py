@@ -158,7 +158,7 @@ def reservation_info(module):
         'productCategory': module.params['product_category'].upper()
     }
     reservations = requests_wrapper(RESERVATION_API, params=data, module=module).json()
-    return{
+    return {
         'reservations': reservations
     }
 

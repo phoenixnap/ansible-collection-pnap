@@ -160,7 +160,7 @@ def public_network_info(module):
         [filter_networks.append(pn) for pn in public_networks if pn['name'] in names]
         public_networks = filter_networks
 
-    return{
+    return {
         'public_networks': public_networks
     }
 

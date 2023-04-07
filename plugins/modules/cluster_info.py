@@ -232,7 +232,7 @@ import os
 def cluster_info(module):
     set_token_headers(module)
     clusters = requests_wrapper(CLUSTER_API, module=module).json()
-    return{
+    return {
         'clusters': clusters
     }
 

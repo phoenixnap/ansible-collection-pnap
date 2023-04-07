@@ -1,5 +1,24 @@
 ancestor: null
 releases:
+  1.10.0:
+    changes:
+      minor_changes:
+      - ip_block_info - filter by IP Block identifiers
+      - private_network - The cidr parameter is no longer required
+      - private_network - new parameter force added
+    fragments:
+    - 007_server_network_configuration_modules.yml
+    modules:
+    - description: add/remove an IP block from a server.
+      name: server_ip_block
+      namespace: ''
+    - description: add/remove the server to/from a private network
+      name: server_private_network
+      namespace: ''
+    - description: add/remove the server to/from a public network
+      name: server_public_network
+      namespace: ''
+    release_date: '2023-03-30'
   1.6.0:
     changes:
       minor_changes:

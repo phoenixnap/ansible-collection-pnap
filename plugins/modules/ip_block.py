@@ -249,7 +249,7 @@ def ip_blocks_action(module, state):
         else:
             ip_blocks_result = 'The IP Block with Id %s' % module.params['ip_block_id'] + ' is absent.'
 
-    return{
+    return {
         'changed': changed,
         'ip_blocks': ip_blocks_result
     }

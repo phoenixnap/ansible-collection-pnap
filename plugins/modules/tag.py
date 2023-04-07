@@ -191,7 +191,7 @@ def tag_action(module, state):
     if target_tag == 'absent':
         target_tag = 'The tag [%s]' % new_tag_name + ' is absent'
 
-    return{
+    return {
         'changed': changed,
         'tags': target_tag
     }

@@ -231,7 +231,7 @@ def network_action(module, state):
     if target_network == 'absent':
         target_network = 'The network [%s]' % new_network_name + ' is absent'
 
-    return{
+    return {
         'changed': changed,
         'public_networks': target_network
     }

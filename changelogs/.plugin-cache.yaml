@@ -86,6 +86,21 @@ plugins:
       name: server_info
       namespace: ''
       version_added: 0.7.0
+    server_ip_block:
+      description: add/remove an IP block from a server.
+      name: server_ip_block
+      namespace: ''
+      version_added: 1.10.0
+    server_private_network:
+      description: add/remove the server to/from a private network
+      name: server_private_network
+      namespace: ''
+      version_added: 1.10.0
+    server_public_network:
+      description: add/remove the server to/from a public network
+      name: server_public_network
+      namespace: ''
+      version_added: 1.10.0
     ssh_key:
       description: Create/delete SSH key on phoenixNAP Bare Metal Cloud.
       name: ssh_key
@@ -121,4 +136,4 @@ plugins:
   strategy: {}
   test: {}
   vars: {}
-version: 1.9.0
+version: 1.10.0
