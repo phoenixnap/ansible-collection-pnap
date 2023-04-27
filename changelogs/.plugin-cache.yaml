@@ -6,7 +6,6 @@ plugins:
   callback: {}
   cliconf: {}
   connection: {}
-  filter: {}
   httpapi: {}
   inventory: {}
   lookup: {}
@@ -66,6 +65,11 @@ plugins:
       name: public_network_info
       namespace: ''
       version_added: 1.5.0
+    public_network_ip_block:
+      description: add/remove an IP block from a public network.
+      name: public_network_ip_block
+      namespace: ''
+      version_added: 1.11.0
     reservation:
       description: Create reservation on phoenixNAP Bare Metal Cloud.
       name: reservation
@@ -121,6 +125,11 @@ plugins:
       name: storage_network_info
       namespace: ''
       version_added: 1.6.0
+    storage_network_volume:
+      description: add/remove Volume from a Storage Network.
+      name: storage_network_volume
+      namespace: ''
+      version_added: 1.11.0
     tag:
       description: Create/delete tag on phoenixNAP Bare Metal Cloud.
       name: tag
@@ -134,6 +143,5 @@ plugins:
   netconf: {}
   shell: {}
   strategy: {}
-  test: {}
   vars: {}
-version: 1.10.0
+version: 1.11.0

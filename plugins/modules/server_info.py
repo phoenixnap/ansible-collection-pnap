@@ -241,6 +241,35 @@ servers:
         description: OS specific configuration properties.
         type: dict
         contains:
+          netrisController:
+            description: Netris Controller configuration properties.
+            type: dict
+            contains:
+              hostOs:
+                description: Host OS on which the Netris Controller is installed.
+                type: str
+              netrisWebConsoleUrl:
+                description: The URL for the Netris Controller web console. Will only be returned in response to provisioning a server.
+                type: str
+              netrisUserPassword:
+                description:
+                  - Auto-generated password set for user 'netris' in the web console.
+                  - The password is not stored and therefore will only be returned in response to provisioning a server.
+                  - Copy and save it for future reference.
+                type: str
+          netrisSoftgate:
+            description: Netris Softgate configuration properties.
+            type: dict
+            contains:
+              hostOs:
+                description: Host OS on which the Netris Softgate is installed.
+                type: str
+              controllerAddress:
+                description: IP address or hostname through which to reach the Netris Controller.
+                type: str
+              controllerVersion:
+                description: The version of the Netris Controller to connect to.
+                type: str
           windows:
             description: Windows OS configuration properties.
             type: dict
