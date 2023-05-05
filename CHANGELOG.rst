@@ -13,6 +13,7 @@ Minor Changes
 
 - server - add new netris_controller parameter
 - server - add new netris_softgate parameters
+- storage_network - add new parameter client_vlan
 
 New Modules
 -----------
