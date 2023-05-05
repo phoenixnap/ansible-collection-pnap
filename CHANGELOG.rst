@@ -5,6 +5,22 @@ Phoenixnap.Bmc Release Notes
 .. contents:: Topics
 
 
+v1.11.0
+=======
+
+Minor Changes
+-------------
+
+- server - add new netris_controller parameter
+- server - add new netris_softgate parameters
+- storage_network - add new parameter client_vlan
+
+New Modules
+-----------
+
+- phoenixnap.bmc.public_network_ip_block - add/remove an IP block from a public network.
+- phoenixnap.bmc.storage_network_volume - add/remove Volume from a Storage Network.
+
 v1.10.0
 =======
 

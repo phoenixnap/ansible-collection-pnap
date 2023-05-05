@@ -109,7 +109,7 @@ class TestApiParams(TestCase):
                             }
                         ]
                     }
-                }
+                },
             }, sort_keys=True)
         }
         self.assertDictEqual(get_api_params(PseudoModule(), 'my-server-red', 'present'), expected_output)
@@ -140,5 +140,7 @@ class PseudoModule:
         'delete_ip_blocks': True,
         'public_networks': [],
         'install_os_to_ram': False,
-        'cloud_init_user_data': 'xxx'
+        'cloud_init_user_data': 'xxx',
+        'netris_controller': {},
+        'netris_softgate': {},
     }

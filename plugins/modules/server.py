@@ -88,6 +88,24 @@ options:
     description: Define list of IPs allowed to access the Management UI. Supported in single IP, CIDR and range format.
     type: list
     elements: str
+  netris_controller:
+    description: Netris Controller configuration properties.
+    type: dict
+  netris_softgate:
+    description: Netris Softgate configuration properties.
+    type: dict
+    suboptions:
+      controller_address:
+        description: IP address or hostname through which to reach the Netris Controller.
+        type: str
+      controller_version:
+        description: The version of the Netris Controller to connect to.
+        type: str
+      controller_auth_key:
+        description:
+          - The authentication key of the Netris Controller to connect to.
+          - Required for the softgate agent to be able to interact with the Netris Controller.
+        type: str
   network_type:
     description: The type of network configuration for this server
     default: "PUBLIC_AND_PRIVATE"
@@ -422,6 +440,35 @@ servers:
         description: OS specific configuration properties.
         type: dict
         contains:
+          netrisController:
+            description: Netris Controller configuration properties.
+            type: dict
+            contains:
+              hostOs:
+                description: Host OS on which the Netris Controller is installed.
+                type: str
+              netrisWebConsoleUrl:
+                description: The URL for the Netris Controller web console. Will only be returned in response to provisioning a server.
+                type: str
+              netrisUserPassword:
+                description:
+                  - Auto-generated password set for user 'netris' in the web console.
+                  - The password is not stored and therefore will only be returned in response to provisioning a server.
+                  - Copy and save it for future reference.
+                type: str
+          netrisSoftgate:
+            description: Netris Softgate configuration properties.
+            type: dict
+            contains:
+              hostOs:
+                description: Host OS on which the Netris Softgate is installed.
+                type: str
+              controllerAddress:
+                description: IP address or hostname through which to reach the Netris Controller.
+                type: str
+              controllerVersion:
+                description: The version of the Netris Controller to connect to.
+                type: str
           windows:
             description: Windows OS configuration properties.
             type: dict
@@ -695,6 +742,14 @@ def get_api_params(module, server_id, target_state):
         if module.params['force'] is not None:
             path = '?force=' + str(module.params['force']).lower()
         gateway_address = module.params['gateway_address'] or module.params['private_network_gateway_address']
+        netris_softgate = None
+        if module.params['netris_softgate']:
+            netris_softgate = {
+                "controllerAddress": module.params['netris_softgate']['controller_address'],
+                "controllerAuthKey": module.params['netris_softgate']['controller_auth_key'],
+                "controllerVersion": module.params['netris_softgate']['controller_version'],
+            }
+
         data = {
             "description": module.params['description'],
             "location": module.params['location'],
@@ -708,6 +763,8 @@ def get_api_params(module, server_id, target_state):
             "pricingModel": module.params['pricing_model'],
             "type": module.params['type'],
             "osConfiguration": {
+                "netrisController": module.params['netris_controller'],
+                "netrisSoftgate": netris_softgate,
                 "windows": {
                     "rdpAllowedIps": module.params['rdp_allowed_ips']
                 },
@@ -761,7 +818,6 @@ def prepare_result_present(process_servers, target_state):
 
 
 def servers_action(module, target_state):
-
     changed = False
     set_token_headers(module)
     existing_servers = get_existing_servers(module)
@@ -815,6 +871,14 @@ def main():
             ip_block={},
             management_access_allowed_ips=dict(type='list', elements='str'),
             network_type=dict(default='PUBLIC_AND_PRIVATE'),
+            netris_controller=dict(type='dict'),
+            netris_softgate=dict(
+                type='dict',
+                options=dict(
+                    controller_address=dict(type='str'),
+                    controller_version=dict(type='str'),
+                    controller_auth_key=dict(no_log=True)
+                )),
             os={},
             rdp_allowed_ips=dict(type='list', elements='str'),
             reservation_id={},
