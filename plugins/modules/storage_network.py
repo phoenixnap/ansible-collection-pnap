@@ -63,7 +63,10 @@ options:
         type: str
       capacityInGb:
         description: Capacity of Volume in GB.
-        type: str
+        type: int
+  client_vlan:
+    description: Custom Client VLAN that the Storage Network will be set to.
+    type: int
   state:
     description: Indicate desired state of the target.
     default: present
@@ -262,7 +265,8 @@ def storage_network_action(module, state):
                 'name': new_storage_name,
                 'location': module.params['location'],
                 'description': module.params['description'],
-                'volumes': module.params['volumes']
+                'volumes': module.params['volumes'],
+                'clientVlan': module.params['client_vlan'],
             })
             if not module.check_mode:
                 response_create = requests_wrapper(STORAGE_NETWORK_API, method='POST', data=data).json()
@@ -310,8 +314,9 @@ def main():
                     name={},
                     description={},
                     pathSuffix={},
-                    capacityInGb={}
+                    capacityInGb=dict(type='int')
                 )),
+            client_vlan=dict(type='int'),
             state=dict(choices=ALLOWED_STATES, default='present')
         ),
         required_if=[["state", "present", ["name", "location", "volumes"]]],
