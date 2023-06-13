@@ -36,6 +36,16 @@ releases:
       name: storage_network_volume
       namespace: ''
     release_date: '2023-04-27'
+  1.12.0:
+    changes:
+      minor_changes:
+      - ip_block - Delete IP Blocks only if count is defined.
+      - ip_block_info - filter by location, description, state
+      - server - add new parameter storage_configuration
+    fragments:
+    - 010_server_module_storage_configuration.yml
+    - 011_ip_block_module_improvement.yml
+    release_date: '2023-06-13'
   1.6.0:
     changes:
       minor_changes:

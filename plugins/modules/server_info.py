@@ -399,6 +399,20 @@ servers:
                     description: The status of the assignment to the network.
                     type: str
                     sample: assigned
+      storageConfiguration:
+        description: Storage configuration.
+        type: dict
+        contains:
+          rootPartition:
+            description: Root partition configuration.
+            type: dict
+            contains:
+              raid:
+                description: Software RAID configuration.
+                type: str
+              size:
+                description: The size of the root partition in GB. -1 to use all available space.
+                type: int
 '''
 
 from ansible.module_utils.basic import AnsibleModule

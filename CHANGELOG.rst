@@ -5,6 +5,16 @@ Phoenixnap.Bmc Release Notes
 .. contents:: Topics
 
 
+v1.12.0
+=======
+
+Minor Changes
+-------------
+
+- ip_block - Delete IP Blocks only if count is defined.
+- ip_block_info - filter by location, description, state
+- server - add new parameter storage_configuration
+
 v1.11.0
 =======
 
