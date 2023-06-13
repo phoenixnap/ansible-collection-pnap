@@ -37,6 +37,7 @@ options:
   cloud_init_user_data:
     description: User data for the cloud-init configuration in base64 encoding. NoCloud format is supported.
     type: str
+    default: ''
   delete_ip_blocks:
     description: Required when the state is absent, it determines whether the IP blocks assigned to the server should be deleted or not.
     type: bool
@@ -177,6 +178,22 @@ options:
     choices: [absent, present, powered-on, powered-off, rebooted, reset, shutdown]
     default: present
     type: str
+  storage_configuration:
+    description: Storage configuration.
+    type: dict
+    suboptions:
+      rootPartition:
+        description: Root partition configuration.
+        type: dict
+        suboptions:
+          raid:
+            description: Software RAID configuration.
+            type: str
+            default: NO_RAID
+          size:
+            description: The size of the root partition in GB. -1 to use all available space.
+            type: int
+            default: -1
   tags:
     description: Tags to set to server, if any.
     type: list
@@ -598,6 +615,20 @@ servers:
                     description: The status of the assignment to the network.
                     type: str
                     sample: assigned
+      storageConfiguration:
+        description: Storage configuration.
+        type: dict
+        contains:
+          rootPartition:
+            description: Root partition configuration.
+            type: dict
+            contains:
+              raid:
+                description: Software RAID configuration.
+                type: str
+              size:
+                description: The size of the root partition in GB. -1 to use all available space.
+                type: int
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -790,7 +821,8 @@ def get_api_params(module, server_id, target_state):
                     "publicNetworks": module.params['public_networks']
                 }
             },
-            "tags": module.params['tags']
+            "tags": module.params['tags'],
+            "storageConfiguration": module.params['storage_configuration'],
         }
 
     data = json.dumps(remove_empty_elements(data), sort_keys=True)
@@ -904,6 +936,18 @@ def main():
             ssh_key=dict(type='list', elements='str', no_log=True),
             ssh_key_ids=dict(type='list', elements='str', no_log=True),
             state=dict(choices=ALLOWED_STATES, default='present'),
+            storage_configuration=dict(
+                type='dict',
+                options=dict(
+                    rootPartition=dict(
+                        type='dict',
+                        options=dict(
+                            raid=dict(default='NO_RAID'),
+                            size=dict(default=-1, type='int')
+                        )
+                    )
+                )
+            ),
             tags=dict(
                 type="list",
                 elements='dict',

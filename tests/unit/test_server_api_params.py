@@ -143,4 +143,5 @@ class PseudoModule:
         'cloud_init_user_data': 'xxx',
         'netris_controller': {},
         'netris_softgate': {},
+        'storage_configuration': {},
     }

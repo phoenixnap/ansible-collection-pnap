@@ -16,3 +16,22 @@
   - name: Print the gathered infos
     debug:
       var: output.ip_blocks
+
+- name: List IP blocks | Filter by location
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ~/.pnap/config.yaml
+  collections:
+    - phoenixnap.bmc
+  tasks:
+  - phoenixnap.bmc.ip_blocks_info:
+      client_id: "{{clientId}}"
+      client_secret: "{{clientSecret}}"
+      location:
+        - PHX
+        - ASH
+    register: output
+  - name: Print the gathered infos
+    debug:
+      var: output.ip_blocks

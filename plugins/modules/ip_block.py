@@ -37,11 +37,12 @@ options:
     description: Client Secret (Application Management)
     type: str
   count:
-    description: xx
+    description:
+      - Specifies the number of IP Blocks.
+      - Defined value allow IP blocks to be deleted if they are not used
     type: int
-    default: 1
   description:
-    description: The description of the IP Block.
+    description: The description of the IP Block. Using ip_block_id, it can be edited later.
     type: str
   location:
     description: IP Block location ID.
@@ -52,6 +53,17 @@ options:
   ip_block_id:
     description: The IP Block identifier.
     type: str
+  tags:
+    description: Tags to set to the ip-block.
+    type: list
+    elements: dict
+    suboptions:
+      name:
+        type: str
+        description: The name of the tag.
+      value:
+        type: str
+        description: The value of the tag assigned to the resource.
   state:
     description: Indicate desired state of the target.
     default: present
@@ -181,13 +193,14 @@ def get_matched_ip_blocks(existing_ips, cidr_block_size, location, count):
     return match_ips, count
 
 
-def create_ip_blocks(cidr_block_size, location, description, count, module):
+def create_ip_blocks(cidr_block_size, location, description, tags, count, module):
     ip_blocks_result = []
     if not module.check_mode:
         data = json.dumps({
             'cidrBlockSize': cidr_block_size,
             'location': location,
-            'description': description
+            'description': description,
+            'tags': tags,
         })
         for __ in range(count):
             ip_blocks_result.append(requests_wrapper(IP_API, method='POST', data=data).json())
@@ -218,25 +231,38 @@ def delete_ip_blocks(match_ips, count, module, changed):
 def ip_blocks_action(module, state):
     set_token_headers(module)
     changed = False
-    count = module.params['count']
+    count = 1 if module.params['count'] is None else module.params['count']
     if count and count < 1:
         raise Exception('The count cannot be less than 0')
     cidr_block_size = module.params['cidr_block_size']
     location = module.params['location']
     description = module.params['description']
+    tags = module.params['tags']
+    ip_block_id = module.params['ip_block_id']
     existing_ips = get_existing_ip_blocks(module)
     ip_blocks_result = []
 
     if state == 'present':
-        match_ips, count = get_matched_ip_blocks(existing_ips, cidr_block_size, location, count)
-        if count > 0:
-            changed = True
-            ip_blocks_result = create_ip_blocks(cidr_block_size, location, description, count, module)
-        elif count == 0:
-            ip_blocks_result = match_ips
+        if ip_block_id:
+            ip_blocks_result = requests_wrapper(IP_API + ip_block_id).json()
+            if description:
+                if ip_blocks_result.get('description') != description:
+                    changed = True
+                    if not module.check_mode:
+                        data = json.dumps({
+                            'description': description
+                        })
+                        ip_blocks_result = requests_wrapper(IP_API + ip_block_id, method='PATCH', data=data).json()
         else:
-            ids = find_deletion_candidates(match_ips, abs(count))
-            ip_blocks_result, changed = delete_ip_blocks(ids, abs(count), module, changed)
+            match_ips, count = get_matched_ip_blocks(existing_ips, cidr_block_size, location, count)
+            if count > 0:
+                changed = True
+                ip_blocks_result = create_ip_blocks(cidr_block_size, location, description, tags, count, module)
+            elif count == 0 or module.params['count'] is None:
+                ip_blocks_result = match_ips
+            else:
+                ids = find_deletion_candidates(match_ips, abs(count))
+                ip_blocks_result, changed = delete_ip_blocks(ids, abs(count), module, changed)
 
     if state == 'absent':
         count = 1
@@ -264,11 +290,19 @@ def main():
             location={},
             ip_block_id={},
             description={},
-            count=dict(type='int', default=1),
+            count=dict(type='int'),
+            tags=dict(
+                type="list",
+                elements='dict',
+                options=dict(
+                    name={},
+                    value={}
+                )
+            ),
             state=dict(choices=ALLOWED_STATES, default='present')
         ),
+        mutually_exclusive=[('count', 'ip_block_id')],
         required_if=[
-            ["state", "present", ["cidr_block_size", "location"]],
             ["state", "absent", ["ip_block_id"]]
         ],
         supports_check_mode=True
