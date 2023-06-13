@@ -33,8 +33,21 @@ options:
   client_secret:
     description: Client Secret (Application Management)
     type: str
-  ids:
+  ip_block_id:
     description: Filter by IP Block identifiers.
+    type: list
+    elements: str
+    aliases: ['ids']
+  description:
+    description: Filter by IP Block description.
+    type: list
+    elements: str
+  location:
+    description: Filter by IP Block location.
+    type: list
+    elements: str
+  status:
+    description: Filter by IP Block status.
     type: list
     elements: str
 '''
@@ -112,13 +125,22 @@ import os
 
 def ip_blocks_info(module):
     set_token_headers(module)
-    ids = module.params['ids']
+    ip_block_id = module.params['ip_block_id']
+    description = module.params['description']
+    location = module.params['location']
+    status = module.params['status']
     ip_blocks = requests_wrapper(IP_API, module=module).json()
 
-    if ids:
-        filter_ip_blocks = []
-        [filter_ip_blocks.append(ip) for ip in ip_blocks if ip['id'] in ids]
-        ip_blocks = filter_ip_blocks
+    if ip_block_id:
+        ip_blocks = [ip for ip in ip_blocks if ip['id'] in ip_block_id]
+    if description:
+        ip_blocks = [ip for ip in ip_blocks if ip['description'] in description]
+    if location:
+        location = [loc.upper() for loc in location]
+        ip_blocks = [ip for ip in ip_blocks if ip['location'].upper() in location]
+    if status:
+        status = [s.upper() for s in status]
+        ip_blocks = [ip for ip in ip_blocks if ip['status'].upper() in status]
 
     return {
         'ip_blocks': ip_blocks
@@ -131,7 +153,10 @@ def main():
         argument_spec=dict(
             client_id=dict(default=os.environ.get('BMC_CLIENT_ID'), no_log=True),
             client_secret=dict(default=os.environ.get('BMC_CLIENT_SECRET'), no_log=True),
-            ids=dict(type='list', elements='str'),
+            location=dict(type='list', elements='str'),
+            description=dict(type='list', elements='str'),
+            status=dict(type='list', elements='str'),
+            ip_block_id=dict(type='list', elements='str', aliases=['ids']),
         ),
         supports_check_mode=True,
     )
