@@ -5,6 +5,14 @@ Phoenixnap.Bmc Release Notes
 .. contents:: Topics
 
 
+v1.13.0
+=======
+
+Minor Changes
+-------------
+
+- ip_block_info - add new parameter cidr_block_size
+
 v1.12.0
 =======
 
