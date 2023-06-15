@@ -50,6 +50,10 @@ options:
     description: Filter by IP Block status.
     type: list
     elements: str
+  cidr_block_size:
+    description: Filter by IP CIDR Block Size.
+    type: list
+    elements: str
 '''
 
 EXAMPLES = '''
@@ -129,18 +133,21 @@ def ip_blocks_info(module):
     description = module.params['description']
     location = module.params['location']
     status = module.params['status']
+    cidr_block_size = module.params['cidr_block_size']
     ip_blocks = requests_wrapper(IP_API, module=module).json()
 
     if ip_block_id:
-        ip_blocks = [ip for ip in ip_blocks if ip['id'] in ip_block_id]
+        ip_blocks = [ip for ip in ip_blocks if ip.get('id') in ip_block_id]
     if description:
-        ip_blocks = [ip for ip in ip_blocks if ip['description'] in description]
+        ip_blocks = [ip for ip in ip_blocks if ip.get('description') in description]
     if location:
         location = [loc.upper() for loc in location]
-        ip_blocks = [ip for ip in ip_blocks if ip['location'].upper() in location]
+        ip_blocks = [ip for ip in ip_blocks if ip.get('location').upper() in location]
     if status:
         status = [s.upper() for s in status]
-        ip_blocks = [ip for ip in ip_blocks if ip['status'].upper() in status]
+        ip_blocks = [ip for ip in ip_blocks if ip.get('status').upper() in status]
+    if cidr_block_size:
+        ip_blocks = [ip for ip in ip_blocks if ip.get('cidrBlockSize').upper() in cidr_block_size]
 
     return {
         'ip_blocks': ip_blocks
@@ -156,6 +163,7 @@ def main():
             location=dict(type='list', elements='str'),
             description=dict(type='list', elements='str'),
             status=dict(type='list', elements='str'),
+            cidr_block_size=dict(type='list', elements='str'),
             ip_block_id=dict(type='list', elements='str', aliases=['ids']),
         ),
         supports_check_mode=True,
