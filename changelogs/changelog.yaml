@@ -46,6 +46,13 @@ releases:
     - 010_server_module_storage_configuration.yml
     - 011_ip_block_module_improvement.yml
     release_date: '2023-06-13'
+  1.13.0:
+    changes:
+      minor_changes:
+      - ip_block_info - add new parameter cidr_block_size
+    fragments:
+    - 012_ip_block_info_cidr.yml
+    release_date: '2023-06-15'
   1.6.0:
     changes:
       minor_changes:
