@@ -1,22 +1,21 @@
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-- name: List all public networks
+- name: Example
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.public_network_info:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      #filter by location
-      #location: PHX
-      #filter by names
-      #names: [network1, network2] 
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.public_networks
+    - name: List all public networks
+      phoenixnap.bmc.public_network_info:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        # filter by location
+        # location: PHX
+        # filter by names
+        # names: [network1, network2]
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.public_networks

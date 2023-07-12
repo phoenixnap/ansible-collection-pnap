@@ -2,24 +2,23 @@
 # in location: ~/.pnap/config.yaml
 # and generated SSH key pair in location: ~/.ssh/
 
-- name: Create two ubuntu servers
+- name: Example
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.server:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      hostnames: [my-server-1, my-server-2]
-      location: PHX
-      os: ubuntu/bionic
-      type: s1.c1.medium
-      ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-      state: present
-    register: output
-  - name: Print the servers information
-    debug:
-      var: output.servers
+    - name: Create two ubuntu servers
+      phoenixnap.bmc.server:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        hostnames: [my-server-1, my-server-2]
+        location: PHX
+        os: ubuntu/bionic
+        type: s1.c1.medium
+        ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        state: present
+      register: output
+    - name: Print the servers information
+      ansible.builtin.debug:
+        var: output.servers
