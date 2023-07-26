@@ -26,4 +26,3 @@ servers:
       location: PHX
       os: windows/srv2019std
       rdp_allowed_ips: ["0.0.0.0/0"]
-  

@@ -6,15 +6,14 @@
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.public_network:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      name: Initial public network
-      state: absent
-    register: output
-  - name: Print the networks information
-    debug:
-      var: output.public_networks
+    - name: Delete public network
+      phoenixnap.bmc.public_network:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        name: Initial public network
+        state: absent
+      register: output
+    - name: Print the networks information
+      ansible.builtin.debug:
+        var: output.public_networks

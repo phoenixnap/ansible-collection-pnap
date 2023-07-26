@@ -5,19 +5,17 @@
 # Playbook creates servers based on the inventory.yaml file.
 # command: ansible-playbook create_servers_parallel.yaml -i inventory.yaml
 
-- name: Create servers in parallel
+- name: Example
   hosts: servers
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-    - name: create server
+    - name: Create servers in parallel
       delegate_to: localhost
       phoenixnap.bmc.server:
-        client_id: "{{clientId}}"
-        client_secret: "{{clientSecret}}"
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
         hostnames: "{{ inventory_hostname }}"
         location: "{{ hostvars[inventory_hostname].location }}"
         os: "{{ hostvars[inventory_hostname].os }}"
@@ -25,7 +23,7 @@
         description: "{{ hostvars[inventory_hostname].description }}"
         install_default_sshkeys: "{{ hostvars[inventory_hostname].install_default_sshkeys }}"
         ssh_key: "{{ hostvars[inventory_hostname].ssh_key }}"
-        ssh_key_ids:  "{{ hostvars[inventory_hostname].ssh_key_ids }}"
+        ssh_key_ids: "{{ hostvars[inventory_hostname].ssh_key_ids }}"
         reservation_id: "{{ hostvars[inventory_hostname].reservation_id }}"
         pricing_model: "{{ hostvars[inventory_hostname].pricing_model }}"
         network_type: "{{ hostvars[inventory_hostname].network_type }}"
@@ -33,6 +31,6 @@
         management_access_allowed_ips: "{{ hostvars[inventory_hostname].management_access_allowed_ips }}"
         state: present
       register: output
-    - name: print results
-      debug:
+    - name: Print results
+      ansible.builtin.debug:
         var: output

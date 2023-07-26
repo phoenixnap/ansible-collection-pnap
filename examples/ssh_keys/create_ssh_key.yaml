@@ -1,18 +1,21 @@
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-- name: Create new SSH Key for account
+- name: Example
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.ssh_key:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      name: sshkey-name-01
-      ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-      default: true
-      state: present
+    - name: Create new SSH Key for account
+      phoenixnap.bmc.ssh_key:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        name: sshkey-name-01
+        ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        default: true
+        state: present
+        register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.ssh_keys

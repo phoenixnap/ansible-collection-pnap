@@ -5,6 +5,16 @@ Phoenixnap.Bmc Release Notes
 .. contents:: Topics
 
 
+v1.14.0
+=======
+
+Minor Changes
+-------------
+
+- ip_block - multiple descriptions create multiple ip blocks
+- storage_network - volumes parameter has new parameter tags added
+- storage_network_info - volumes parameter has new parameter tags added
+
 v1.13.0
 =======
 

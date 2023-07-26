@@ -1,27 +1,26 @@
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-- name: Create new cluster for account
+- name: Example
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.cluster:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      location: PHX
-      name: mycluster
-      description: mydescritpion
-      node_pool_name: mypool
-      node_server_type: s1.c1.small
-      node_pool_count: 1
-      node_install_default_keys: false
-      node_key_ids: 6xex7xbx7xex1x4x3xfxex3x, 6yfy6y4yby6ydy2y4ycy2ybyXyX
-      state: present
-    register: output
-  - name: Print the cluster information
-    debug:
-      var: output.clusters
+    - name: Create new cluster for account
+      phoenixnap.bmc.cluster:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        location: PHX
+        name: mycluster
+        description: mydescritpion
+        node_pool_name: mypool
+        node_server_type: s1.c1.small
+        node_pool_count: 1
+        node_install_default_keys: false
+        node_key_ids: 6xex7xbx7xex1x4x3xfxex3x, 6yfy6y4yby6ydy2y4ycy2ybyXyX
+        state: present
+      register: output
+    - name: Print the cluster information
+      ansible.builtin.debug:
+        var: output.clusters

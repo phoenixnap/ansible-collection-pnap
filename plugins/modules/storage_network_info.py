@@ -173,6 +173,25 @@ storage_networks:
           permissions:
             description: Permissions for a volume.
             type: dict
+          tags:
+            description: The tags assigned if any.
+            type: list
+            contains:
+              id:
+                description: The unique id of the tag.
+                type: str
+              name:
+                description: The name of the tag.
+                type: str
+              value:
+                description: The value of the tag assigned to the resource.
+                type: str
+              isBillingTag:
+                description: Whether or not to show the tag as part of billing and invoices.
+                type: bool
+              createdBy:
+                description: Who the tag was created by.
+                type: str
 '''
 
 from ansible.module_utils.basic import AnsibleModule

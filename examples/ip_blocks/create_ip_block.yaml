@@ -1,31 +1,31 @@
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-- name: Request an IP Block.
+- name: Example
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.tag:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      name: Environment
-      description: desc1
-      is_billing_tag: true
-      state: present
-  - phoenixnap.bmc.ip_blocks:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      location: PHX
-      cidrBlockSize: /28
-      tags:
-        - name: Environment
-          value: PROD
-      state: present
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.ip_blocks
+    - name: Create a Tag
+      phoenixnap.bmc.tag:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        name: Environment
+        description: desc1
+        is_billing_tag: true
+        state: present
+    - name: Request an IP Block.
+      phoenixnap.bmc.ip_block:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        location: PHX
+        cidr_block_size: /28
+        tags:
+          - name: Environment
+            value: PROD
+        state: present
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.ip_blocks

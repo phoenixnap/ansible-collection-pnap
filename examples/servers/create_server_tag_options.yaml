@@ -3,17 +3,16 @@
 # and generated SSH key pair in location: ~/.ssh/
 # In addition, this example assumes that there are already tags named "Environment" and "Department".
 
-- name: Create new server | network example
+- name: Example
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.server:
-        client_id: "{{clientId}}"
-        client_secret: "{{clientSecret}}"
+    - name: Create new server | tags example
+      phoenixnap.bmc.server:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
         hostnames: my-server-1
         description: My custom server 1
         location: PHX
@@ -27,7 +26,7 @@
             value: Marketing
         ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
         state: present
-    register: output
-  - name: Print the servers information
-    debug:
-      var: output.servers
+      register: output
+    - name: Print the servers information
+      ansible.builtin.debug:
+        var: output.servers

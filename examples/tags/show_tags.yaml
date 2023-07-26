@@ -6,13 +6,12 @@
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.tag_info:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.tags
+    - name: List all tags
+      phoenixnap.bmc.tag_info:
+        client_id: "{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.tags

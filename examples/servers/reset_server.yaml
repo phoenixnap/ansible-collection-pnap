@@ -2,17 +2,19 @@
 # in location: ~/.pnap/config.yaml
 # and generated SSH key pair in location: ~/.ssh/
 
-- name: reset ubuntu server
+- name: Example
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.server:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      hostnames: my-server-1
-      ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-      state: reset
+    - name: Reset ubuntu server
+      phoenixnap.bmc.server:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        hostnames: my-server-1
+        ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        state: reset
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.servers
