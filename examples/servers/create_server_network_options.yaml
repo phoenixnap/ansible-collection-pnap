@@ -2,17 +2,16 @@
 # in location: ~/.pnap/config.yaml
 # and generated SSH key pair in location: ~/.ssh/
 
-- name: Create new server | network example
+- name: Example
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.server:
-        client_id: "{{clientId}}"
-        client_secret: "{{clientSecret}}"
+    - name: Create new server | network example
+      phoenixnap.bmc.server:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
         hostnames: my-server-1
         description: My custom server 1
         location: PHX
@@ -20,7 +19,7 @@
         type: s0.d1.medium
         gateway_address: 182.16.0.145
         private_network_configuration_type: USER_DEFINED
-        private_networks: 
+        private_networks:
           - id: 60f81608e2f4665962b214db
             ips: [10.0.0.13 - 10.0.0.17]
             dhcp: false
@@ -32,7 +31,7 @@
             ips: [182.16.0.146, 182.16.0.147]
         ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
         state: present
-    register: output
-  - name: Print the servers information
-    debug:
-      var: output.servers
+      register: output
+    - name: Print the servers information
+      ansible.builtin.debug:
+        var: output.servers

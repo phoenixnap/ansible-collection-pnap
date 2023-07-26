@@ -64,6 +64,17 @@ options:
       capacityInGb:
         description: Capacity of Volume in GB.
         type: int
+      tags:
+        description: Tag request to assign to resource.
+        type: list
+        elements: dict
+        suboptions:
+          name:
+            description: The name of the tag.
+            type: str
+          value:
+            description: The value of the tag assigned to the resource.
+            type: str
   client_vlan:
     description: Custom Client VLAN that the Storage Network will be set to.
     type: int
@@ -215,6 +226,25 @@ storage_networks:
           permissions:
             description: Permissions for a volume.
             type: dict
+          tags:
+            description: The tags assigned if any.
+            type: list
+            contains:
+              id:
+                description: The unique id of the tag.
+                type: str
+              name:
+                description: The name of the tag.
+                type: str
+              value:
+                description: The value of the tag assigned to the resource.
+                type: str
+              isBillingTag:
+                description: Whether or not to show the tag as part of billing and invoices.
+                type: bool
+              createdBy:
+                description: Who the tag was created by.
+                type: str
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -314,7 +344,8 @@ def main():
                     name={},
                     description={},
                     pathSuffix={},
-                    capacityInGb=dict(type='int')
+                    capacityInGb=dict(type='int'),
+                    tags=dict(type="list", elements='dict', options=dict(name={}, value={}))
                 )),
             client_vlan=dict(type='int'),
             state=dict(choices=ALLOWED_STATES, default='present')

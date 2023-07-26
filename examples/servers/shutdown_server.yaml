@@ -2,20 +2,19 @@
 # in location: ~/.pnap/config.yaml
 # Playbook can also be used for states: absent, powered-on, powered-off, rebooted
 
-- name: shutdown servers
+- name: Example
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.server:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      hostnames: [my-server-1, my-server-2]
-      state: shutdown
-    register: output
-  - name: Print the servers information
-    debug:
-      var: output.servers
+    - name: Shutdown servers
+      phoenixnap.bmc.server:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        hostnames: [my-server-1, my-server-2]
+        state: shutdown
+      register: output
+    - name: Print the servers information
+      ansible.builtin.debug:
+        var: output.servers
