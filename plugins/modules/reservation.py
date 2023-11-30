@@ -55,27 +55,23 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# Create a reservation
-
 - name: Create new reservation
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.reservation:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      sku: XXX-XXX-XXX
-      auto_renew: true
-      state: present
-    register: output
-  - name: Print the reservation information
-    debug:
-      var: output.reservations
-
+    - name: Create a reservation
+      phoenixnap.bmc.reservation:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        sku: XXX-XXX-XXX
+        auto_renew: true
+        state: present
+      register: output
+    - name: Print the reservation information
+      ansible.builtin.debug:
+        var: output.reservations
 '''
 
 RETURN = '''

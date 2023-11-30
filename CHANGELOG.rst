@@ -5,6 +5,20 @@ Phoenixnap.Bmc Release Notes
 .. contents:: Topics
 
 
+v1.15.0
+=======
+
+Minor Changes
+-------------
+
+- The documentation for modules has been updated to meet the Ansible lint requirements
+
+New Modules
+-----------
+
+- phoenixnap.bmc.rated_usage_info - Retrieves all rated usage for given time period.
+- phoenixnap.bmc.server_reserve - reserve specific server.
+
 v1.14.0
 =======
 

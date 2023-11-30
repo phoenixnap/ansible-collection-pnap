@@ -215,43 +215,37 @@ EXAMPLES = '''
 # in location: ~/.pnap/config.yaml
 # and generated SSH key pair in location: ~/.ssh/
 
-# Create server
-
 - name: Create new server for account
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.server:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      hostnames: [my-server-red, my-server-blue]
-      location: PHX
-      os: ubuntu/bionic
-      type: s1.c1.medium
-      state: present
-      ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-    register: output
-  - name: Print the servers information
-    debug:
-      var: output.servers
-
-# Create server | private network example
+    - name: Create server
+      phoenixnap.bmc.server:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        hostnames: [my-server-red, my-server-blue]
+        location: PHX
+        os: ubuntu/bionic
+        type: s1.c1.medium
+        state: present
+        ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      register: output
+    - name: Print the servers information
+      ansible.builtin.debug:
+        var: output.servers
 
 - name: Create new server | private network example
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.server:
-        client_id: "{{clientId}}"
-        client_secret: "{{clientSecret}}"
+    - name: Create server | private network example
+      phoenixnap.bmc.server:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
         hostnames: server-red
         description: custom description
         location: PHX
@@ -266,53 +260,46 @@ EXAMPLES = '''
             ips: [10.0.0.11, 10.0.0.12]
             dhcp: false
         state: present
-    register: output
-  - name: Print the servers information
-    debug:
-      var: output.servers
+      register: output
+    - name: Print the servers information
+      ansible.builtin.debug:
+        var: output.servers
 
-# Power on servers
-
-- name: power on servers
+- name: Power on servers
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.server:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      hostnames: [my-server-red, my-server-blue]
-      state: powered-on
-    register: output
-  - name: Print the servers information
-    debug:
-      var: output.servers
+    - name: Power on servers
+      phoenixnap.bmc.server:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        hostnames: [my-server-red, my-server-blue]
+        state: powered-on
+      register: output
+    - name: Print the servers information
+      ansible.builtin.debug:
+        var: output.servers
 
-# Shutdown servers
-# use server_ids as server identifier
-
-- name: shutdown servers
+- name: Shutdown servers
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.server:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      server_ids:
-        - e6afba51-7de8-4080-83ab-0f9155706xxx
-        - e6afBa51-7dg8-4380-8sab-0f9155705xxx
-      state: shutdown
-    register: output
-  - name: Print the servers information
-    debug:
-      var: output.servers
+    - name: Shutdown servers
+      phoenixnap.bmc.server:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        server_ids:
+          - e6afba51-7de8-4080-83ab-0f9155706xxx
+          - e6afBa51-7dg8-4380-8sab-0f9155705xxx
+        state: shutdown
+      register: output
+    - name: Print the servers information
+      ansible.builtin.debug:
+        var: output.servers
 
 # For more examples, check out this helpful tutorial:
 # https://phoenixnap.com/kb/how-to-install-phoenixnap-bmc-ansible-module#htoc-bmc-playbook-examples
@@ -629,6 +616,14 @@ servers:
               size:
                 description: The size of the root partition in GB. -1 to use all available space.
                 type: int
+      supersededBy:
+        description: Unique identifier of the server to which the reservation has been
+        type: str
+        sample: "64a539b8d9c2c9ba8424ca31"
+      supersedes:
+        description: Unique identifier of the server from which the reservation has been transferred.
+        type: str
+        sample: "76915b5c85121d411f26e92f"
 '''
 
 from ansible.module_utils.basic import AnsibleModule

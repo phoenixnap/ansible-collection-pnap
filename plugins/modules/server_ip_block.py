@@ -61,49 +61,42 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# Add an IP block to server.
-
 - name: Add an IP block to server.
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.server_ip_block:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      server_id: e6afba51-7de8-4080-83ab-0f915570659c
-      ip_block_id: 60473a6115e34466c9f8f083
-      state: present
-    register: output
-  - name: Print the server ip block information
-    debug:
-      var: output.server_ip_block
-
-# Remove an IP block from server.
+    - name: Add an IP block to server.
+      phoenixnap.bmc.server_ip_block:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        server_id: e6afba51-7de8-4080-83ab-0f915570659c
+        ip_block_id: 60473a6115e34466c9f8f083
+        state: present
+      register: output
+    - name: Print the server ip block information
+      ansible.builtin.debug:
+        var: output.server_ip_block
 
 - name: Remove an IP block from server.
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.server_ip_block:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      server_id: e6afba51-7de8-4080-83ab-0f915570659c
-      ip_block_id: 60473a6115e34466c9f8f083
-      delete_ip_blocks: True
-      state: absent
-    register: output
-  - name: Print the server ip block information
-    debug:
-      var: output.server_ip_block
-
+    - name: Remove an IP block from server.
+      phoenixnap.bmc.server_ip_block:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        server_id: e6afba51-7de8-4080-83ab-0f915570659c
+        ip_block_id: 60473a6115e34466c9f8f083
+        delete_ip_blocks: true
+        state: absent
+      register: output
+    - name: Print the server ip block information
+      ansible.builtin.debug:
+        var: output.server_ip_block
 '''
 
 RETURN = '''

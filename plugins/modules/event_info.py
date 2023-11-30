@@ -60,29 +60,26 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# Retrieve the event logs for given time period
 - name: Retrieve the event logs
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.event_info:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      from_date: "2021-12-01T16:24:57.123Z"
-      to_date: "2021-12-02T16:24:57.123Z"
-      limit: 10
-      order: ASC
-      username: user@domen.com
-      verb: POST
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.events
-
+    - name: Retrieve the event logs for given time period
+      phoenixnap.bmc.event_info:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        from_date: "2021-12-01T16:24:57.123Z"
+        to_date: "2021-12-02T16:24:57.123Z"
+        limit: 10
+        order: ASC
+        username: user@domen.com
+        verb: POST
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.events
 '''
 
 RETURN = '''

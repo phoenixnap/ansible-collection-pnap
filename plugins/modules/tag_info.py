@@ -43,41 +43,36 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# List all tags information for account
 - name: List all tags
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.tag_info:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.tags
+    - name: List all tags information for account
+      phoenixnap.bmc.tag_info:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.tags
 
-# List tags information based on the specified names
 - name: List the tag details
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.network_info:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
+    - name: List tags information based on the specified names
+      phoenixnap.bmc.network_info:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
       names: [Environment]
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.tags
-
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.tags
 '''
 
 RETURN = '''

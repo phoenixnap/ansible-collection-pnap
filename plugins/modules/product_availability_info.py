@@ -64,44 +64,39 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# Information about all available products
 - name: Information about all products
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.product_availability_info:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.product_availabilities
+    - name: Information about all available products
+      phoenixnap.bmc.product_availability_info:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.product_availabilities
 
-# Information about all available server products at a specific location
 - name: Information about all server products at the Phoenix location
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.product_availability_info:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      product_category:
-        - SERVER
-      location:
-        - PHX
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.product_availabilities
-
+    - name: Information about all available server products at a specific location
+      phoenixnap.bmc.product_availability_info:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        product_category:
+          - SERVER
+        location:
+          - PHX
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.product_availabilities
 '''
 
 RETURN = '''

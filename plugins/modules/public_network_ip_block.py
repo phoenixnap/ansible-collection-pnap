@@ -57,48 +57,41 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# Add an IP block to public network.
-
 - name: Add an IP block to public network.
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.public_network_ip_block:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      public_network_id: e6afba51-7de8-4080-83ab-0f915570659c
-      ip_block_id: 60473a6115e34466c9f8f083
-      state: present
-    register: output
-  - name: Print the public network information
-    debug:
-      var: output.public_network_ip_block
-
-# Remove an IP block from public network.
+    - name: Add an IP block to public network.
+      phoenixnap.bmc.public_network_ip_block:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        public_network_id: e6afba51-7de8-4080-83ab-0f915570659c
+        ip_block_id: 60473a6115e34466c9f8f083
+        state: present
+      register: output
+    - name: Print the public network information
+      ansible.builtin.debug:
+        var: output.public_network_ip_block
 
 - name: Remove an IP block from public network.
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.public_network_ip_block:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      public_network_id: e6afba51-7de8-4080-83ab-0f915570659c
-      ip_block_id: 60473a6115e34466c9f8f083
-      state: absent
-    register: output
-  - name: Print the public network information
-    debug:
-      var: output.public_network_ip_block
-
+    - name: Remove an IP block from public network.
+      phoenixnap.bmc.public_network_ip_block:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        public_network_id: e6afba51-7de8-4080-83ab-0f915570659c
+        ip_block_id: 60473a6115e34466c9f8f083
+        state: absent
+      register: output
+    - name: Print the public network information
+      ansible.builtin.debug:
+        var: output.public_network_ip_block
 '''
 
 RETURN = '''
