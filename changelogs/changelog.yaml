@@ -3,122 +3,122 @@ releases:
   1.10.0:
     changes:
       minor_changes:
-      - ip_block_info - filter by IP Block identifiers
-      - private_network - The cidr parameter is no longer required
-      - private_network - new parameter force added
+        - ip_block_info - filter by IP Block identifiers
+        - private_network - The cidr parameter is no longer required
+        - private_network - new parameter force added
     fragments:
-    - 007_server_network_configuration_modules.yml
+      - 007_server_network_configuration_modules.yml
     modules:
-    - description: add/remove an IP block from a server.
-      name: server_ip_block
-      namespace: ''
-    - description: add/remove the server to/from a private network
-      name: server_private_network
-      namespace: ''
-    - description: add/remove the server to/from a public network
-      name: server_public_network
-      namespace: ''
+      - description: add/remove an IP block from a server.
+        name: server_ip_block
+        namespace: ''
+      - description: add/remove the server to/from a private network
+        name: server_private_network
+        namespace: ''
+      - description: add/remove the server to/from a public network
+        name: server_public_network
+        namespace: ''
     release_date: '2023-03-30'
   1.11.0:
     changes:
       minor_changes:
-      - server - add new netris_controller parameter
-      - server - add new netris_softgate parameters
-      - storage_network - add new parameter client_vlan
+        - server - add new netris_controller parameter
+        - server - add new netris_softgate parameters
+        - storage_network - add new parameter client_vlan
     fragments:
-    - 008_storage_network_module_added.yml
-    - 009_storage_network_client_vlan_param_added.yml
+      - 008_storage_network_module_added.yml
+      - 009_storage_network_client_vlan_param_added.yml
     modules:
-    - description: add/remove an IP block from a public network.
-      name: public_network_ip_block
-      namespace: ''
-    - description: add/remove Volume from a Storage Network.
-      name: storage_network_volume
-      namespace: ''
+      - description: add/remove an IP block from a public network.
+        name: public_network_ip_block
+        namespace: ''
+      - description: add/remove Volume from a Storage Network.
+        name: storage_network_volume
+        namespace: ''
     release_date: '2023-04-27'
   1.12.0:
     changes:
       minor_changes:
-      - ip_block - Delete IP Blocks only if count is defined.
-      - ip_block_info - filter by location, description, state
-      - server - add new parameter storage_configuration
+        - ip_block - Delete IP Blocks only if count is defined.
+        - ip_block_info - filter by location, description, state
+        - server - add new parameter storage_configuration
     fragments:
-    - 010_server_module_storage_configuration.yml
-    - 011_ip_block_module_improvement.yml
+      - 010_server_module_storage_configuration.yml
+      - 011_ip_block_module_improvement.yml
     release_date: '2023-06-13'
   1.13.0:
     changes:
       minor_changes:
-      - ip_block_info - add new parameter cidr_block_size
+        - ip_block_info - add new parameter cidr_block_size
     fragments:
-    - 012_ip_block_info_cidr.yml
+      - 012_ip_block_info_cidr.yml
     release_date: '2023-06-15'
   1.14.0:
     changes:
       minor_changes:
-      - ip_block - multiple descriptions create multiple ip blocks
-      - storage_network - volumes parameter has new parameter tags added
-      - storage_network_info - volumes parameter has new parameter tags added
+        - ip_block - multiple descriptions create multiple ip blocks
+        - storage_network - volumes parameter has new parameter tags added
+        - storage_network_info - volumes parameter has new parameter tags added
     fragments:
-    - 013_ip_block_update.yml
+      - 013_ip_block_update.yml
     release_date: '2023-07-12'
   1.15.0:
     changes:
       minor_changes:
-      - The documentation for modules has been updated to meet the Ansible lint requirements
+        - The documentation for modules has been updated to meet the Ansible lint requirements
     fragments:
-    - 014_server_reserve.yml
+      - 014_server_reserve.yml
     modules:
-    - description: Retrieves all rated usage for given time period.
-      name: rated_usage_info
-      namespace: ''
-    - description: reserve specific server.
-      name: server_reserve
-      namespace: ''
+      - description: Retrieves all rated usage for given time period.
+        name: rated_usage_info
+        namespace: ''
+      - description: reserve specific server.
+        name: server_reserve
+        namespace: ''
     release_date: '2023-11-30'
   1.6.0:
     changes:
       minor_changes:
-      - ip_block and server examples updated
-      - server - add new parameter install_os_to_rams
+        - ip_block and server examples updated
+        - server - add new parameter install_os_to_rams
     fragments:
-    - 001_storage_network_module_added.yml
+      - 001_storage_network_module_added.yml
     modules:
-    - description: Create/delete storage network on phoenixNAP Bare Metal Cloud.
-      name: storage_network
-      namespace: ''
-    - description: Gather information about phoenixNAP BMC storage networks
-      name: storage_network_info
-      namespace: ''
+      - description: Create/delete storage network on phoenixNAP Bare Metal Cloud.
+        name: storage_network
+        namespace: ''
+      - description: Gather information about phoenixNAP BMC storage networks
+        name: storage_network_info
+        namespace: ''
     release_date: '2022-09-14'
   1.7.0:
     changes:
       minor_changes:
-      - server - add new parameter cloud_init_user_data
+        - server - add new parameter cloud_init_user_data
     fragments:
-    - 002_server_module_cloud_init.yml
+      - 002_server_module_cloud_init.yml
     release_date: '2022-11-01'
   1.7.1:
     changes:
       bugfixes:
-      - server - cloud_init_user_data default value added
+        - server - cloud_init_user_data default value added
     fragments:
-    - 003_server_module_cloud_init_default.yml
+      - 003_server_module_cloud_init_default.yml
     release_date: '2022-11-22'
   1.8.0:
     changes:
       minor_changes:
-      - private_network - add new parameter vlan_id
-      - public_network - add new parameter vlan_id
+        - private_network - add new parameter vlan_id
+        - public_network - add new parameter vlan_id
     fragments:
-    - 004_private_network_module_vlan_id.yml
-    - 005_public_network_module_vlan_id.yml
+      - 004_private_network_module_vlan_id.yml
+      - 005_public_network_module_vlan_id.yml
     release_date: '2022-12-15'
   1.9.0:
     changes:
       minor_changes:
-      - server - The delete_ip_blocks parameter is required when state is absent
-      - server - add new parameter force
+        - server - The delete_ip_blocks parameter is required when state is absent
+        - server - add new parameter force
     fragments:
-    - 006_server_module_force.yml
+      - 006_server_module_force.yml
     release_date: '2023-02-08'
