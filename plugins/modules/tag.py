@@ -54,48 +54,41 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# Create a tag
-
 - name: Create new tag for account
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.tag:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      name: Environment
-      description: This tag is used for all resources that need to be assigned to an environment.
-      is_billing_tag: false
-      state: present
-    register: output
-  - name: Print the tag information
-    debug:
-      var: output.tags
-
-# Delete a tag
+    - name: Create a tag
+      phoenixnap.bmc.tag:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        name: Environment
+        description: This tag is used for all resources that need to be assigned to an environment.
+        is_billing_tag: false
+        state: present
+      register: output
+    - name: Print the tag information
+      ansible.builtin.debug:
+        var: output.tags
 
 - name: Delete the tag
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.tag:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      name: Environment
-      state: absent
-    register: output
-  - name: Print the tag information
-    debug:
-      var: output.tags
-
+    - name: Delete a tag
+      phoenixnap.bmc.tag:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        name: Environment
+        state: absent
+      register: output
+    - name: Print the tag information
+      ansible.builtin.debug:
+        var: output.tags
 '''
 
 RETURN = '''

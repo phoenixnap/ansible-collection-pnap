@@ -69,51 +69,44 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# Create a public network.
-
 - name: Create a public network.
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.network:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      name: Initial public network
-      location: PHX
-      description: My first public network #1
-      ip_blocks:
-        - id: 60473a6115e34466c9f8f083
-        - id: 616e6ec6d66b406a45ab8797
-      state: present
-    register: output
-  - name: Print the networks information
-    debug:
-      var: output.public_networks
-
-# Delete network
+    - name: Create a public network.
+      phoenixnap.bmc.public_network:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        name: Initial public network
+        location: PHX
+        description: My first public network 1
+        ip_blocks:
+          - id: 60473a6115e34466c9f8f083
+          - id: 616e6ec6d66b406a45ab8797
+        state: present
+      register: output
+    - name: Print the networks information
+      ansible.builtin.debug:
+        var: output.public_networks
 
 - name: Delete network
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.network:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      name: Initial public network
-      state: absent
-    register: output
-  - name: Print the networks information
-    debug:
-      var: output.public_networks
-
+    - name: Delete network
+      phoenixnap.bmc.public_network:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        name: Initial public network
+        state: absent
+      register: output
+    - name: Print the networks information
+      ansible.builtin.debug:
+        var: output.public_networks
 '''
 
 RETURN = '''

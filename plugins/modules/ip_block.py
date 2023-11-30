@@ -81,46 +81,40 @@ EXAMPLES = '''
 # in location: ~/.pnap/config.yaml
 # and generated SSH key pair in location: ~/.ssh/
 
-# Request an IP Block.
-
 - name: Request an IP Block.
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.ip_block:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      location: PHX
-      cidr_block_size: /28
-      state: present
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.ip_blocks
-
-# Delete an IP Block.
+    - name: Request an IP Block.
+      phoenixnap.bmc.ip_block:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        location: PHX
+        cidr_block_size: /28
+        state: present
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.ip_blocks
 
 - name: Delete an IP Block.
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.ip_block:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      ip_block_id: 6047127fed34ecc3ba8402d2
-      state: absent
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.ip_blocks
+    - name: Delete an IP Block.
+      phoenixnap.bmc.ip_block:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        ip_block_id: 6047127fed34ecc3ba8402d2
+        state: absent
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.ip_blocks
 '''
 
 RETURN = '''

@@ -163,82 +163,73 @@ EXAMPLES = '''
 # in location: ~/.pnap/config.yaml
 # and generated SSH key pair in location: ~/.ssh/
 
-# Create cluster
-
 - name: Create new cluster for account
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.cluster:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      location: PHX
-      name: mycluster
-      description: mydescritpion
-      node_pool_name: mypool
-      node_server_type: s1.c1.small
-      node_pool_count: 1
-      node_install_default_keys: false
-      node_key_ids: 6xex7xbx7xex1x4x3xfxex3x, 6yfy6y4yby6ydy2y4ycy2ybyXyX
-      state: present
-    register: output
-  - name: Print the cluster information
-    debug:
-      var: output.clusters
-
-# Deployment of both management and workload clusters.
+    - name: Create cluster
+      phoenixnap.bmc.cluster:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        location: PHX
+        name: mycluster
+        description: mydescritpion
+        node_pool_name: mypool
+        node_server_type: s1.c1.small
+        node_pool_count: 1
+        node_install_default_keys: false
+        node_key_ids: 6xex7xbx7xex1x4x3xfxex3x, 6yfy6y4yby6ydy2y4ycy2ybyXyX
+        state: present
+      register: output
+    - name: Print the cluster information
+      ansible.builtin.debug:
+        var: output.clusters
 
 - name: Create new clusters | management and workload
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.cluster:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      location: PHX
-      name: Rancher cluster deployment
-      description: mydescritpion
-      node_server_type: s1.c1.small
-      node_pool_count: 1
-      node_install_default_keys: false
-      node_key_ids: 6xex7xbx7xex1x4x3xfxex3x, 6yfy6y4yby6ydy2y4ycy2ybyXyX
-      workload_configuration:
-        name: Workload cluster
+    - name: Deployment of both management and workload clusters.
+      phoenixnap.bmc.cluster:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
         location: PHX
-        server_count: 1
-        server_type: s2.c2.small
-      state: present
-    register: output
-  - name: Print the cluster information
-    debug:
-      var: output.clusters
-
-# Delete cluster
+        name: Rancher cluster deployment
+        description: mydescritpion
+        node_server_type: s1.c1.small
+        node_pool_count: 1
+        node_install_default_keys: false
+        node_key_ids: 6xex7xbx7xex1x4x3xfxex3x, 6yfy6y4yby6ydy2y4ycy2ybyXyX
+        workload_configuration:
+          name: Workload cluster
+          location: PHX
+          server_count: 1
+          server_type: s2.c2.small
+        state: present
+      register: output
+    - name: Print the cluster information
+      ansible.builtin.debug:
+        var: output.clusters
 
 - name: Delete cluster
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.cluster:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      name: mycluster
-    register: output
-  - name: Print the cluster information
-    debug:
-      var: output.clusters
+    - name: Delete cluster
+      phoenixnap.bmc.cluster:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        name: mycluster
+      register: output
+    - name: Print the cluster information
+      ansible.builtin.debug:
+        var: output.clusters
 '''
 
 RETURN = '''

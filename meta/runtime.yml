@@ -1,4 +1,4 @@
-requires_ansible: '>=2.9.10'
+requires_ansible: '>=2.14.0'
 plugin_routing:
   modules:
     ip_address_info:

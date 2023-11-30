@@ -71,6 +71,11 @@ plugins:
       name: public_network_ip_block
       namespace: ''
       version_added: 1.11.0
+    rated_usage_info:
+      description: Retrieves all rated usage for given time period.
+      name: rated_usage_info
+      namespace: ''
+      version_added: 1.15.0
     reservation:
       description: Create reservation on phoenixNAP Bare Metal Cloud.
       name: reservation
@@ -106,6 +111,11 @@ plugins:
       name: server_public_network
       namespace: ''
       version_added: 1.10.0
+    server_reserve:
+      description: reserve specific server.
+      name: server_reserve
+      namespace: ''
+      version_added: 1.15.0
     ssh_key:
       description: Create/delete SSH key on phoenixNAP Bare Metal Cloud.
       name: ssh_key
@@ -146,4 +156,4 @@ plugins:
   strategy: {}
   test: {}
   vars: {}
-version: 1.14.0
+version: 1.15.0

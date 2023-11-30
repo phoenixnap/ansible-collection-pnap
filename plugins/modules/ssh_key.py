@@ -58,40 +58,33 @@ EXAMPLES = '''
 # in location: ~/.pnap/config.yaml
 # and generated SSH key pair in location: ~/.ssh/
 
-# Create a SSH Key
-
 - name: Create new SSH Key for account
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.ssh_key:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      name: mykey
-      default: true
-      ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-      state: present
-
-# Delete a SSH Key
+    - name: Create a SSH Key
+      phoenixnap.bmc.ssh_key:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        name: mykey
+        default: true
+        ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        state: present
 
 - name: Delete the SSH Key
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.ssh_key:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      name: mykey
-      state: absent
-
+    - name: Delete a SSH Key
+      phoenixnap.bmc.ssh_key:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        name: mykey
+        state: absent
 '''
 
 RETURN = '''

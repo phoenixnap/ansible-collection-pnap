@@ -72,52 +72,45 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# Add the server to a private network.
-
 - name: Add the server to a private network.
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.server_private_network:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      server_id: e6afba51-7de8-4080-83ab-0f915570659c
-      private_network_id: 60473a6115e34466c9f8f083
-      ips:
-        - 10.0.0.1
-        - 10.0.0.2
-      dhcp: false
-      state: present
-    register: output
-  - name: Print the server private network information
-    debug:
-      var: output.server_private_network
-
-# Remove the server from private network.
+    - name: Add the server to a private network.
+      phoenixnap.bmc.server_private_network:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        server_id: e6afba51-7de8-4080-83ab-0f915570659c
+        private_network_id: 60473a6115e34466c9f8f083
+        ips:
+          - 10.0.0.1
+          - 10.0.0.2
+        dhcp: false
+        state: present
+      register: output
+    - name: Print the server private network information
+      ansible.builtin.debug:
+        var: output.server_private_network
 
 - name: Remove the server from private network.
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.server_private_network:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      server_id: e6afba51-7de8-4080-83ab-0f915570659c
-      private_network_id: 60473a6115e34466c9f8f083
-      state: absent
-    register: output
-  - name: Print the server private_network information
-    debug:
-      var: output.server_private_network
-
+    - name: Remove the server from private network.
+      phoenixnap.bmc.server_private_network:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        server_id: e6afba51-7de8-4080-83ab-0f915570659c
+        private_network_id: 60473a6115e34466c9f8f083
+        state: absent
+      register: output
+    - name: Print the server private_network information
+      ansible.builtin.debug:
+        var: output.server_private_network
 '''
 
 RETURN = '''

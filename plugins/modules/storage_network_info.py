@@ -46,41 +46,36 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# List all storage networks information for account
 - name: List all storage networks
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.storage_network_info:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.storage_networks
+    - name: List all storage networks information for account
+      phoenixnap.bmc.storage_network_info:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.storage_networks
 
-# List storage networks information based on the specified names
 - name: List the storage network details
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.storage_network_info:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      names: My storage network
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.storage_networks
-
+    - name: List storage networks information based on the specified names
+      phoenixnap.bmc.storage_network_info:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        names: My storage network
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.storage_networks
 '''
 
 RETURN = '''
