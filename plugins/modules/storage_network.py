@@ -89,51 +89,44 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# Create a storage network and volume
-
 - name: Create new storage network for account
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.storage_network:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      name: My storage network
-      location: PHX
-      description: My description
-      volumes:
-        - name: My volume name
-          capacityInGb: 1000
-      state: present
-    register: output
-  - name: Print the storage network information
-    debug:
-      var: output.storage_networks
-
-# Delete storage network
+    - name: Create a storage network and volume
+      phoenixnap.bmc.storage_network:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        name: My storage network
+        location: PHX
+        description: My description
+        volumes:
+          - name: My volume name
+            capacityInGb: 1000
+        state: present
+      register: output
+    - name: Print the storage network information
+      ansible.builtin.debug:
+        var: output.storage_networks
 
 - name: Delete storage network
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.storage_network:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      name: My storage network
-      state: absent
-    register: output
-  - name: Print the storage network information
-    debug:
-      var: output.storage_networks
-
+    - name: Delete storage network
+      phoenixnap.bmc.storage_network:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        name: My storage network
+        state: absent
+      register: output
+    - name: Print the storage network information
+      ansible.builtin.debug:
+        var: output.storage_networks
 '''
 
 RETURN = '''

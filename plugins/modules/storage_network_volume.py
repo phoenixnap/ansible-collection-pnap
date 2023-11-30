@@ -95,49 +95,42 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# Create a volume belonging to a storage network.
-
 - name: Create a volume belonging to a storage network.
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.storage_network_volume:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      storage_network_id: e6afba51-7de8-4080-83ab-0f915570659c
-      volume_name: myvolume
-      capacityInGb: 1000
-      state: present
-    register: output
-  - name: Print the storage network information
-    debug:
-      var: output.storage_network_ip_block
-
-# Delete a Storage Network's Volume
+    - name: Create a volume belonging to a storage network.
+      phoenixnap.bmc.storage_network_volume:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        storage_network_id: e6afba51-7de8-4080-83ab-0f915570659c
+        volume_name: myvolume
+        capacityInGb: 1000
+        state: present
+      register: output
+    - name: Print the storage network information
+      ansible.builtin.debug:
+        var: output.storage_network_ip_block
 
 - name: Delete a Storage Network's Volume
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.storage_network_volume:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      storage_network_id: e6afba51-7de8-4080-83ab-0f915570659c
-      volume_id: 60473a6115e34466c9f8f083
-      state: absent
-    register: output
-  - name: Print the storage network information
-    debug:
-      var: output.storage_network_volume
-
+    - name: Delete a Storage Network's Volume
+      phoenixnap.bmc.storage_network_volume:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        storage_network_id: e6afba51-7de8-4080-83ab-0f915570659c
+        volume_id: 60473a6115e34466c9f8f083
+        state: absent
+      register: output
+    - name: Print the storage network information
+      ansible.builtin.debug:
+        var: output.storage_network_volume
 '''
 
 RETURN = '''

@@ -13,14 +13,16 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 ---
-module: server_info
+module: server_reserve
 
-short_description: Gather information about phoenixNAP BMC servers
+short_description: reserve specific server.
 description:
-    - Gather information about servers available.
+    - Reserve specific server.
+    - No actual configuration is performed on the operating system.
     - This module has a dependency on requests
+    - API is documented at U(https://developers.phoenixnap.com/docs/bmc/1/overview).
 
-version_added: "0.7.0"
+version_added: "1.15.0"
 
 author:
     - Pavle Jojkic (@pajuga) <pavlej@phoenixnap.com>
@@ -33,70 +35,40 @@ options:
   client_secret:
     description: Client Secret (Application Management)
     type: str
-  hostnames:
-    description: Name of server.
-    type: list
-    elements: str
-  server_ids:
-    description: The unique identifier of the server.
-    type: list
-    elements: str
+  server_id:
+    description: The server's ID.
+    type: str
+    required: true
+  pricing_model:
+    description: Server pricing model.
+    type: str
+    required: true
 '''
 
 EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-- name: List all servers
+- name: Create a server reservation for one month
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
   tasks:
-    - name: List all servers information for account
-      phoenixnap.bmc.server_info:
+    - name: Create a server reservation for one month
+      phoenixnap.bmc.server_reserve:
         client_id: "{{ clientId }}"
         client_secret: "{{ clientSecret }}"
+        server_id: e6afba51-7de8-4080-83ab-0f915570659c
+        pricing_model: ONE_MONTH_RESERVATION
       register: output
-    - name: Print the gathered infos
+    - name: Print the server information
       ansible.builtin.debug:
-        var: output.servers
-
-- name: List the server details
-  hosts: localhost
-  gather_facts: false
-  vars_files:
-    - ~/.pnap/config.yaml
-  tasks:
-    - name: List server information based on the specified hostnames
-      phoenixnap.bmc.server_info:
-        client_id: "{{ clientId }}"
-        client_secret: "{{ clientSecret }}"
-        hostnames: [server-red]
-      register: output
-    - name: Print the gathered infos
-      ansible.builtin.debug:
-        var: output.servers
-
-- name: List the server details
-  hosts: localhost
-  gather_facts: false
-  vars_files:
-    - ~/.pnap/config.yaml
-  tasks:
-    - name: List server information based on the specified ids
-      phoenixnap.bmc.server_info:
-        client_id: "{{ clientId }}"
-        client_secret: "{{ clientSecret }}"
-        server_ids: [60ffdc90fa7a2d75544cd8fb]
-      register: output
-    - name: Print the gathered infos
-      ansible.builtin.debug:
-        var: output.servers
+        var: output.server_reserve
 '''
 
 RETURN = '''
-servers:
+server_reserve:
     description: The servers information as list
     returned: success
     type: complex
@@ -418,42 +390,49 @@ servers:
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_native
-from ansible_collections.phoenixnap.bmc.plugins.module_utils.pnap import set_token_headers, HAS_REQUESTS, requests_wrapper, SERVER_API
+from ansible_collections.phoenixnap.bmc.plugins.module_utils.pnap import (set_token_headers, HAS_REQUESTS, requests_wrapper,
+                                                                          SERVER_API)
 
 import os
+import json
+
+API_SUFFIX = "/actions/reserve"
 
 
-def server_info(module):
+def get_existing_server(server_id, module):
+    pricing_model = requests_wrapper(SERVER_API + server_id, module=module).json()
+    return pricing_model
+
+
+def server_reserve_action(module):
     set_token_headers(module)
-    servers = requests_wrapper(SERVER_API, module=module).json()
-    filter_servers = []
-    server_ids = module.params['server_ids']
-    hostnames = module.params['hostnames']
+    changed = False
+    server_id = module.params['server_id']
+    target_pricing_model = module.params['pricing_model'].upper()
+    existing_server = get_existing_server(server_id, module)
+    existing_pricing_model = existing_server.get('pricingModel')
 
-    if server_ids:
-        [filter_servers.append(es) for es in servers if es['id'] in server_ids]
-        servers = filter_servers
-
-    if hostnames:
-        [filter_servers.append(es) for es in servers if es['hostname'] in hostnames]
-        servers = filter_servers
+    if target_pricing_model != existing_pricing_model.upper():
+        changed = True
+        if not module.check_mode:
+            data = json.dumps({"pricingModel": target_pricing_model})
+            existing_server = requests_wrapper(SERVER_API + server_id + API_SUFFIX, method='POST', data=data)
 
     return {
-        'servers': servers
+        'changed': changed,
+        'server_reserve': existing_server
     }
 
 
 def main():
-
     module = AnsibleModule(
         argument_spec=dict(
             client_id=dict(default=os.environ.get('BMC_CLIENT_ID'), no_log=True),
             client_secret=dict(default=os.environ.get('BMC_CLIENT_SECRET'), no_log=True),
-            hostnames=dict(type='list', elements='str'),
-            server_ids=dict(type='list', elements='str')
+            server_id=dict(required=True),
+            pricing_model=dict(required=True),
         ),
-        supports_check_mode=True,
-        mutually_exclusive=[('hostnames', 'server_ids')],
+        supports_check_mode=True
     )
 
     if not HAS_REQUESTS:
@@ -465,7 +444,7 @@ def main():
         module.fail_json(msg=_fail_msg)
 
     try:
-        module.exit_json(**server_info(module))
+        module.exit_json(**server_reserve_action(module))
     except Exception as e:
         module.fail_json(msg='failed: %s' % to_native(e))
 

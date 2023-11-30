@@ -46,41 +46,36 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# List all private networks information for account
 - name: List all private networks
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.private_network_info:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.private_networks
+    - name: List all private networks information for account
+      phoenixnap.bmc.private_network_info:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.private_networks
 
-# List private networks information based on the specified names
 - name: List the private network details
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.private_network_info:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      names: [My Default Backend Network]
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.private_networks
-
+    - name: List private networks information based on the specified names
+      phoenixnap.bmc.private_network_info:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        names: [My Default Backend Network]
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.private_networks
 '''
 
 RETURN = '''

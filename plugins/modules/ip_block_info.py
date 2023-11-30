@@ -60,22 +60,20 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# List IP blocks
 - name: List IP blocks
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.ip_block_info:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.ip_blocks
+    - name: List IP blocks
+      phoenixnap.bmc.ip_block_info:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.ip_blocks
 '''
 
 RETURN = '''

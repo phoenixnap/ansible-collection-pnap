@@ -43,41 +43,36 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# List all SSH keys information for account
 - name: List all SSH keys
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.ssh_key_info:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.ssh_keys
+    - name: List all SSH keys information for account
+      phoenixnap.bmc.ssh_key_info:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.ssh_keys
 
-# List SSH keys information based on the specified names
 - name: List the SSH key details
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.ssh_key_info:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      names: [default-key]
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.ssh_keys
-
+    - name: List SSH keys information based on the specified names
+      phoenixnap.bmc.ssh_key_info:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        names: [default-key]
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.ssh_keys
 '''
 
 RETURN = '''

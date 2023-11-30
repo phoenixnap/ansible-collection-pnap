@@ -73,50 +73,43 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# Create private network
-
 - name: Create new private network for account
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.private_network:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      name: My Default Backend Network
-      location: PHX
-      location_default: true
-      description: My Default Backend Network
-      cidr: 10.0.0.0/24
-      state: present
-    register: output
-  - name: Print the private network information
-    debug:
-      var: output.private_networks
-
-# Delete network
+    - name: Create private network
+      phoenixnap.bmc.private_network:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        name: My Default Backend Network
+        location: PHX
+        location_default: true
+        description: My Default Backend Network
+        cidr: 10.0.0.0/24
+        state: present
+      register: output
+    - name: Print the private network information
+      ansible.builtin.debug:
+        var: output.private_networks
 
 - name: Delete private network
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.private_network:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      name: My Default Backend Network
-      state: absent
-    register: output
-  - name: Print the private networks information
-    debug:
-      var: output.private_networks
-
+    - name: Delete network
+      phoenixnap.bmc.private_network:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        name: My Default Backend Network
+        state: absent
+      register: output
+    - name: Print the private networks information
+      ansible.builtin.debug:
+        var: output.private_networks
 '''
 
 RETURN = '''

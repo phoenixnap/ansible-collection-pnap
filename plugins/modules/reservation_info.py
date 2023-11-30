@@ -43,23 +43,21 @@ EXAMPLES = '''
 # All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
 # in location: ~/.pnap/config.yaml
 
-# List all server reservation
 - name: List all server reservations
   hosts: localhost
   gather_facts: false
   vars_files:
     - ~/.pnap/config.yaml
-  collections:
-    - phoenixnap.bmc
   tasks:
-  - phoenixnap.bmc.reservation_info:
-      client_id: "{{clientId}}"
-      client_secret: "{{clientSecret}}"
-      product_category: server
-    register: output
-  - name: Print the gathered infos
-    debug:
-      var: output.reservations
+    - name: List all server reservation
+      phoenixnap.bmc.reservation_info:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        product_category: server
+      register: output
+    - name: Print the gathered infos
+      ansible.builtin.debug:
+        var: output.reservations
 '''
 
 RETURN = '''
