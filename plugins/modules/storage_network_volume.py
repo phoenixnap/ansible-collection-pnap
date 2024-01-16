@@ -84,6 +84,17 @@ options:
   volume_new_name:
     description: Volume new name
     type: str
+  tags:
+    description: Tag request to assign to resource.
+    type: list
+    elements: dict
+    suboptions:
+      name:
+        description: The name of the tag.
+        type: str
+      value:
+        description: The value of the tag assigned to the resource.
+        type: str
   state:
     description: Indicate desired state of the target.
     default: present
@@ -164,6 +175,11 @@ storage_network_volume:
         returned: always
         type: str
         sample: /shared-docs
+      capacityInGb:
+        description: Maximum capacity in GB.
+        returned: always
+        type: int
+        sample: 1000
       usedCapacityInGb:
         description: Used capacity in GB, updated periodically.
         returned: always
@@ -181,6 +197,10 @@ storage_network_volume:
         sample: READY
       createdOn:
         description: date-time
+        returned: always
+        type: str
+      deleteRequestedOn:
+        description: Date and time of the initial request for volume deletion.
         returned: always
         type: str
       permissions:
@@ -211,6 +231,25 @@ storage_network_volume:
                 description: All squash permission.
                 type: list
                 elements: str
+      tags:
+        description: The tags assigned if any.
+        type: list
+        contains:
+          id:
+            description: The unique id of the tag.
+            type: str
+          name:
+            description: The name of the tag.
+            type: str
+          value:
+            description: The value of the tag assigned to the resource.
+            type: str
+          isBillingTag:
+            description: Whether or not to show the tag as part of billing and invoices.
+            type: bool
+          createdBy:
+            description: Who the tag was created by.
+            type: str
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -298,6 +337,7 @@ def storage_network_volume_action(module, state):
                     "description": module.params['description'],
                     "pathSuffix": module.params['path_suffix'],
                     "permissions": module.params['permissions'],
+                    "tags": module.params["tags"],
                 }))
                 existing_volume = requests_wrapper(STORAGE_NETWORK_API + storage_network_id + API_SUFFIX, method='POST', data=data).json()
         else:
@@ -363,6 +403,7 @@ def main():
                 )
             ),
             volume_new_name={},
+            tags=dict(type="list", elements='dict', options=dict(name={}, value={})),
             state=dict(choices=ALLOWED_STATES, default='present')
         ),
         mutually_exclusive=[('volume_name', 'volume_id')],

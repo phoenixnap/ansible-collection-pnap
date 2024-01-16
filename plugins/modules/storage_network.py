@@ -175,6 +175,10 @@ storage_networks:
         description: Date and time when this storage network was created.
         returned: always
         type: str
+      deleteRequestedOn:
+        description: Date and time of the initial request for storage network deletion.
+        returned: always
+        type: str
       volumes:
         description: Volume for a storage network.
         returned: always
@@ -204,6 +208,10 @@ storage_networks:
             description: Maximum capacity in GB.
             type: int
             example: 2000
+          usedCapacityInGb:
+            description: Used capacity in GB, updated periodically.
+            type: int
+            example: 2000
           protocol:
             description: File system protocol. Currently this field should be set to NFS.
             type: str
@@ -214,6 +222,10 @@ storage_networks:
             example: READY
           createdOn:
             description: Date and time when this volume was created.
+            returned: always
+            type: str
+          deleteRequestedOn:
+            description: Date and time of the initial request for volume deletion.
             returned: always
             type: str
           permissions:

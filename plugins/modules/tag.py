@@ -107,6 +107,12 @@ tags:
         returned: always
         type: str
         sample: Environment
+      values:
+        description: The optional values of the tag.
+        returned: always
+        type: list
+        elements: str
+        sample: [DEV, PROD]
       description:
         description: The description of the tag.
         returned: always
@@ -130,6 +136,11 @@ tags:
             description: The value of the tag assigned to the resource.
             type: str
             sample: DEV
+      createdBy:
+        description: The tag's creator.
+        returned: always
+        type: str
+        sample: USER
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -152,7 +163,7 @@ def tag_action(module, state):
     changed = False
     existing_tags = get_existing_tags(module)
     new_tag_name = module.params['name']
-    target_tag = next((network for network in existing_tags if network['name'] == new_tag_name), 'absent')
+    target_tag = next((tag for tag in existing_tags if tag['name'] == new_tag_name), 'absent')
 
     if state == 'present':
         if target_tag == 'absent':

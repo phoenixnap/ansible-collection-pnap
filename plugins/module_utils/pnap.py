@@ -30,6 +30,7 @@ IP_API = 'https://api.phoenixnap.com/ips/v1/ip-blocks/'
 PRODUCT_API = 'https://api.phoenixnap.com/billing/v1/products/'
 PRODUCT_AVAILABILITY_API = 'https://api.phoenixnap.com/billing/v1/product-availability/'
 STORAGE_NETWORK_API = 'https://api.phoenixnap.com/network-storage/v1/storage-networks/'
+RATED_USAGE_API = 'https://api.phoenixnap.com/billing/v1/rated-usage/'
 
 NETWORK_TIMEOUT_STATUS_CHANGE = 180
 CHECK_FOR_NETWORK_STATUS_CHANGE = 5
@@ -50,7 +51,7 @@ def set_token_headers(module):
         raise Exception('%s' % response.json()['error_description'])
     token = response.json()['access_token']
     REQUEST.headers.update({'Authorization': 'Bearer %s' % token})
-    REQUEST.headers.update({'X-Powered-By': 'BMC-Ansible/1.15.0'})
+    REQUEST.headers.update({'X-Powered-By': 'BMC-Ansible/1.16.0'})
 
 
 def requests_wrapper(endpoint, method='GET', params=None, data=None, module=None, reauth_attempts=3, retries=3):
