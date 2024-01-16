@@ -152,6 +152,10 @@ public_networks:
         description: The description of this public network.
         type: str
         sample: Further details on the network.
+      status:
+        description: he status of the public network.
+        type: str
+        sample: READY
       createdOn:
         description: Date and time when this public network was created.
         type: str

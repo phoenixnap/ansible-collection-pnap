@@ -5,6 +5,19 @@ Phoenixnap.Bmc Release Notes
 .. contents:: Topics
 
 
+v1.16.0
+=======
+
+Minor Changes
+-------------
+
+- Improved documentation
+
+New Modules
+-----------
+
+- phoenixnap.bmc.server_reserved - Provision reserved server.
+
 v1.15.0
 =======
 

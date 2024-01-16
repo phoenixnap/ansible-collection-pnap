@@ -166,6 +166,39 @@ ip_blocks:
         description: The description of the IP Block.
         type: str
         sample: IP Block #1 used for publicly accessing server #1.
+      tags:
+        description: The tags assigned if any.
+        returned: always
+        type: list
+        contains:
+          id:
+            description: The unique id of the tag.
+            type: str
+            sample: 60ffafcdffb8b074c7968dad
+          name:
+            description: The name of the tag.
+            type: str
+            sample: Environment
+          value:
+            description: The value of the tag assigned to the resource.
+            type: str
+            sample: PROD
+          isBillingTag:
+            description: Whether or not to show the tag as part of billing and invoices
+            type: bool
+            sample: true
+          createdBy:
+            description: Who the tag was created by.
+            type: str
+            sample: USER
+      isBringYourOwn:
+        description: True if the IP block is a bring your own block.
+        type: bool
+        sample: true
+      createdOn:
+        description: Date and time when the IP block was created.
+        type: str
+        sample: "2021-03-13T20:24:32.491Z"
 '''
 
 from ansible.module_utils.basic import AnsibleModule

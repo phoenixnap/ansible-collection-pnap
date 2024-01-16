@@ -76,6 +76,17 @@ releases:
         name: server_reserve
         namespace: ''
     release_date: '2023-11-30'
+  1.16.0:
+    changes:
+      minor_changes:
+        - Improved documentation
+    fragments:
+      - 015_server_reserved.yml
+    modules:
+      - description: Provision reserved server.
+        name: server_reserved
+        namespace: ''
+    release_date: '2024-01-16'
   1.6.0:
     changes:
       minor_changes:

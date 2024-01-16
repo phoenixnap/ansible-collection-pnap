@@ -124,20 +124,28 @@ private_networks:
         returned: always
         type: str
         sample: 10.0.0.0/24
-      servers:
-        description: Server details linked to the Private Network
+      memberships:
+        description: A list of resources that are members of this private network.
         returned: always
         type: list
         contains:
-          id:
-            description: The server identifier.
+          resourceId:
+            description: The resource identifier.
             type: str
             sample: 603f3e995c18d515cda9c4f8
+          resourceType:
+            description: The resource's type.
+            type: str
+            sample: server
           ips:
-            description: List of private IPs associated to the server.
+            description: List of IPs associated to the resource
             type: list
             elements: str
-            example: ["10.0.0.2", "10.0.0.3"]
+            example: ["10.111.14.104", "10.111.14.105"]
+      status:
+        description: The status of the private network.
+        type: str
+        sample: READY
       createdOn:
         description: Date and time when this private network was created.
         returned: always

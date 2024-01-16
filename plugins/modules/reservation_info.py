@@ -36,7 +36,6 @@ options:
   product_category:
     description: The product category (server, bandwidth, operating-system, public_ip).
     type: str
-    required: true
 '''
 
 EXAMPLES = '''
@@ -141,6 +140,11 @@ reservations:
         returned: always
         type: str
         sample: 83604275-bdba-490a-b87a-978e8dffdb14
+      nextBillingDate:
+        description: Next billing date for Reservation.
+        returned: always
+        type: str
+        sample: "2020-04-19"
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -152,10 +156,11 @@ import os
 
 def reservation_info(module):
     set_token_headers(module)
-    data = {
-        'productCategory': module.params['product_category'].upper()
-    }
-    reservations = requests_wrapper(RESERVATION_API, params=data, module=module).json()
+
+    product_category = module.params.get('product_category')
+    params = {'productCategory': product_category.upper()} if product_category else None
+
+    reservations = requests_wrapper(RESERVATION_API, params=params, module=module).json()
     return {
         'reservations': reservations
     }
@@ -167,7 +172,7 @@ def main():
         argument_spec=dict(
             client_id=dict(default=os.environ.get('BMC_CLIENT_ID'), no_log=True),
             client_secret=dict(default=os.environ.get('BMC_CLIENT_SECRET'), no_log=True),
-            product_category=dict(required=True),
+            product_category={},
         ),
         supports_check_mode=True,
     )

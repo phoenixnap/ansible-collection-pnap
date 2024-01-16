@@ -151,6 +151,11 @@ reservations:
         returned: always
         type: str
         sample: 83604275-bdba-490a-b87a-978e8dffdb14
+      nextBillingDate:
+        description: Next billing date for Reservation.
+        returned: always
+        type: str
+        sample: "2020-04-19"
 '''
 
 from ansible.module_utils.basic import AnsibleModule
