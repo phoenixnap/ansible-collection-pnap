@@ -296,6 +296,17 @@ servers:
               - On restart RAM OS will be lost and the server will not be reachable unless a custom bootable OS has been deployed.
             type: bool
             sample: false
+          esxi:
+            description: Esxi OS configuration.
+            type: dict
+            contains:
+              datastoreConfiguration:
+                description: Esxi data storage configuration.
+                type: dict
+                contains:
+                  datastoreName:
+                    description: Datastore name.
+                    type: str
           cloudInit:
             description: Cloud-init configuration details.
             type: dict

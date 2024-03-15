@@ -94,7 +94,10 @@ class TestApiParams(TestCase):
                     'installOsToRam': False,
                     'cloudInit': {
                         'userData': 'eHh4'
-                    }
+                    },
+                    'esxi': {
+                        'datastoreConfiguration': {'datastoreName': 'test'},
+                    },
                 },
                 'networkConfiguration': {
                     'gatewayAddress': '182.16.0.145',
@@ -144,4 +147,5 @@ class PseudoModule:
         'netris_controller': {},
         'netris_softgate': {},
         'storage_configuration': {},
+        'datastore_configuration': {'datastore_name': 'test'},
     }
