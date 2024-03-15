@@ -23,7 +23,7 @@ SSH_API = 'https://api.phoenixnap.com/bmc/v1/ssh-keys/'
 PRIVATE_NETWORK_API = 'https://api.phoenixnap.com/networks/v1/private-networks/'
 PUBLIC_NETWORK_API = 'https://api.phoenixnap.com/networks/v1/public-networks/'
 TAG_API = 'https://api.phoenixnap.com/tag-manager/v1/tags/'
-EVENT_API = 'https://api.phoenixnap.com/audit/v1/events/'
+EVENT_API = 'https://api.phoenixnap.com/audit/v1/events'
 RESERVATION_API = 'https://api.phoenixnap.com/billing/v1/reservations/'
 CLUSTER_API = 'https://api.phoenixnap.com/solutions/rancher/v1beta/clusters/'
 IP_API = 'https://api.phoenixnap.com/ips/v1/ip-blocks/'
@@ -31,6 +31,8 @@ PRODUCT_API = 'https://api.phoenixnap.com/billing/v1/products/'
 PRODUCT_AVAILABILITY_API = 'https://api.phoenixnap.com/billing/v1/product-availability/'
 STORAGE_NETWORK_API = 'https://api.phoenixnap.com/network-storage/v1/storage-networks/'
 RATED_USAGE_API = 'https://api.phoenixnap.com/billing/v1/rated-usage/'
+INVOICE_API = 'https://api.phoenixnap.com/invoicing/v1/invoices/'
+TRANSACTION_API = 'https://api.phoenixnap.com/payments/v1/transactions/'
 
 NETWORK_TIMEOUT_STATUS_CHANGE = 180
 CHECK_FOR_NETWORK_STATUS_CHANGE = 5
@@ -51,7 +53,7 @@ def set_token_headers(module):
         raise Exception('%s' % response.json()['error_description'])
     token = response.json()['access_token']
     REQUEST.headers.update({'Authorization': 'Bearer %s' % token})
-    REQUEST.headers.update({'X-Powered-By': 'BMC-Ansible/1.17.0'})
+    REQUEST.headers.update({'X-Powered-By': 'BMC-Ansible/1.9.0'})
 
 
 def requests_wrapper(endpoint, method='GET', params=None, data=None, module=None, reauth_attempts=3, retries=3):
