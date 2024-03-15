@@ -8,7 +8,11 @@ plugins:
   connection: {}
   filter: {}
   httpapi: {}
-  inventory: {}
+  inventory:
+    bmc_server:
+      description: Retrieves list of servers via PhoenixNAP BMC API
+      name: bmc_server
+      version_added: 1.17.0
   lookup: {}
   module:
     cluster:
@@ -26,6 +30,11 @@ plugins:
       name: event_info
       namespace: ''
       version_added: 1.0.0
+    invoice_info:
+      description: List invoices.
+      name: invoice_info
+      namespace: ''
+      version_added: 1.17.0
     ip_block:
       description: Create/delete IP block.
       name: ip_block
@@ -156,9 +165,14 @@ plugins:
       name: tag_info
       namespace: ''
       version_added: 0.12.0
+    transaction_info:
+      description: List of client's transactions.
+      name: transaction_info
+      namespace: ''
+      version_added: 1.17.0
   netconf: {}
   shell: {}
   strategy: {}
   test: {}
   vars: {}
-version: 1.16.0
+version: 1.17.0

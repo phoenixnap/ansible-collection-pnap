@@ -5,6 +5,29 @@ Phoenixnap.Bmc Release Notes
 .. contents:: Topics
 
 
+v1.17.0
+=======
+
+Minor Changes
+-------------
+
+- pnap.py - event endpoint path  corrected
+- server - add new parameter datastore_congiguration
+
+New Plugins
+-----------
+
+Inventory
+~~~~~~~~~
+
+- phoenixnap.bmc.bmc_server - Retrieves list of servers via PhoenixNAP BMC API
+
+New Modules
+-----------
+
+- phoenixnap.bmc.invoice_info - List invoices.
+- phoenixnap.bmc.transaction_info - List of client's transactions.
+
 v1.16.0
 =======
 

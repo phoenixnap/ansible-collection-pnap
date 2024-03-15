@@ -87,6 +87,26 @@ releases:
         name: server_reserved
         namespace: ''
     release_date: '2024-01-16'
+  1.17.0:
+    changes:
+      minor_changes:
+        - pnap.py - event endpoint path  corrected
+        - server - add new parameter datastore_congiguration
+    fragments:
+      - 016_inventory_plugin.yml
+    modules:
+      - description: List invoices.
+        name: invoice_info
+        namespace: ''
+      - description: List of client's transactions.
+        name: transaction_info
+        namespace: ''
+    plugins:
+      inventory:
+        - description: Retrieves list of servers via PhoenixNAP BMC API
+          name: bmc_server
+          namespace: null
+    release_date: '2024-03-15'
   1.6.0:
     changes:
       minor_changes:
