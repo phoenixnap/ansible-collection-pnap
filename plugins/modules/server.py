@@ -793,6 +793,7 @@ def get_api_params(module, server_id, target_state):
                 "controllerAuthKey": module.params['netris_softgate']['controller_auth_key'],
                 "controllerVersion": module.params['netris_softgate']['controller_version'],
             }
+        datastore_configuration = None
         if module.params["datastore_configuration"]:
             datastore_configuration = {
                 "datastoreConfiguration": {
