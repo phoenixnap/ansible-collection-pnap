@@ -208,6 +208,13 @@ options:
   type:
     description: Server type ID. See BMC API for current list - U(https://developers.phoenixnap.com/docs/bmc/1/types/Server).
     type: str
+  datastore_configuration:
+    description: Esxi data storage configuration.
+    type: dict
+    suboptions:
+      datastore_name:
+        description: Datastore name.
+        type: str
 '''
 
 EXAMPLES = '''
@@ -506,6 +513,17 @@ servers:
               - On restart RAM OS will be lost and the server will not be reachable unless a custom bootable OS has been deployed.
             type: bool
             sample: false
+          esxi:
+            description: Esxi OS configuration.
+            type: dict
+            contains:
+              datastoreConfiguration:
+                description: Esxi data storage configuration.
+                type: dict
+                contains:
+                  datastoreName:
+                    description: Datastore name.
+                    type: str
           cloudInit:
             description: Cloud-init configuration details.
             type: dict
@@ -775,6 +793,13 @@ def get_api_params(module, server_id, target_state):
                 "controllerAuthKey": module.params['netris_softgate']['controller_auth_key'],
                 "controllerVersion": module.params['netris_softgate']['controller_version'],
             }
+        datastore_configuration = None
+        if module.params["datastore_configuration"]:
+            datastore_configuration = {
+                "datastoreConfiguration": {
+                    "datastoreName": module.params['datastore_configuration']['datastore_name']
+                }
+            }
 
         data = {
             "description": module.params['description'],
@@ -797,6 +822,7 @@ def get_api_params(module, server_id, target_state):
                 "managementAccessAllowedIps": module.params['management_access_allowed_ips'],
                 "installOsToRam": module.params['install_os_to_ram'],
                 "cloudInit": {"userData": standard_b64encode(module.params['cloud_init_user_data'].encode("utf-8")).decode("utf-8")},
+                "esxi": datastore_configuration,
             },
             "networkConfiguration": {
                 "gatewayAddress": gateway_address,
@@ -906,6 +932,12 @@ def main():
                     controller_version=dict(type='str'),
                     controller_auth_key=dict(no_log=True)
                 )),
+            datastore_configuration=dict(
+                type='dict',
+                options=dict(
+                    datastore_name={},
+                )
+            ),
             os={},
             rdp_allowed_ips=dict(type='list', elements='str'),
             reservation_id={},
