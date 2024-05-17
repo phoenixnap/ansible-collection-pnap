@@ -107,6 +107,16 @@ releases:
           name: bmc_server
           namespace: null
     release_date: '2024-03-15'
+  1.17.1:
+    changes:
+      minor_changes:
+        - bmc_server - The documentation for inventory module has been updated to meet
+          the Ansible lint requirements
+        - invoice_info - Updated string formatting for compatibility with older Python
+          versions.
+    fragments:
+      - 017_yamllint_compliance.yml
+    release_date: '2024-05-17'
   1.6.0:
     changes:
       minor_changes:
