@@ -219,7 +219,7 @@ def invoice_info(module):
     }
 
     if invoice_id and module.params['generate_pdf']:
-        save_as = module.params['save_as'] or f'./{invoice_id}.pdf'
+        save_as = module.params['save_as'] or './{}.pdf'.format(invoice_id)
         response = requests_wrapper(INVOICE_API + invoice_id + "/actions/generate-pdf", method="POST", module=module)
         if response.status_code == 200:
             with open(save_as, 'wb') as file:

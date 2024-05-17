@@ -5,6 +5,15 @@ Phoenixnap.Bmc Release Notes
 .. contents:: Topics
 
 
+v1.17.1
+=======
+
+Minor Changes
+-------------
+
+- bmc_server - The documentation for inventory module has been updated to meet the Ansible lint requirements
+- invoice_info - Updated string formatting for compatibility with older Python versions.
+
 v1.17.0
 =======
 

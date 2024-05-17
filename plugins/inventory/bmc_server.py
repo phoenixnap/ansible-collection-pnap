@@ -60,50 +60,42 @@ plugin: phoenixnap.bmc.bmc_server
 client_id: yyy-zzzz-yyy
 client_secret: yyy-xxxx-yyy
 
----
+## filtering configuration in inventory file
+## plugin: phoenixnap.bmc.bmc_server
+# client_id: yyy-zzzz-yyy
+# client_secret: yyy-xxxx-yyy
+# filters:
+#   - '"ASH" in location'
+#   - '"ubuntu" in os'
 
-# filtering configuration in inventory file
-plugin: phoenixnap.bmc.bmc_server
-client_id: yyy-zzzz-yyy
-client_secret: yyy-xxxx-yyy
-filters:
-  - '"ASH" in location'
-  - '"ubuntu" in os'
+## use server ID as hostname and set ansible_host (public IP) with compose
+## also make sure public IP is available:
+# plugin: phoenixnap.bmc.bmc_server
+# client_id: yyy-zzzz-yyy
+# client_secret: yyy-xxxx-yyy
+# hostname: id
+# strict: true
+# compose:
+#   ansible_host: publicIpAddresses[0]
 
----
+## Use the private IP
+# plugin: phoenixnap.bmc.bmc_server
+# client_id: yyy-zzzz-yyy
+# client_secret: yyy-xxxx-yyy
+# hostname: id
+# compose:
+#   ansible_host: privateIpAddresses[0]
 
-# use server ID as hostname and set ansible_host (public IP) with compose
-# also make sure public IP is available:
-plugin: phoenixnap.bmc.bmc_server
-client_id: yyy-zzzz-yyy
-client_secret: yyy-xxxx-yyy
-hostname: id
-strict: true
-compose:
-  ansible_host: publicIpAddresses[0]
-
----
-
-# Use the private IP
-plugin: phoenixnap.bmc.bmc_server
-client_id: yyy-zzzz-yyy
-client_secret: yyy-xxxx-yyy
-hostname: id
-compose:
-  ansible_host: privateIpAddresses[0]
-
----
-
-# Example with keyed_groups and groups
-plugin: phoenixnap.bmc.bmc_server
-client_id: yyy-zzzz-yyy
-client_secret: yyy-xxxx-yyy
-keyed_groups:
-  - prefix: location
-    key: location
-groups:
-  Ubuntu: "'ubuntu' in os"
-  Centos: "'centos' in os"
+## Example with keyed_groups and groups
+# plugin: phoenixnap.bmc.bmc_server
+# client_id: yyy-zzzz-yyy
+# client_secret: yyy-xxxx-yyy
+# keyed_groups:
+#   - prefix: location
+#     key: location
+# groups:
+#   Ubuntu: "'ubuntu' in os"
+#   Centos: "'centos' in os"
 """
 
 RETURN = r""" # """
