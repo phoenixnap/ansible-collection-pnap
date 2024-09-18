@@ -6,6 +6,8 @@
   <br>
 </h1>
 
+## Description
+
 <p align="center">
 Ansible collection of modules for interacting with the <a href="https://developers.phoenixnap.com/apis">Bare Metal Cloud API</a>. This collection contains the <i><b>server</b></i> module which allows you to automate <a href="https://phoenixnap.com/bare-metal-cloud">Bare Metal Cloud</a> server provisioning and management.
 </p>
@@ -36,7 +38,7 @@ Ansible collection of modules for interacting with the <a href="https://develope
 
 :arrow_forward: **Video tutorial:** [How to Deploy a Bare Metal Server in a Minute](https://www.youtube.com/watch?v=BzBBwLxR80o)
 
-## Installing Ansible
+## Installation
 
 Follow these helpful tutorials to learn how to install Ansible on Ubuntu and Windows machines.
 
@@ -77,7 +79,7 @@ To get the values for the clientId and clientSecret, follow these steps:
 5. In the table, click on Actions and select View Credentials from the dropdown.
 6. Copy the values from the Client ID and Client Secret fields into your `config.yaml` file.
 
-## Example Ansible Playbooks for Bare Metal Cloud
+## Use Cases
 
 Ansible Playbooks allow you to interact with your Bare Metal Cloud resources. You can create and delete servers as well as perform power actions with simple code instructions.
 
@@ -138,6 +140,22 @@ Pay attention to the *state* item. This is where you tell Ansible which action y
 -   **shutdown**: works on the operating system
 
 For more examples, check out this helpful tutorial: [Bare Metal Cloud Playbook Examples](https://phoenixnap.com/kb/how-to-install-phoenixnap-bmc-ansible-module#htoc-bmc-playbook-examples)
+
+## Testing
+
+Tests are run with latest `ansible-lint` version and sanity checks running with Python 3.9 to Python 3.12.
+
+## Support
+
+If you need support, you can create in issue in the `ansible-collections` GitHub repo.
+
+## Release motes
+
+You can follow changes in the <a href="https://github.com/phoenixnap/ansible-collection-pnap/blob/master/CHANGELOG.rst">CHANGELOG</a> file.
+
+## License information
+
+GNU General Public License v3.0 or later. See <a href="https://www.gnu.org/licenses/gpl-3.0.txt">COPYING</a> to see the full text.
 
 ## Bare Metal Cloud community
 
