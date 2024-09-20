@@ -42,14 +42,12 @@ options:
   asn:
     description: The BGP Peer Group ASN.
     type: int
-    default: 65401
   password:
     description: The BGP Peer Group password.
     type: str
   advertised_routes:
     description: The Advertised routes for the BGP Peer Group.
     type: str
-    default: NONE
   state:
     description: Indicate desired state of the target.
     default: present
@@ -295,9 +293,9 @@ def main():
             client_id=dict(default=os.environ.get('BMC_CLIENT_ID'), no_log=True),
             client_secret=dict(default=os.environ.get('BMC_CLIENT_SECRET'), no_log=True),
             location={},
-            asn=dict(type='int', default=65401),
+            asn=dict(type='int'),
             password=dict(no_log=True),
-            advertised_routes=dict(default='NONE'),
+            advertised_routes={},
             state=dict(choices=ALLOWED_STATES, default='present')
         ),
         required_if=[["state", "present", ["location"]]],
