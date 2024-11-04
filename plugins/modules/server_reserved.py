@@ -517,6 +517,18 @@ server_reserved:
               size:
                 description: The size of the root partition in GB. -1 to use all available space.
                 type: int
+      gpuConfiguration:
+        description: The GPU configuration.
+        type: dict
+        contains:
+          longName:
+            description: The long name of the GPU.
+            type: str
+            sample: Intel Max 1100 GPU
+          count:
+            description: The number of GPUs.
+            type: int
+            sample: 2
       supersededBy:
         description: Unique identifier of the server to which the reservation has been
         type: str

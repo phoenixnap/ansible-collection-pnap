@@ -1,4 +1,5 @@
-ancestor: null
+---
+ancestor:
 releases:
   1.10.0:
     changes:
@@ -7,18 +8,18 @@ releases:
         - private_network - The cidr parameter is no longer required
         - private_network - new parameter force added
     fragments:
-      - 007_server_network_configuration_modules.yml
+      - "007_server_network_configuration_modules.yml"
     modules:
       - description: add/remove an IP block from a server.
         name: server_ip_block
-        namespace: ''
+        namespace: ""
       - description: add/remove the server to/from a private network
         name: server_private_network
-        namespace: ''
+        namespace: ""
       - description: add/remove the server to/from a public network
         name: server_public_network
-        namespace: ''
-    release_date: '2023-03-30'
+        namespace: ""
+    release_date: "2023-03-30"
   1.11.0:
     changes:
       minor_changes:
@@ -26,16 +27,16 @@ releases:
         - server - add new netris_softgate parameters
         - storage_network - add new parameter client_vlan
     fragments:
-      - 008_storage_network_module_added.yml
-      - 009_storage_network_client_vlan_param_added.yml
+      - "008_storage_network_module_added.yml"
+      - "009_storage_network_client_vlan_param_added.yml"
     modules:
       - description: add/remove an IP block from a public network.
         name: public_network_ip_block
-        namespace: ''
+        namespace: ""
       - description: add/remove Volume from a Storage Network.
         name: storage_network_volume
-        namespace: ''
-    release_date: '2023-04-27'
+        namespace: ""
+    release_date: "2023-04-27"
   1.12.0:
     changes:
       minor_changes:
@@ -43,16 +44,16 @@ releases:
         - ip_block_info - filter by location, description, state
         - server - add new parameter storage_configuration
     fragments:
-      - 010_server_module_storage_configuration.yml
-      - 011_ip_block_module_improvement.yml
-    release_date: '2023-06-13'
+      - "010_server_module_storage_configuration.yml"
+      - "011_ip_block_module_improvement.yml"
+    release_date: "2023-06-13"
   1.13.0:
     changes:
       minor_changes:
         - ip_block_info - add new parameter cidr_block_size
     fragments:
-      - 012_ip_block_info_cidr.yml
-    release_date: '2023-06-15'
+      - "012_ip_block_info_cidr.yml"
+    release_date: "2023-06-15"
   1.14.0:
     changes:
       minor_changes:
@@ -60,106 +61,118 @@ releases:
         - storage_network - volumes parameter has new parameter tags added
         - storage_network_info - volumes parameter has new parameter tags added
     fragments:
-      - 013_ip_block_update.yml
-    release_date: '2023-07-12'
+      - "013_ip_block_update.yml"
+    release_date: "2023-07-12"
   1.15.0:
     changes:
       minor_changes:
         - The documentation for modules has been updated to meet the Ansible lint requirements
     fragments:
-      - 014_server_reserve.yml
+      - "014_server_reserve.yml"
     modules:
       - description: Retrieves all rated usage for given time period.
         name: rated_usage_info
-        namespace: ''
+        namespace: ""
       - description: reserve specific server.
         name: server_reserve
-        namespace: ''
-    release_date: '2023-11-30'
+        namespace: ""
+    release_date: "2023-11-30"
   1.16.0:
     changes:
       minor_changes:
         - Improved documentation
     fragments:
-      - 015_server_reserved.yml
+      - "015_server_reserved.yml"
     modules:
       - description: Provision reserved server.
         name: server_reserved
-        namespace: ''
-    release_date: '2024-01-16'
+        namespace: ""
+    release_date: "2024-01-16"
   1.17.0:
     changes:
       minor_changes:
         - pnap.py - event endpoint path  corrected
         - server - add new parameter datastore_congiguration
     fragments:
-      - 016_inventory_plugin.yml
+      - "016_inventory_plugin.yml"
     modules:
       - description: List invoices.
         name: invoice_info
-        namespace: ''
+        namespace: ""
       - description: List of client's transactions.
         name: transaction_info
-        namespace: ''
+        namespace: ""
     plugins:
       inventory:
         - description: Retrieves list of servers via PhoenixNAP BMC API
           name: bmc_server
-          namespace: null
-    release_date: '2024-03-15'
+          namespace:
+    release_date: "2024-03-15"
   1.17.1:
     changes:
       minor_changes:
-        - bmc_server - The documentation for inventory module has been updated to meet
-          the Ansible lint requirements
-        - invoice_info - Updated string formatting for compatibility with older Python
-          versions.
+        - bmc_server - The documentation for inventory module has been updated to meet the Ansible lint requirements
+        - invoice_info - Updated string formatting for compatibility with older Python versions.
     fragments:
-      - 017_yamllint_compliance.yml
-    release_date: '2024-05-17'
+      - "017_yamllint_compliance.yml"
+    release_date: "2024-05-17"
+  1.18.0:
+    changes:
+      minor_changes:
+        - README - updated to align with the certified collections requirements
+    fragments:
+      - "018_bgp_peer_group.yml"
+    modules:
+      - description: Create/delete BGP Peer Group. on phoenixNAP Bare Metal Cloud.
+        name: bgp_peer_group
+        namespace: ""
+      - description: Gather information about phoenixNAP BGP Peer Groups owned by account.
+        name: bgp_peer_group_info
+        namespace: ""
+    release_date: "2024-09-12"
   1.6.0:
     changes:
       minor_changes:
         - ip_block and server examples updated
         - server - add new parameter install_os_to_rams
     fragments:
-      - 001_storage_network_module_added.yml
+      - "001_storage_network_module_added.yml"
     modules:
       - description: Create/delete storage network on phoenixNAP Bare Metal Cloud.
         name: storage_network
-        namespace: ''
+        namespace: ""
       - description: Gather information about phoenixNAP BMC storage networks
         name: storage_network_info
-        namespace: ''
-    release_date: '2022-09-14'
+        namespace: ""
+    release_date: "2022-09-14"
   1.7.0:
     changes:
       minor_changes:
         - server - add new parameter cloud_init_user_data
     fragments:
-      - 002_server_module_cloud_init.yml
-    release_date: '2022-11-01'
+      - "002_server_module_cloud_init.yml"
+    release_date: "2022-11-01"
   1.7.1:
     changes:
       bugfixes:
         - server - cloud_init_user_data default value added
     fragments:
-      - 003_server_module_cloud_init_default.yml
-    release_date: '2022-11-22'
+      - "003_server_module_cloud_init_default.yml"
+    release_date: "2022-11-22"
   1.8.0:
     changes:
       minor_changes:
         - private_network - add new parameter vlan_id
         - public_network - add new parameter vlan_id
     fragments:
-      - 004_private_network_module_vlan_id.yml
-      - 005_public_network_module_vlan_id.yml
-    release_date: '2022-12-15'
+      - "004_private_network_module_vlan_id.yml"
+      - "005_public_network_module_vlan_id.yml"
+    release_date: "2022-12-15"
   1.9.0:
     changes:
       minor_changes:
         - server - The delete_ip_blocks parameter is required when state is absent
         - server - add new parameter force
     fragments:
-      - 006_server_module_force.yml
-    release_date: '2023-02-08'
+      - "006_server_module_force.yml"
+    release_date: "2023-02-08"

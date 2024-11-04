@@ -147,6 +147,9 @@ ip_blocks:
         returned: always
         type: str
         sample: 1.1.1.0/31
+      ipVersion:
+        description: The IP Version of the block.
+        type: str
       status:
         description: The status of the IP Block.
         returned: always
