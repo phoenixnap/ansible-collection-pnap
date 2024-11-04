@@ -5,6 +5,20 @@ Phoenixnap.Bmc Release Notes
 .. contents:: Topics
 
 
+v1.18.0
+=======
+
+Minor Changes
+-------------
+
+- README - updated to align with the certified collections requirements
+
+New Modules
+-----------
+
+- phoenixnap.bmc.bgp_peer_group - Create/delete BGP Peer Group. on phoenixNAP Bare Metal Cloud.
+- phoenixnap.bmc.bgp_peer_group_info - Gather information about phoenixNAP BGP Peer Groups owned by account.
+
 v1.17.1
 =======
 
