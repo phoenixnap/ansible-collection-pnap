@@ -5,6 +5,18 @@ Phoenixnap.Bmc Release Notes
 .. contents:: Topics
 
 
+v1.19.0
+=======
+
+Minor Changes
+-------------
+
+- ip_block - ip_version parameter is added
+- public_network - ra_enabled parameter is added, new parameters in docs, cidr, usedIpsCount, raEnabled
+- public_network_info - new parameters in docs, cidr, usedIpsCount, raEnabled
+- public_network_ip_block - new parameters in docs, cidr, usedIpsCount, raEnabled
+- server_public_network - compute_slaac_ip parameter is added
+
 v1.18.0
 =======
 
