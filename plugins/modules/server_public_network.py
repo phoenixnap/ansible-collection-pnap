@@ -51,6 +51,9 @@ options:
           and assign one or more IP addresses which are already configured on other resource(s) in network.
     type: list
     elements: str
+  compute_slaac_ip:
+    description: Requests Stateless Address Autoconfiguration (SLAAC). Applicable for Network which contains IPv6 block(s).
+    type: bool
   force:
     description:
       - parameter controlling advanced features availability.
@@ -129,6 +132,11 @@ server_public_network:
         returned: always
         type: str
         sample: assigned
+      computeSlaacIp:
+        description: Requests Stateless Address Autoconfiguration (SLAAC). Applicable for Network which contains IPv6 block(s).
+        returned: always
+        type: bool
+        sample: false
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -165,6 +173,7 @@ def server_public_network_action(module, state):
             data = remove_empty_elements(json.dumps({
                 "id": target_public_network_id,
                 "ips": module.params['ips'],
+                "computeSlaacIp": module.params['compute_slaac_ip'],
             }))
 
             if not module.check_mode:
@@ -198,6 +207,7 @@ def main():
             server_id=dict(required=True),
             public_network_id=dict(required=True),
             ips=dict(type='list', elements='str'),
+            compute_slaac_ip=dict(type='bool'),
             force=dict(type='bool'),
             state=dict(choices=ALLOWED_STATES, default='present')
         ),

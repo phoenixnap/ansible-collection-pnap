@@ -53,6 +53,9 @@ options:
   cidr_block_size:
     description: CIDR IP Block Size.
     type: str
+  ip_version:
+    description: IP Version.
+    type: str
   ip_block_id:
     description:
       - The IP Block identifier.
@@ -228,7 +231,7 @@ def get_matched_ip_blocks(existing_ips, cidr_block_size, location, count):
     return match_ips, count
 
 
-def create_ip_blocks(cidr_block_size, location, description, tags, count, module):
+def create_ip_blocks(cidr_block_size, ip_version, location, description, tags, count, module):
     ip_blocks_result = []
     if not module.check_mode:
         data = json.dumps({
@@ -236,6 +239,7 @@ def create_ip_blocks(cidr_block_size, location, description, tags, count, module
             'location': location,
             'description': description,
             'tags': tags,
+            'ipVersion': ip_version,
         })
         for __ in range(count):
             ip_blocks_result.append(requests_wrapper(IP_API, method='POST', data=data).json())
@@ -270,6 +274,7 @@ def ip_blocks_action(module, state):
     if count and count < 1:
         raise Exception('The count cannot be less than 0')
     cidr_block_size = module.params['cidr_block_size']
+    ip_version = module.params['ip_version']
     location = module.params['location']
     description = module.params['description']
     tags = module.params['tags']
@@ -297,7 +302,7 @@ def ip_blocks_action(module, state):
                 changed = True
                 if not module.check_mode:
                     for item in no_match:
-                        ip_blocks_result.append(create_ip_blocks(cidr_block_size, location, item, tags, 1, module)[0])
+                        ip_blocks_result.append(create_ip_blocks(cidr_block_size, ip_version, location, item, tags, 1, module)[0])
                 else:
                     for item in no_match:
                         ip_blocks_result.append(
@@ -342,7 +347,7 @@ def ip_blocks_action(module, state):
                 match_ips, count = get_matched_ip_blocks(existing_ips, cidr_block_size, location, count)
                 if count > 0:
                     changed = True
-                    ip_blocks_result = create_ip_blocks(cidr_block_size, location, description, tags, count, module)
+                    ip_blocks_result = create_ip_blocks(cidr_block_size, ip_version, location, description, tags, count, module)
                 elif count == 0 or module.params['count'] is None:
                     ip_blocks_result = match_ips
                 else:
@@ -371,6 +376,7 @@ def main():
             client_id=dict(default=os.environ.get('BMC_CLIENT_ID'), no_log=True),
             client_secret=dict(default=os.environ.get('BMC_CLIENT_SECRET'), no_log=True),
             cidr_block_size={},
+            ip_version={},
             location={},
             ip_block_id={},
             description=dict(type='list', elements='str'),

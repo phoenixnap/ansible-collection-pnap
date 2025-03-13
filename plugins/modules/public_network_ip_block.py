@@ -105,6 +105,14 @@ public_network_ip_block:
         returned: always
         type: str
         sample: 60473a6115e34466c9f8f083
+      cidr:
+        description: The CIDR notation of the IP block.
+        type: str
+        sample: 10.111.14.0/29
+      usedIpsCount:
+        description: The number of IPs used in the IP block.
+        type: str
+        sample: 3
 '''
 
 from ansible.module_utils.basic import AnsibleModule
