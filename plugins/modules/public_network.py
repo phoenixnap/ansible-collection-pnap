@@ -58,6 +58,9 @@ options:
   vlan_id:
     description: The VLAN that will be assigned to this network.
     type: int
+  ra_enabled:
+    description: Boolean indicating whether Router Advertisement is enabled. Only applicable for Network with IPv6 Blocks.
+    type: bool
   state:
     description: Indicate desired state of the target.
     default: present
@@ -161,13 +164,25 @@ public_networks:
         type: str
         sample: "2022-04-05T13:50:30.491Z"
       ipBlocks:
-        description: A list of IP Blocks that are associated with this public netwo
+        description: A list of IP Blocks that are associated with this public network
         type: list
         contains:
           id:
             description: The IP Block identifier.
             type: str
             sample: 60473a6115e34466c9f8f083
+          cidr:
+            description: The CIDR notation of the IP block.
+            type: str
+            sample: 10.111.14.0/29
+          usedIpsCount:
+            description: The number of IPs used in the IP block.
+            type: str
+            sample: 3
+      raEnabled:
+        description: Boolean indicating whether Router Advertisement is enabled. Only applicable for Network with IPv6 Blocks.
+        type: bool
+        sample: false
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -203,6 +218,7 @@ def network_action(module, state):
                 'description': module.params['description'],
                 'ipBlocks': module.params['ip_blocks'],
                 'vlanId': module.params['vlan_id'],
+                'raEnabled': module.params['ra_enabled'],
             })
             if not module.check_mode:
                 target_network = requests_wrapper(PUBLIC_NETWORK_API, method='POST', data=data).json()
@@ -250,6 +266,7 @@ def main():
                 )
             ),
             vlan_id=dict(type='int'),
+            ra_enabled=dict(type='bool'),
             state=dict(choices=ALLOWED_STATES, default='present')
         ),
         required_if=[["state", "present", ["name", "location"]]],
