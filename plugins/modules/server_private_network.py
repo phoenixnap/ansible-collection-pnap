@@ -54,7 +54,7 @@ options:
     type: list
     elements: str
   dhcp:
-    description: Determines whether DHCP is enabled for this server. Should be false if any IPs are provided.
+    description: Determines whether DHCP is enabled for this server.
     type: bool
   force:
     description:

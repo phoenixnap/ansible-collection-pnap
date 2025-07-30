@@ -1,7 +1,7 @@
 ---
 namespace: phoenixnap
 name: bmc
-version: 1.19.0
+version: 1.20.0
 readme: README.md
 authors:
   - Pavle Jojkic <pavlej@phoenixnap.com>

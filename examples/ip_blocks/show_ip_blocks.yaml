@@ -24,6 +24,6 @@
           - PHX
           - ASH
       register: output
-    - name: Print the gathered infos
+    - name: Print the gathered infos filtered by location
       ansible.builtin.debug:
         var: output.ip_blocks

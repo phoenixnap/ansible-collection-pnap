@@ -105,11 +105,29 @@ reservations:
         returned: always
         type: str
         sample: ONE_MONTH_RESERVATION
+      reservationState:
+        description: Reservation state.
+        returned: always
+        type: str
+        sample: ACTIVE
       initialInvoiceModel:
         description: Reservations created with initial invoice model ON_CREATION will be invoiced on same date when reservation is created.
         returned: always
         type: str
         sample: ON_CREATION
+      quantity:
+        description: Represents the quantity.
+        returned: always
+        type: dict
+        contains:
+          quantity:
+            description: Quantity size.
+            type: int
+            sample: 30
+          unit:
+            description: The quantity unit.
+            type: str
+            sample: TB
       startDateTime:
         description: The point in time (in UTC) when the reservation starts..
         returned: always
