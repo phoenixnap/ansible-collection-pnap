@@ -23,6 +23,6 @@
         product_category: SERVER
         location: PHX
       register: output
-    - name: Print the gathered infos
+    - name: Print the gathered infos filtered by location
       ansible.builtin.debug:
         var: output.products

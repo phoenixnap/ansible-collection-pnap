@@ -1,5 +1,4 @@
----
-ancestor:
+ancestor: null
 releases:
   1.10.0:
     changes:
@@ -12,14 +11,14 @@ releases:
     modules:
       - description: add/remove an IP block from a server.
         name: server_ip_block
-        namespace: ""
+        namespace: ''
       - description: add/remove the server to/from a private network
         name: server_private_network
-        namespace: ""
+        namespace: ''
       - description: add/remove the server to/from a public network
         name: server_public_network
-        namespace: ""
-    release_date: "2023-03-30"
+        namespace: ''
+    release_date: '2023-03-30'
   1.11.0:
     changes:
       minor_changes:
@@ -32,11 +31,11 @@ releases:
     modules:
       - description: add/remove an IP block from a public network.
         name: public_network_ip_block
-        namespace: ""
+        namespace: ''
       - description: add/remove Volume from a Storage Network.
         name: storage_network_volume
-        namespace: ""
-    release_date: "2023-04-27"
+        namespace: ''
+    release_date: '2023-04-27'
   1.12.0:
     changes:
       minor_changes:
@@ -46,14 +45,14 @@ releases:
     fragments:
       - 010_server_module_storage_configuration.yml
       - 011_ip_block_module_improvement.yml
-    release_date: "2023-06-13"
+    release_date: '2023-06-13'
   1.13.0:
     changes:
       minor_changes:
         - ip_block_info - add new parameter cidr_block_size
     fragments:
       - 012_ip_block_info_cidr.yml
-    release_date: "2023-06-15"
+    release_date: '2023-06-15'
   1.14.0:
     changes:
       minor_changes:
@@ -62,7 +61,7 @@ releases:
         - storage_network_info - volumes parameter has new parameter tags added
     fragments:
       - 013_ip_block_update.yml
-    release_date: "2023-07-12"
+    release_date: '2023-07-12'
   1.15.0:
     changes:
       minor_changes:
@@ -72,11 +71,11 @@ releases:
     modules:
       - description: Retrieves all rated usage for given time period.
         name: rated_usage_info
-        namespace: ""
+        namespace: ''
       - description: reserve specific server.
         name: server_reserve
-        namespace: ""
-    release_date: "2023-11-30"
+        namespace: ''
+    release_date: '2023-11-30'
   1.16.0:
     changes:
       minor_changes:
@@ -86,8 +85,8 @@ releases:
     modules:
       - description: Provision reserved server.
         name: server_reserved
-        namespace: ""
-    release_date: "2024-01-16"
+        namespace: ''
+    release_date: '2024-01-16'
   1.17.0:
     changes:
       minor_changes:
@@ -98,24 +97,26 @@ releases:
     modules:
       - description: List invoices.
         name: invoice_info
-        namespace: ""
+        namespace: ''
       - description: List of client's transactions.
         name: transaction_info
-        namespace: ""
+        namespace: ''
     plugins:
       inventory:
         - description: Retrieves list of servers via PhoenixNAP BMC API
           name: bmc_server
-          namespace:
-    release_date: "2024-03-15"
+          namespace: null
+    release_date: '2024-03-15'
   1.17.1:
     changes:
       minor_changes:
-        - bmc_server - The documentation for inventory module has been updated to meet the Ansible lint requirements
-        - invoice_info - Updated string formatting for compatibility with older Python versions.
+        - bmc_server - The documentation for inventory module has been updated to meet
+          the Ansible lint requirements
+        - invoice_info - Updated string formatting for compatibility with older Python
+          versions.
     fragments:
       - 017_yamllint_compliance.yml
-    release_date: "2024-05-17"
+    release_date: '2024-05-17'
   1.18.0:
     changes:
       minor_changes:
@@ -125,22 +126,37 @@ releases:
     modules:
       - description: Create/delete BGP Peer Group. on phoenixNAP Bare Metal Cloud.
         name: bgp_peer_group
-        namespace: ""
+        namespace: ''
       - description: Gather information about phoenixNAP BGP Peer Groups owned by account.
         name: bgp_peer_group_info
-        namespace: ""
-    release_date: "2024-09-12"
+        namespace: ''
+    release_date: '2024-09-12'
   1.19.0:
     changes:
       minor_changes:
         - ip_block - ip_version parameter is added
-        - public_network - ra_enabled parameter is added, new parameters in docs, cidr, usedIpsCount, raEnabled
+        - public_network - ra_enabled parameter is added, new parameters in docs, cidr,
+          usedIpsCount, raEnabled
         - public_network_info - new parameters in docs, cidr, usedIpsCount, raEnabled
         - public_network_ip_block - new parameters in docs, cidr, usedIpsCount, raEnabled
         - server_public_network - compute_slaac_ip parameter is added
     fragments:
       - 019_public_network_new_params.yml
-    release_date: "2025-03-13"
+    release_date: '2025-03-13'
+  1.20.0:
+    changes:
+      minor_changes:
+        - ip_block - Response parameter documentation updated
+        - ip_block_info - Response parameter documentation updated
+        - reservation - Response parameter documentation updated
+        - reservation_info - Response parameter documentation updated
+    fragments:
+      - 020_reservation_transfer.yml
+    modules:
+      - description: Transfer server reservation
+        name: reservation_transfer
+        namespace: ''
+    release_date: '2025-07-30'
   1.6.0:
     changes:
       minor_changes:
@@ -151,25 +167,25 @@ releases:
     modules:
       - description: Create/delete storage network on phoenixNAP Bare Metal Cloud.
         name: storage_network
-        namespace: ""
+        namespace: ''
       - description: Gather information about phoenixNAP BMC storage networks
         name: storage_network_info
-        namespace: ""
-    release_date: "2022-09-14"
+        namespace: ''
+    release_date: '2022-09-14'
   1.7.0:
     changes:
       minor_changes:
         - server - add new parameter cloud_init_user_data
     fragments:
       - 002_server_module_cloud_init.yml
-    release_date: "2022-11-01"
+    release_date: '2022-11-01'
   1.7.1:
     changes:
       bugfixes:
         - server - cloud_init_user_data default value added
     fragments:
       - 003_server_module_cloud_init_default.yml
-    release_date: "2022-11-22"
+    release_date: '2022-11-22'
   1.8.0:
     changes:
       minor_changes:
@@ -178,7 +194,7 @@ releases:
     fragments:
       - 004_private_network_module_vlan_id.yml
       - 005_public_network_module_vlan_id.yml
-    release_date: "2022-12-15"
+    release_date: '2022-12-15'
   1.9.0:
     changes:
       minor_changes:
@@ -186,4 +202,4 @@ releases:
         - server - add new parameter force
     fragments:
       - 006_server_module_force.yml
-    release_date: "2023-02-08"
+    release_date: '2023-02-08'

@@ -119,29 +119,27 @@ bgp_peer_groups:
         returned: always
         type: str
         sample: PHX
-      ipv4Prefixes:
-        description: The List of the BGP Peer Group IPv4 prefixes.
+      ipPrefixes:
+        description: The List of the BGP Peer Group IP prefixes.
         returned: always
         type: list
         contains:
-          ipv4AllocationId:
-            description: IPv4 allocation ID.
+          ipAllocationId:
+            description: IP allocation ID.
             type: str
             sample: 6047127fed34ecc3ba8402d2
           cidr:
-            description: The IP block in CIDR format.
+            description: The IP block in CIDR format, dependent on IP version.
             type: str
             sample: 10.111.14.40/29
+          ipVersion:
+            description: The IP block version.
+            type: bool
+            example: V4
           status:
             description: The BGP IPv4 Prefix status.
             type: str
             example: READY
-          isBringYourOwnIp:
-            description: Identifies IP as a bring your own IP block.
-            type: bool
-          inUse:
-            description: The Boolean value of the BGP IPv4 Prefix is in use.
-            type: bool
       targetAsnDetails:
         description: BGP Peer Group ASN details.
         returned: always

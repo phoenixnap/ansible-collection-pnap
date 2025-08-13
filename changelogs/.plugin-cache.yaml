@@ -105,6 +105,11 @@ plugins:
       name: reservation_info
       namespace: ''
       version_added: 1.0.0
+    reservation_transfer:
+      description: Transfer server reservation
+      name: reservation_transfer
+      namespace: ''
+      version_added: 1.20.0
     server:
       description: Manage phoenixNAP Bare Metal Cloud servers
       name: server
@@ -185,4 +190,4 @@ plugins:
   strategy: {}
   test: {}
   vars: {}
-version: 1.19.0
+version: 1.20.0

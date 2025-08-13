@@ -65,10 +65,10 @@ EXAMPLES = '''
     - ~/.pnap/config.yaml
   tasks:
     - name: List tags information based on the specified names
-      phoenixnap.bmc.network_info:
+      phoenixnap.bmc.tag_info:
         client_id: "{{ clientId }}"
         client_secret: "{{ clientSecret }}"
-      names: [Environment]
+        names: [Environment]
       register: output
     - name: Print the gathered infos
       ansible.builtin.debug:
