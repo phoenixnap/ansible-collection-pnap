@@ -97,6 +97,24 @@ reservations:
         returned: always
         type: str
         sample: ONE_MONTH_RESERVATION
+      quantity:
+        description: Represents the quantity.
+        returned: always
+        type: dict
+        contains:
+          quantity:
+            description: Quantity size.
+            type: int
+            sample: 30
+          unit:
+            description: The quantity unit.
+            type: str
+            sample: TB
+      reservationState:
+        description: Reservation state.
+        returned: always
+        type: str
+        sample: ACTIVE
       startDateTime:
         description: The point in time (in UTC) when the reservation starts.
         returned: always

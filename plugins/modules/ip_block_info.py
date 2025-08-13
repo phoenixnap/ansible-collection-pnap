@@ -109,6 +109,11 @@ ip_blocks:
         returned: always
         type: str
         sample: unassigned
+      parentIpBlockAllocationId:
+        description: IP Block parent identifier. If present, this block is subnetted from the parent IP Block.
+        returned: always
+        type: str
+        sample: 5edf1c9b4212930ac543d999
       assignedResourceId:
         description: ID of the resource assigned to the IP Block.
         returned: always
@@ -148,6 +153,10 @@ ip_blocks:
             description: Who the tag was created by.
             type: str
             sample: USER
+      isSystemManaged:
+        description: True if the IP block is a system managed block.
+        type: bool
+        sample: true
       isBringYourOwn:
         description: True if the IP block is a bring your own block.
         type: bool

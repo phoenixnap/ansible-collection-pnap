@@ -5,6 +5,22 @@ Phoenixnap.Bmc Release Notes
 .. contents:: Topics
 
 
+v1.20.0
+=======
+
+Minor Changes
+-------------
+
+- ip_block - Response parameter documentation updated
+- ip_block_info - Response parameter documentation updated
+- reservation - Response parameter documentation updated
+- reservation_info - Response parameter documentation updated
+
+New Modules
+-----------
+
+- phoenixnap.bmc.reservation_transfer - Transfer server reservation
+
 v1.19.0
 =======
 
