@@ -275,6 +275,12 @@ servers:
                 type: list
                 elements: str
                 sample: ["172.217.22.14", "10.111.14.40/29", "10.111.14.66 - 10.111.14.71"]
+              bringYourOwnLicense:
+                description:
+                  - Use a Bring Your Own (BYO) Windows license. If true, the server is provisioned in trial mode, and you must activate your own license.
+                  - If false (default), the server includes a managed Windows license billed by the platform.
+                type: bool
+                sample: false
           rootPassword:
             description: Password set for user root on an ESXi server which will only be returned in response to provisioning a server.
             type: str

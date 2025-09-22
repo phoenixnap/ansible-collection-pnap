@@ -142,6 +142,11 @@ options:
     description: List of IPs allowed for RDP access to Windows OS. Supported in single IP, CIDR and range format. When undefined, RDP is disabled.
     type: list
     elements: str
+  bring_your_own_license:
+    description:
+      - Use a Bring Your Own (BYO) Windows license. If true, the server is provisioned in trial mode, and you must activate your own license.
+      - If false (default), the server includes a managed Windows license billed by the platform.
+    type: bool
   server_id:
     description: The unique identifier of the server.
     type: str
@@ -386,6 +391,12 @@ server_reserved:
                 type: list
                 elements: str
                 sample: ["172.217.22.14", "10.111.14.40/29", "10.111.14.66 - 10.111.14.71"]
+              bringYourOwnLicense:
+                description:
+                  - Use a Bring Your Own (BYO) Windows license. If true, the server is provisioned in trial mode, and you must activate your own license.
+                  - If false (default), the server includes a managed Windows license billed by the platform.
+                type: bool
+                sample: false
           rootPassword:
             description: Password set for user root on an ESXi server which will only be returned in response to provisioning a server.
             type: str
@@ -590,7 +601,8 @@ def get_module_params(module, current_hostname):
             "netrisController": module.params.get('netris_controller'),
             "netrisSoftgate": netris_softgate,
             "windows": {
-                "rdpAllowedIps": module.params.get('rdp_allowed_ips')
+                "rdpAllowedIps": module.params.get('rdp_allowed_ips'),
+                "bringYourOwnLicense": module.params['bring_your_own_license'],
             },
             "managementAccessAllowedIps": module.params.get('management_access_allowed_ips'),
             "installOsToRam": module.params.get('install_os_to_ram'),
@@ -670,6 +682,7 @@ def main():
                 )),
             os=dict(required=True),
             rdp_allowed_ips=dict(type='list', elements='str'),
+            bring_your_own_license=dict(type='bool'),
             private_network_configuration_type=dict(default='USE_OR_CREATE_DEFAULT'),
             private_networks=dict(
                 type='list',

@@ -88,7 +88,8 @@ class TestApiParams(TestCase):
                 'type': 's1.c1.small',
                 'osConfiguration': {
                     'windows': {
-                        'rdpAllowedIps': '1.1.1.1'
+                        'rdpAllowedIps': '1.1.1.1',
+                        'bringYourOwnLicense': False,
                     },
                     'managementAccessAllowedIps': '1.1.1.1',
                     'installOsToRam': False,
@@ -148,4 +149,5 @@ class PseudoModule:
         'netris_softgate': {},
         'storage_configuration': {},
         'datastore_configuration': {'datastore_name': 'test'},
+        'bring_your_own_license': False,
     }

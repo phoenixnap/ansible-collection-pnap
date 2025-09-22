@@ -428,7 +428,7 @@ def server_reserve_action(module):
         changed = True
         if not module.check_mode:
             data = json.dumps({"pricingModel": target_pricing_model})
-            existing_server = requests_wrapper(SERVER_API + server_id + API_SUFFIX, method='POST', data=data)
+            existing_server = requests_wrapper(SERVER_API + server_id + API_SUFFIX, method='POST', data=data).json()
 
     return {
         'changed': changed,

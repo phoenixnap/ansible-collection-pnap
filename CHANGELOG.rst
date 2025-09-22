@@ -4,6 +4,14 @@ Phoenixnap.Bmc Release Notes
 
 .. contents:: Topics
 
+v1.21.0
+=======
+
+Minor Changes
+-------------
+
+- reservation - add new parameter bring_your_own_license
+- server - add new parameter bring_your_own_license
 
 v1.20.0
 =======
