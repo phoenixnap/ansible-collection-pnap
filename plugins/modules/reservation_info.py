@@ -163,6 +163,23 @@ reservations:
         returned: always
         type: str
         sample: "2020-04-19"
+      utilization:
+        description: Utilization details.
+        type: dict
+        contains:
+          quantity:
+            description: Storage quantity.
+            type: dict
+            contains:
+              quantity:
+                description: Quantity size.
+                type: str
+              unit:
+                description: The quantity unit.
+                type: str
+          percentage:
+            description: Utilization percent.
+            type: int
 '''
 
 from ansible.module_utils.basic import AnsibleModule

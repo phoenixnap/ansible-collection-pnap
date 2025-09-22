@@ -37,6 +37,16 @@ options:
     description: The sku code of product pricing plan.
     type: str
     required: true
+  quantity:
+    description: Represents the quantity.
+    type: dict
+    suboptions:
+      quantity:
+        description: Quantity size.
+        type: int
+      unit:
+        description: The quantity unit.
+        type: str
   auto_renew:
     description: A flag indicating whether the reservation will auto-renew. ALL reservations with the given SKU will be affected.
     type: bool
@@ -174,6 +184,23 @@ reservations:
         returned: always
         type: str
         sample: "2020-04-19"
+      utilization:
+        description: Utilization details.
+        type: dict
+        contains:
+          quantity:
+            description: Storage quantity.
+            type: dict
+            contains:
+              quantity:
+                description: Quantity size.
+                type: str
+              unit:
+                description: The quantity unit.
+                type: str
+          percentage:
+            description: Utilization percent.
+            type: int
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -210,12 +237,19 @@ def reservation_action(module, state):
     reservations = []
 
     if state == 'present':
+        quantity = None
+        if module.params['quantity']:
+            quantity = {
+                "quantity": module.params['quantity']['quantity'],
+                "controllerAuthKey": module.params['quantity']['unit'],
+            }
         if module.params['convert']:
             if not target_reservations:
                 raise Exception("Reservation with SKU %s doesn't exist." % sku)
             new_sku = module.params['convert']
             data = json.dumps({
-                'sku': new_sku
+                'sku': new_sku,
+                'quantity': quantity,
             })
 
             for tr in target_reservations:
@@ -232,7 +266,8 @@ def reservation_action(module, state):
                         reservations.append(tr)
             else:
                 data = json.dumps({
-                    'sku': sku
+                    'sku': sku,
+                    'quantity': quantity,
                 })
                 reservations = requests_wrapper(RESERVATION_API, method='POST', data=data).json()
                 if reservations['autoRenew'] != auto_renew:
@@ -251,6 +286,12 @@ def main():
             client_id=dict(default=os.environ.get('BMC_CLIENT_ID'), no_log=True),
             client_secret=dict(default=os.environ.get('BMC_CLIENT_SECRET'), no_log=True),
             sku=dict(required=True),
+            quantity=dict(
+                type='dict',
+                options=dict(
+                    quantity=dict(type='int'),
+                    unit=dict(type='str'),
+                )),
             auto_renew=dict(type='bool'),
             convert={},
             state=dict(choices=ALLOWED_STATES, default='present')
