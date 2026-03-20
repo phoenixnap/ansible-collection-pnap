@@ -110,11 +110,19 @@ reservations:
         returned: always
         type: str
         sample: PHX
-      reservationModel:
-        description: The Reservation Model.
+      term:
+        description: The Reservation term.
         returned: always
-        type: str
-        sample: ONE_MONTH_RESERVATION
+        type: dict
+        contains:
+          lengthInMonths:
+            description: Term's length, expressed in months.
+            type: int
+            sample: 12
+          reservationModel:
+            description: The reservation model.
+            type: str
+            sample: ONE_MONTH_RESERVATION
       reservationState:
         description: Reservation state.
         returned: always

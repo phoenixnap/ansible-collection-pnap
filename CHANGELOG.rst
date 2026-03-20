@@ -4,6 +4,18 @@ Phoenixnap.Bmc Release Notes
 
 .. contents:: Topics
 
+v1.22.0
+=======
+
+Minor Changes
+-------------
+
+- rated_usage_info - Response parameter documentation updated
+- reservation - Response parameter documentation updated
+- reservation_info - Response parameter documentation updated
+- server_private_network - Response parameter documentation updated
+- server_public_network - Response parameter documentation updated
+
 v1.21.0
 =======
 

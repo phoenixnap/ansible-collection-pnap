@@ -180,11 +180,27 @@ rated_usage:
         returned: always
         type: str
         sample: ec4a9d49-1cef-49e9-b85e-b560f88bcd26
-      reservationId:
-        description: Reservation id associated with this rated usage record.
+      reservationDetails:
+        description: Details of a Reservation entry inside Rated Usage.
         returned: always
-        type: str
-        sample: c32a24a1-5949-4b60-99c0-c8aaa3a92b04
+        type: dict
+        contains:
+          id:
+            description: The Reservation identifier.
+            type: str
+            sample: 83604275-bdba-490a-b87a-978e8dffdb14
+          quantity:
+            description: Represents the quantity.
+            type: dict
+            contains:
+              quantity:
+                description: Quantity size.
+                type: int
+                sample: 30
+              unit:
+                description: The quantity unit.
+                type: str
+                sample: TB
 '''
 
 from ansible.module_utils.basic import AnsibleModule

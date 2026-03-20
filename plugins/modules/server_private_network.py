@@ -135,6 +135,11 @@ server_private_network:
         returned: always
         type: bool
         sample: false
+      vlanId:
+        description: The VLAN on which this network has been configured within the network switch.
+        returned: always
+        type: int
+        sample: 10
       statusDescription:
         description: The status of the network.
         returned: always

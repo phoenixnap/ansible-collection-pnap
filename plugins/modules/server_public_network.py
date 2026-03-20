@@ -137,6 +137,11 @@ server_public_network:
         returned: always
         type: bool
         sample: false
+      vlanId:
+        description: The VLAN on which this network has been configured within the network switch.
+        returned: always
+        type: int
+        sample: 10
 '''
 
 from ansible.module_utils.basic import AnsibleModule
