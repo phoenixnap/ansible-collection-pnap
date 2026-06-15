@@ -74,6 +74,23 @@ options:
       - Used alongside the USER_DEFINED configurationType.
       - must contain at most 1 item
     type: str
+  ipxe:
+    description: iPXE configuration details. Configures the server to boot using the iPXE network boot firmware with a custom boot script.
+    type: dict
+    suboptions:
+      url:
+        description: The URL of the iPXE boot script used to start the server.
+        type: str
+      native_vlan_configuration:
+        description: Specifies the native VLAN configuration for the server.
+        type: dict
+        suboptions:
+          vlan_id:
+            description: The VLAN ID of the network to be used as the native VLAN.
+            type: int
+          static_dhcp_address_v4:
+            description: The static IP V4 address assigned to the server within the native VLAN.
+            type: str
   hostname:
     description: Name of server.
     type: str
@@ -418,6 +435,17 @@ server_reserved:
               - On restart RAM OS will be lost and the server will not be reachable unless a custom bootable OS has been deployed.
             type: bool
             sample: false
+          esxi:
+            description: Esxi OS configuration.
+            type: dict
+            contains:
+              datastoreConfiguration:
+                description: Esxi data storage configuration.
+                type: dict
+                contains:
+                  datastoreName:
+                    description: Datastore name.
+                    type: str
           cloudInit:
             description: Cloud-init configuration details.
             type: dict
@@ -425,6 +453,26 @@ server_reserved:
               userData:
                 description: User data for the cloud-init configuration in base64 encoding. NoCloud format is supported.
                 type: str
+          iPXE:
+            description: iPXE configuration details. Configures the server to boot using the iPXE network boot firmware with a custom boot script.
+            type: dict
+            contains:
+              url:
+                description: The URL of the iPXE boot script used to start the server.
+                type: str
+              nativeVlanConfiguration:
+                description: Specifies the native VLAN configuration for the server.
+                type: dict
+                contains:
+                  vlanId:
+                    description: The VLAN ID of the network to be used as the native VLAN.
+                    type: int
+                  staticDhcpAddressV4:
+                    description: The static IP V4 address assigned to the server within the native VLAN.
+                    type: str
+                  status:
+                    description: The status of the native VLAN configuration.
+                    type: str
       networkConfiguration:
         description: Entire network details of bare metal server.
         type: dict
@@ -587,6 +635,21 @@ def get_module_params(module, current_hostname):
             "controllerAuthKey": module.params['netris_softgate']['controller_auth_key'],
             "controllerVersion": module.params['netris_softgate']['controller_version'],
         }
+    ipxe = None
+    if module.params['ipxe']:
+        ipxe = {
+            "url": module.params['ipxe']['url']
+        }
+        native_vlan = module.params['ipxe'].get('native_vlan_configuration')
+        if native_vlan:
+            native_vlan_configuration = {}
+            if native_vlan.get('vlan_id') is not None:
+                native_vlan_configuration["vlanId"] = native_vlan['vlan_id']
+            if native_vlan.get('static_dhcp_address_v4') is not None:
+                native_vlan_configuration["staticDhcpAddressV4"] = native_vlan['static_dhcp_address_v4']
+            if native_vlan_configuration:
+                ipxe["nativeVlanConfiguration"] = native_vlan_configuration
+
     hostname = module.params.get('hostname') or current_hostname
 
     return json.dumps(remove_empty_elements({
@@ -600,6 +663,7 @@ def get_module_params(module, current_hostname):
         "osConfiguration": {
             "netrisController": module.params.get('netris_controller'),
             "netrisSoftgate": netris_softgate,
+            "iPXE": ipxe,
             "windows": {
                 "rdpAllowedIps": module.params.get('rdp_allowed_ips'),
                 "bringYourOwnLicense": module.params['bring_your_own_license'],
@@ -679,6 +743,18 @@ def main():
                     controller_address=dict(type='str'),
                     controller_version=dict(type='str'),
                     controller_auth_key=dict(no_log=True)
+                )),
+            ipxe=dict(
+                type='dict',
+                options=dict(
+                    url=dict(type='str'),
+                    native_vlan_configuration=dict(
+                        type='dict',
+                        options=dict(
+                            vlan_id=dict(type='int'),
+                            static_dhcp_address_v4=dict(type='str'),
+                        )
+                    ),
                 )),
             os=dict(required=True),
             rdp_allowed_ips=dict(type='list', elements='str'),

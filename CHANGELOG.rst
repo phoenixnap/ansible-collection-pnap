@@ -4,6 +4,17 @@ Phoenixnap.Bmc Release Notes
 
 .. contents:: Topics
 
+v1.23.0
+=======
+
+Minor Changes
+-------------
+
+- server - iPXE parameters added
+- server_info - iPXE parameters added
+- server_reserve - iPXE parameters added
+- server_reserved - iPXE parameters added
+
 v1.22.0
 =======
 

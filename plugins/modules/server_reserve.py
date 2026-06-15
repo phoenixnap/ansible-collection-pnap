@@ -268,6 +268,17 @@ server_reserve:
               - On restart RAM OS will be lost and the server will not be reachable unless a custom bootable OS has been deployed.
             type: bool
             sample: false
+          esxi:
+            description: Esxi OS configuration.
+            type: dict
+            contains:
+              datastoreConfiguration:
+                description: Esxi data storage configuration.
+                type: dict
+                contains:
+                  datastoreName:
+                    description: Datastore name.
+                    type: str
           cloudInit:
             description: Cloud-init configuration details.
             type: dict
@@ -275,6 +286,26 @@ server_reserve:
               userData:
                 description: User data for the cloud-init configuration in base64 encoding. NoCloud format is supported.
                 type: str
+          iPXE:
+            description: iPXE configuration details. Configures the server to boot using the iPXE network boot firmware with a custom boot script.
+            type: dict
+            contains:
+              url:
+                description: The URL of the iPXE boot script used to start the server.
+                type: str
+              nativeVlanConfiguration:
+                description: Specifies the native VLAN configuration for the server.
+                type: dict
+                contains:
+                  vlanId:
+                    description: The VLAN ID of the network to be used as the native VLAN.
+                    type: int
+                  staticDhcpAddressV4:
+                    description: The static IP V4 address assigned to the server within the native VLAN.
+                    type: str
+                  status:
+                    description: The status of the native VLAN configuration.
+                    type: str
       networkConfiguration:
         description: Entire network details of bare metal server.
         type: dict

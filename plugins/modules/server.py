@@ -81,6 +81,23 @@ options:
       - Used alongside the USER_DEFINED configurationType.
       - must contain at most 1 item
     type: str
+  ipxe:
+    description: iPXE configuration details. Configures the server to boot using the iPXE network boot firmware with a custom boot script.
+    type: dict
+    suboptions:
+      url:
+        description: The URL of the iPXE boot script used to start the server.
+        type: str
+      native_vlan_configuration:
+        description: Specifies the native VLAN configuration for the server.
+        type: dict
+        suboptions:
+          vlan_id:
+            description: The VLAN ID of the network to be used as the native VLAN.
+            type: int
+          static_dhcp_address_v4:
+            description: The static IP V4 address assigned to the server within the native VLAN.
+            type: str
   hostnames:
     description: Name of server.
     type: list
@@ -220,6 +237,19 @@ options:
       datastore_name:
         description: Datastore name.
         type: str
+  boot_type:
+    description:
+      - This option applies only when state is set to reboot.
+      - Allowed values are IPXE and STANDARD.
+      - Specifies whether to boot via IPXE (requires script) or STANDARD (default mechanism, incompatible with ipxeUrl).
+    type: str
+    default: STANDARD
+  ipxe_url:
+    description:
+      - This option applies only when state is set to reboot.
+      - The URL for the iPXE script, used only with IPXE boot type.
+    type: str
+
 '''
 
 EXAMPLES = '''
@@ -542,6 +572,26 @@ servers:
               userData:
                 description: User data for the cloud-init configuration in base64 encoding. NoCloud format is supported.
                 type: str
+          iPXE:
+            description: iPXE configuration details. Configures the server to boot using the iPXE network boot firmware with a custom boot script.
+            type: dict
+            contains:
+              url:
+                description: The URL of the iPXE boot script used to start the server.
+                type: str
+              nativeVlanConfiguration:
+                description: Specifies the native VLAN configuration for the server.
+                type: dict
+                contains:
+                  vlanId:
+                    description: The VLAN ID of the network to be used as the native VLAN.
+                    type: int
+                  staticDhcpAddressV4:
+                    description: The static IP V4 address assigned to the server within the native VLAN.
+                    type: str
+                  status:
+                    description: The status of the native VLAN configuration.
+                    type: str
       networkConfiguration:
         description: Entire network details of bare metal server.
         type: dict
@@ -788,6 +838,10 @@ def get_api_params(module, server_id, target_state):
     elif (target_state == 'shutdown'):
         path = '%s/actions/shutdown' % server_id
     elif (target_state == 'rebooted'):
+        data = {
+            "bootType": module.params['boot_type'],
+            "ipxeUrl": module.params['ipxe_url'],
+        }
         path = '%s/actions/reboot' % server_id
     elif (target_state == 'reset'):
         path = '%s/actions/reset' % server_id
@@ -823,6 +877,20 @@ def get_api_params(module, server_id, target_state):
                     "datastoreName": module.params['datastore_configuration']['datastore_name']
                 }
             }
+        ipxe = None
+        if module.params['ipxe']:
+            ipxe = {
+                "url": module.params['ipxe']['url']
+            }
+            native_vlan = module.params['ipxe'].get('native_vlan_configuration')
+            if native_vlan:
+                native_vlan_configuration = {}
+                if native_vlan.get('vlan_id') is not None:
+                    native_vlan_configuration["vlanId"] = native_vlan['vlan_id']
+                if native_vlan.get('static_dhcp_address_v4') is not None:
+                    native_vlan_configuration["staticDhcpAddressV4"] = native_vlan['static_dhcp_address_v4']
+                if native_vlan_configuration:
+                    ipxe["nativeVlanConfiguration"] = native_vlan_configuration
 
         data = {
             "description": module.params['description'],
@@ -847,6 +915,7 @@ def get_api_params(module, server_id, target_state):
                 "installOsToRam": module.params['install_os_to_ram'],
                 "cloudInit": {"userData": standard_b64encode(module.params['cloud_init_user_data'].encode("utf-8")).decode("utf-8")},
                 "esxi": datastore_configuration,
+                "iPXE": ipxe,
             },
             "networkConfiguration": {
                 "gatewayAddress": gateway_address,
@@ -962,6 +1031,18 @@ def main():
                     datastore_name={},
                 )
             ),
+            ipxe=dict(
+                type='dict',
+                options=dict(
+                    url=dict(type='str'),
+                    native_vlan_configuration=dict(
+                        type='dict',
+                        options=dict(
+                            vlan_id=dict(type='int'),
+                            static_dhcp_address_v4=dict(type='str'),
+                        )
+                    ),
+                )),
             os={},
             rdp_allowed_ips=dict(type='list', elements='str'),
             bring_your_own_license=dict(type='bool'),
@@ -1008,6 +1089,8 @@ def main():
                     value={}
                 )),
             type={},
+            boot_type=dict(default='STANDARD'),
+            ipxe_url={},
         ),
         mutually_exclusive=[('hostnames', 'server_ids')],
         required_one_of=[('hostnames', 'server_ids')],

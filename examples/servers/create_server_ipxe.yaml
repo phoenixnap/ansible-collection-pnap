@@ -1,0 +1,27 @@
+# All the examples assume that you have file config.yaml with your 'clientId' and 'clientSecret'
+# in location: ~/.pnap/config.yaml
+
+- name: Example
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ~/.pnap/config.yaml
+  tasks:
+    - name: Boot using the iPXE network boot firmware
+      phoenixnap.bmc.server:
+        client_id: "{{ clientId }}"
+        client_secret: "{{ clientSecret }}"
+        hostnames: my-server-1
+        location: PHX
+        os: ipxe
+        ipxe:
+          url: https://example.com/boot.ipxe
+          native_vlan_configuration:
+            vlan_id: 10
+            static_dhcp_address_v4: 185.74.213.56
+        type: s4.x6.c6.large
+        state: present
+      register: output
+    - name: Print the servers information
+      ansible.builtin.debug:
+        var: output.servers
