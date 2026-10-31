@@ -23,7 +23,7 @@ Ansible collection of modules for interacting with the <a href="https://develope
 ## Requirements
 
 - [Bare Metal Cloud](https://bmc.phoenixnap.com) account
-- Python 3 (versions 3.12 and higher)
+- Python 3 (versions 3.10 and higher)
   - Python **_requests_** package
 
 ## Creating a Bare Metal Cloud account
