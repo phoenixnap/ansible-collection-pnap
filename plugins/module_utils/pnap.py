@@ -109,7 +109,7 @@ def wait_for_network_status_change(server_id, network_id, get_existing_network_m
     timeout = time.time() + NETWORK_TIMEOUT_STATUS_CHANGE
     while timeout > time.time():
         network = get_existing_network_method(server_id, network_id, module)
-        if network["statusDescription"].lower() == "assigned":
+        if network["statusDescription"].lower() == target_status.lower():
             return network
         time.sleep(CHECK_FOR_NETWORK_STATUS_CHANGE)
     raise Exception('waiting for status %s has expired' % target_status)
