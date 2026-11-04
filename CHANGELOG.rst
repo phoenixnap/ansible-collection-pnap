@@ -4,6 +4,16 @@ Phoenixnap.Bmc Release Notes
 
 .. contents:: Topics
 
+v1.24.0
+=======
+
+Minor Changes
+-------------
+
+- Remove Python 2 compatibility code across the collection.
+- Update collection documentation to address certification requirements
+- public_network - Support updating description and ra_enabled parameters.
+
 v1.23.0
 =======
 

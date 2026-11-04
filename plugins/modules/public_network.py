@@ -2,9 +2,6 @@
 # (c) 2021, Pavle Jojkic <pavlej@phoenixnap.com> , Goran Jelenic <goranje@phoenixnap.com>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
-__metaclass__ = type
-
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
     'status': ['preview'],
@@ -194,7 +191,7 @@ import os
 import json
 
 ALLOWED_STATES = ["present", "absent"]
-IMMUTABLE_ARGUMENTS = {'location': 'location'}
+IMMUTABLE_ARGUMENTS = {'location': 'location', 'vlan_id': 'vlanId'}
 
 
 def get_existing_networks(module):
@@ -225,15 +222,30 @@ def network_action(module, state):
 
         else:
             check_immutable_arguments(IMMUTABLE_ARGUMENTS, target_network, module)
-            desc = target_network.get('description')
-            if desc != module.params['description']:
+            data = {}
+            changed = False
+
+            if (
+                module.params['description'] is not None
+                and target_network.get('description') != module.params['description']
+            ):
+                data['description'] = module.params['description']
                 changed = True
-                data = json.dumps({
-                    'name': target_network['name'],
-                    'description': module.params['description'],
-                })
+
+            if (
+                module.params['ra_enabled'] is not None
+                and target_network.get('raEnabled') != module.params['ra_enabled']
+            ):
+                data['raEnabled'] = module.params['ra_enabled']
+                changed = True
+
+            if changed:
                 if not module.check_mode:
-                    target_network = requests_wrapper(PUBLIC_NETWORK_API + target_network['id'], method='PATCH', data=data).json()
+                    target_network = requests_wrapper(
+                        PUBLIC_NETWORK_API + target_network['id'],
+                        method='PATCH',
+                        data=json.dumps(data)
+                    ).json()
 
     if state == 'absent' and target_network != 'absent':
         changed = True

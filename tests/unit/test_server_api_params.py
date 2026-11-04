@@ -45,9 +45,12 @@ class TestApiParams(TestCase):
         expected_output = {
             'method': 'POST',
             'endpoint': 'https://api.phoenixnap.com/bmc/v1/servers/some_server_id/actions/reboot',
-            'data': 'null'
+            'data': json.dumps({
+                'bootType': 'STANDARD',
+                'ipxeUrl': 'test'
+            })
         }
-        self.assertDictEqual(get_api_params(None, 'some_server_id', 'rebooted'), expected_output)
+        self.assertDictEqual(get_api_params(PseudoModule(), 'some_server_id', 'rebooted'), expected_output)
 
     def test_api_params_for_state_reset(self):
         expected_output = {
@@ -150,4 +153,7 @@ class PseudoModule:
         'storage_configuration': {},
         'datastore_configuration': {'datastore_name': 'test'},
         'bring_your_own_license': False,
+        'boot_type': 'STANDARD',
+        'ipxe_url': 'test',
+        'ipxe': {},
     }

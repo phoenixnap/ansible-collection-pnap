@@ -9,7 +9,7 @@
 ## Description
 
 <p align="center">
-Ansible collection of modules for interacting with the <a href="https://developers.phoenixnap.com/apis">Bare Metal Cloud API</a>. This collection contains the <i><b>server</b></i> module which allows you to automate <a href="https://phoenixnap.com/bare-metal-cloud">Bare Metal Cloud</a> server provisioning and management.
+Ansible collection of modules for interacting with the <a href="https://developers.phoenixnap.com/apis">Bare Metal Cloud API</a>. This collection enables you to automate the provisioning, configuration, and management of <a href="https://phoenixnap.com/bare-metal-cloud">Bare Metal Cloud</a> resources, including servers, networks, and other cloud resources.
 </p>
 
 <p align="center">
@@ -23,8 +23,7 @@ Ansible collection of modules for interacting with the <a href="https://develope
 ## Requirements
 
 - [Bare Metal Cloud](https://bmc.phoenixnap.com) account
-- Ansible 2.9+
-- Python 2 (version 2.7) or Python 3 (versions 3.5 and higher)
+- Python 3 (versions 3.10 and higher)
   - Python **_requests_** package
 
 ## Creating a Bare Metal Cloud account
@@ -45,19 +44,28 @@ Follow these helpful tutorials to learn how to install Ansible on Ubuntu and Win
 - [How to Install and Configure Ansible on Ubuntu 20.04](https://phoenixnap.com/kb/install-ansible-ubuntu-20-04)
 - [How to Install and Configure Ansible on Windows](https://phoenixnap.com/kb/install-ansible-on-windows)
 
-## Installing the Bare Metal Cloud Ansible module
+## Installing the Bare Metal Cloud Ansible collection
 
-This Ansible collection contains the **_server_** module which requires the Python **_requests_** HTTP library to work properly. If you don't have it installed on your machine already, run this command to install it:
-
-    pip install requests
-
-Now install the Ansible collection by running:
+Before using this collection, you need to install it with the Ansible Galaxy command-line tool:
 
     ansible-galaxy collection install phoenixnap.bmc
 
-You can view the **_server_** module documentation with this command:
+You can also include it in a requirements.yml file and install it with `ansible-galaxy collection install -r requirements.yml`, using the format:
 
-    ansible-doc phoenixnap.bmc.server
+```yaml
+collections:
+  - name: phoenixnap.bmc
+```
+
+**Red Hat Ansible Automation Platform customers** should use an Execution Environment (EE) that includes this collection and its dependencies. Install the collection from [Red Hat Automation Hub](https://console.redhat.com/ansible/automation-hub/). For instructions on building and using Execution Environments, see the [Red Hat Ansible Automation Platform documentation](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/).
+
+Note that if you install the collection from Ansible Galaxy, it will not be upgraded automatically when you upgrade the Ansible package. To upgrade the collection to the latest available version, run the following command:
+
+    ansible-galaxy collection install phoenixnap.bmc --upgrade
+
+You can also install a specific version of the collection, for example, if you need to install a different version. Use the following syntax to install version 1.0.0:
+
+    ansible-galaxy collection install phoenixnap.bmc:1.0.0
 
 ## Authentication
 
@@ -114,7 +122,7 @@ To delete that same server, create a file called `playbook_deprovision.yml` and 
 
 ```yaml
 
-- name: reset servers
+- name: delete servers
   hosts: localhost
   gather_facts: false
   vars_files:
@@ -136,20 +144,23 @@ Pay attention to the *state* item. This is where you tell Ansible which action y
 -   **power-off**: turns off the power supply to the machine
 -   **power-on**: turns on the power supply to the machine
 -   **rebooted**: restarts the server
--   **reset**: formats the server
 -   **shutdown**: works on the operating system
 
 For more examples, check out this helpful tutorial: [Bare Metal Cloud Playbook Examples](https://phoenixnap.com/kb/how-to-install-phoenixnap-bmc-ansible-module#htoc-bmc-playbook-examples)
 
 ## Testing
 
-Tests are run with latest `ansible-lint` version and sanity checks running with Python 3.9 to Python 3.12.
+Tests are run with latest `ansible-lint` version and sanity checks running with Python 3.12.
 
 ## Support
 
-If you need support, you can create in issue in the `ansible-collections` GitHub repo.
+As Red Hat Ansible Certified Content, this collection is entitled to support through the Ansible Automation Platform (AAP) using the **Create issue** button on the top right corner.
 
-## Release motes
+If a support case cannot be opened with Red Hat and the collection has been obtained either from Galaxy or GitHub, there may community help available via:
+- GitHub issues for bugs or feature requests: https://github.com/phoenixnap/ansible-collection-pnap/issues
+- the [Ansible Forum](https://forum.ansible.com/) for general inqueries or workflow questions
+
+## Release notes
 
 You can follow changes in the <a href="https://github.com/phoenixnap/ansible-collection-pnap/blob/master/CHANGELOG.rst">CHANGELOG</a> file.
 

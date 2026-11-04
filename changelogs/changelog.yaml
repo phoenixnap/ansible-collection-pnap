@@ -184,6 +184,15 @@ releases:
     fragments:
       - 022_server_ipxe_params_.yml
     release_date: "2026-06-12"
+  1.24.0:
+    changes:
+      minor_changes:
+        - Remove Python 2 compatibility code across the collection.
+        - Update collection documentation to address certification requirements
+        - public_network - Support updating description and ra_enabled parameters.
+    fragments:
+      - 023_maintenance_and_compliance.yml
+    release_date: "2026-10-22"
   1.6.0:
     changes:
       minor_changes:
