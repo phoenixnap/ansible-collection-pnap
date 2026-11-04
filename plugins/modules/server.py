@@ -951,7 +951,7 @@ def wait_for_status_change(module, target_list, target_state, first_response):
     timeout = time.time() + TIMEOUT_STATUS_CHANGE
     while timeout > time.time():
         servers_refreshed = refresh_server_list(module, target_list)
-        if all(sr['status'] == state_final(target_state) for sr in servers_refreshed):
+        if len(servers_refreshed) == len(target_list) and all(sr['status'] == state_final(target_state) for sr in servers_refreshed):
             return servers_refreshed
         time.sleep(CHECK_FOR_STATUS_CHANGE)
     raise Exception('waiting for status %s has expired' % target_state)

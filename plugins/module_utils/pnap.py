@@ -3,9 +3,6 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 
-from __future__ import absolute_import, division, print_function
-__metaclass__ = type
-from ansible.module_utils.six import raise_from
 from base64 import standard_b64encode
 import time
 HAS_REQUESTS = True
@@ -15,6 +12,8 @@ try:
     REQUEST.headers.update({'Content-Type': 'application/json'})
 except ImportError:
     HAS_REQUESTS = False
+from ansible_collections.phoenixnap.bmc.plugins.module_utils.version import __version__
+
 
 VALID_RESPONSE_CODES = [200, 201, 202, 204]
 AUTH_API = 'https://auth.phoenixnap.com/auth/realms/BMC/protocol/openid-connect/token'
@@ -54,24 +53,29 @@ def set_token_headers(module):
         raise Exception('%s' % response.json()['error_description'])
     token = response.json()['access_token']
     REQUEST.headers.update({'Authorization': 'Bearer %s' % token})
-    REQUEST.headers.update({'X-Powered-By': 'BMC-Ansible/1.23.0'})
+    REQUEST.headers.update({'X-Powered-By': f'BMC-Ansible/{__version__}'})
 
 
 def requests_wrapper(endpoint, method='GET', params=None, data=None, module=None, reauth_attempts=3, retries=3):
     try:
         response = REQUEST.request(method, endpoint, data=data, params=params)
         if response.status_code == 401:
-            set_token_headers(module)
             if reauth_attempts == 0:
                 raise Exception("Too many reauthentication attempts")
+            set_token_headers(module)
             return requests_wrapper(endpoint, method, params, data, module, reauth_attempts - 1)
         elif response.status_code not in VALID_RESPONSE_CODES:
-            error_message = response.json().get('message')
-            validation_errors = response.json().get('validationErrors')
+            try:
+                error_response = response.json()
+                error_message = error_response.get('message')
+                validation_errors = error_response.get('validationErrors')
+            except (ValueError, TypeError):
+                error_message = response.text
+                validation_errors = None
             raise Exception('status code %s | %s | Validation errors: %s' % (response.status_code, error_message, validation_errors))
     except requests.exceptions.RequestException as e:
         if retries == 0:
-            raise_from(Exception("Communications error: %s" % str(e)), e)
+            raise Exception("Communications error: %s" % str(e)) from e
         return requests_wrapper(endpoint, method, params, data, module, retries=retries - 1)
 
     return response
@@ -105,7 +109,7 @@ def wait_for_network_status_change(server_id, network_id, get_existing_network_m
     timeout = time.time() + NETWORK_TIMEOUT_STATUS_CHANGE
     while timeout > time.time():
         network = get_existing_network_method(server_id, network_id, module)
-        if network["statusDescription"].lower() == "assigned":
+        if network["statusDescription"].lower() == target_status.lower():
             return network
         time.sleep(CHECK_FOR_NETWORK_STATUS_CHANGE)
     raise Exception('waiting for status %s has expired' % target_status)
